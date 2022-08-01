@@ -2,11 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from ast import literal_eval
 import numpy as np
-import seaborn as sns
 import datetime
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
+# from trackobjects.trackside import TrackSide
+
 
 if __name__ == '__main__':
 
@@ -64,65 +65,10 @@ for i in range(len(xy_coordinates_vehicle2)):
     data_dict['x2_straight'].append(straight_line[0][0])
     data_dict['y2_straight'].append(straight_line[0][1])
 
+xy_coordinates_vehicle1 = [list(a) for a in zip(data_dict['x1_straight'], data_dict['y1_straight'])]
+xy_coordinates_vehicle2 = [list(a) for a in zip(data_dict['x2_straight'], data_dict['y2_straight'])]
 
-fig, (ax1, ax2, ax3) = plt.subplots(3)
-# fig.suptitle('-')
-# plt.title('positions over time')
-
-ax1.set_xlabel('y position [m]')
-ax1.set_ylabel('x position [m]')
-ax1.invert_xaxis()
-
-
-ax1.scatter(data_dict['y1_straight'][0::300], data_dict['x1_straight'][0::300], s=10)
-ax1.scatter(data_dict['y2_straight'][0::300], data_dict['x2_straight'][0::300], s=10)
-
-
-ax1.plot(data_dict['y1_straight'], data_dict['x1_straight'])
-ax1.plot(data_dict['y2_straight'], data_dict['x2_straight'])
-
-
-# velocity_time plot
-def vehicle_velocity(intcolumnname):
-    velocity = []
-    for i in range(len(data.iloc[:, intcolumnname])):
-        velocity_vehicle = literal_eval(data.iloc[i, intcolumnname])
-        x_loc = velocity_vehicle[0]
-        velocity.append(x_loc)
-        # velocity = list(dict.fromkeys(velocity))
-    return velocity
-
-def get_timestamps(intcolumnname):
-    time = []
-    for i in range(len(data.iloc[:, intcolumnname])):
-       epoch_in_nanoseconds = data.iloc[i, intcolumnname]
-       epoch_in_seconds = epoch_in_nanoseconds / 1000000000
-       #we need to remove doubles??
-       datetimes = datetime.datetime.fromtimestamp(epoch_in_seconds)
-       time.append(datetimes)
-    return time
-
-velocity_vehicle1 = vehicle_velocity(3)
-velocity_vehicle2 = vehicle_velocity(6)
-
-
-time_in_datetime = get_timestamps(0)
-time_in_seconds_trail = [(a - time_in_datetime[0]).total_seconds() for a in time_in_datetime]
-time_in_seconds_trail = np.array(time_in_seconds_trail)
-
-# plt.xlabel('time [s]')
-# plt.ylabel('velocity [m/s]')
-# plt.title('velocity at times')
-ax2.set_xlabel('Time [s]')
-ax2.set_ylabel('Velocity [m/s]')
-ax2.plot(time_in_seconds_trail, velocity_vehicle1)
-ax2.plot(time_in_seconds_trail, velocity_vehicle2)
-
-fig.tight_layout(pad=1.0)
-
-
-
-##collision bound plot
+# print(xy_coordinates_vehicle2)
 
 for i in range(len(xy_coordinates_vehicle1)):
     traveled_distance1 = track.coordinates_to_traveled_distance(xy_coordinates_vehicle1[i])
@@ -130,17 +76,9 @@ for i in range(len(xy_coordinates_vehicle1)):
     data_dict['distance_traveled_vehicle1'].append(traveled_distance1)
     data_dict['distance_traveled_vehicle2'].append(traveled_distance2)
 
-average_travelled_distance_trace = list((np.array(data_dict['distance_traveled_vehicle1']) + np.array(
-    data_dict['distance_traveled_vehicle2'])) / 2.)
+print(data_dict['distance_traveled_vehicle1'])
+print(data_dict['distance_traveled_vehicle2'])
 
-headway = list(np.array(data_dict['distance_traveled_vehicle1']) - np.array(data_dict['distance_traveled_vehicle2']))
-
-ax3.plot(average_travelled_distance_trace, headway, c='k')
-ax3.set_xlabel('Average travelled distance [m]')
-ax3.set_ylabel('Headway [m]')
-fig.tight_layout(pad=1.0)
-
-plt.show()
-
+#
 
 
