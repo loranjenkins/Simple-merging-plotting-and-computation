@@ -22,7 +22,11 @@ class Track(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def traveled_distance_to_coordinates(self, distance: float, track_side: TrackSide) -> np.ndarray:
+    def traveled_distance_to_coordinates_rightvehicle(self, distance: float, track_side: TrackSide) -> np.ndarray:
+        pass
+
+    @abc.abstractmethod
+    def traveled_distance_to_coordinates_leftvehicle(self, distance: float, track_side: TrackSide) -> np.ndarray:
         pass
 
     @abc.abstractmethod

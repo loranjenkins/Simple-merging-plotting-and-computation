@@ -16,6 +16,7 @@ if __name__ == '__main__':
         r'D:\Pycharmprojects\Simple-merging-plotting-and-computation\data_folder\joan_data_experment_2vehicles.csv',
         sep=';')
     data.values.tolist()
+    data = data.iloc[500:,:]
 
 def vehicle_xy_coordinates(intcolumnname):
     list_x = []
@@ -46,8 +47,11 @@ xy_coordinates_vehicle2 = np.array(xy_coordinates_vehicle2)
 # x2, y2 = xy_coordinates_vehicle2.T
 simulation_constants = SimulationConstants(vehicle_width=1.8,
                                            vehicle_length=4.5,
-                                           track_start_point_distance=60,
-                                           track_section_length=294.)
+                                           track_width=4,
+                                           track_height=292.5,
+                                           track_start_point_distance=60, #distance between centerpoints cars -> differs each trail
+                                           track_section_length_before= 294, #length of section differs each trail
+                                           track_section_length_after = 150)
 
 track = SymmetricMergingTrack(simulation_constants)
 # print(xy_coordinates_vehicle1[1])
@@ -56,26 +60,32 @@ data_dict = {'x1_straight': [],
              'y1_straight': [],
              'x2_straight': [],
              'y2_straight': [],
+             'velocity_vehicle1': [],
+             'velocity_vehicle2': [],
              'distance_traveled_vehicle1': [],
              'distance_traveled_vehicle2': []}
 
 for i in range(len(xy_coordinates_vehicle1)):
     straight_line = track.closest_point_on_route(xy_coordinates_vehicle1[i])
-    data_dict['x1_straight'].append(straight_line[0][0])
+    data_dict['x1_straight'].append(straight_line[0][0]+5)
     data_dict['y1_straight'].append(straight_line[0][1])
 
 for i in range(len(xy_coordinates_vehicle2)):
     straight_line = track.closest_point_on_route(xy_coordinates_vehicle2[i])
-    data_dict['x2_straight'].append(straight_line[0][0])
+    data_dict['x2_straight'].append(straight_line[0][0]-5)
     data_dict['y2_straight'].append(straight_line[0][1])
 
 fig, (ax1, ax2, ax3) = plt.subplots(3)
 # fig.suptitle('-')
 # plt.title('positions over time')
-
 ax1.set_xlabel('y position [m]')
 ax1.set_ylabel('x position [m]')
+ax1.set_yticks([-30, -5, 5, 30])
+ax1.set_yticklabels([30, 0, 0, -30])
 ax1.invert_xaxis()
+# ax1.tick_params(axis='y', labelsize=10)
+# ax1.tick_params(axis='x', labelsize=10)
+
 
 ax1.scatter(data_dict['y1_straight'][0::300], data_dict['x1_straight'][0::300], s=10)
 ax1.scatter(data_dict['y2_straight'][0::300], data_dict['x2_straight'][0::300], s=10)
@@ -109,6 +119,11 @@ def get_timestamps(intcolumnname):
 velocity_vehicle1 = vehicle_velocity(3)
 velocity_vehicle2 = vehicle_velocity(6)
 
+for i in range(len(velocity_vehicle1)):
+    data_dict['velocity_vehicle1'].append(velocity_vehicle1)
+    data_dict['velocity_vehicle2'].append(velocity_vehicle2)
+
+
 time_in_datetime = get_timestamps(0)
 time_in_seconds_trail = [(a - time_in_datetime[0]).total_seconds() for a in time_in_datetime]
 time_in_seconds_trail = np.array(time_in_seconds_trail)
@@ -141,4 +156,50 @@ ax3.set_xlabel('Average travelled distance [m]')
 ax3.set_ylabel('Headway [m]')
 fig.tight_layout(pad=1.0)
 
-plt.show()
+# plt.show()
+
+##compute crt
+
+def check_if_on_collision_course_for_point(travelled_distance_collision_point, data_dict, simulation_constants):
+    track = SymmetricMergingTrack(simulation_constants)
+    point_predictions = {'vehicle1': [], 'vehicle2': []}
+
+    point_predictions['vehicle1'] = np.array(data_dict['distance_traveled_vehicle1']) + np.array(data_dict['velocity_vehicle1']) * (
+                travelled_distance_collision_point - np.array(data_dict['distance_traveled_vehicle2'])) / np.array(data_dict['velocity_vehicle2'])
+    point_predictions['vehicle2'] = np.array(data_dict['distance_traveled_vehicle2']) + np.array(data_dict['velocity_vehicle2']) * (
+            travelled_distance_collision_point - np.array(data_dict['distance_traveled_vehicle1'])) / np.array(data_dict['velocity_vehicle1'])
+
+    # lb, ub = track.get_collision_bounds(travelled_distance_collision_point, 1.8, 4.5)
+    lb = 100
+    ub = 100
+    on_collision_course = ((lb < point_predictions['vehicle2']) & (point_predictions['vehicle2'] < ub)) | \
+                          ((lb < point_predictions['vehicle1']) & (point_predictions['vehicle1'] < ub))
+    return on_collision_course
+
+def calculate_conflict_resolved_time(data_dict, time, simulation_constants):
+    time = time
+    track = SymmetricMergingTrack(simulation_constants)
+
+    merge_point_collision_course = check_if_on_collision_course_for_point((track._section_length_before+track._section_length_after), data_dict, simulation_constants)
+    threshold_collision_course = check_if_on_collision_course_for_point(track._upper_bound_threshold + 1e-3, data_dict, simulation_constants)
+
+    on_collision_course = merge_point_collision_course | threshold_collision_course
+
+    approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track._section_length_before) &
+                     (np.array(data_dict['distance_traveled_vehicle1']) < track._section_length_before+track._section_length_after)) | \
+                    ((np.array(data_dict['distance_traveled_vehicle2']) > track._section_length_before) &
+                     (np.array(data_dict['distance_traveled_vehicle2']) < track._section_length_before+track._section_length_after))
+
+    indices_of_conflict_resolved = ((on_collision_course == False) & approach_mask)
+
+    try:
+        time_of_conflict_resolved = np.array(time)[indices_of_conflict_resolved][0]
+    except IndexError:
+        time_of_conflict_resolved = None
+
+    return time_of_conflict_resolved
+
+# crt = calculate_conflict_resolved_time(data_dict, time_in_seconds_trail, simulation_constants)
+# print(crt)
+# merge_point_collision_course = check_if_on_collision_course_for_point((track._section_length_before+track._section_length_after), data_dict, simulation_constants)
+# print(list(merge_point_collision_course))
