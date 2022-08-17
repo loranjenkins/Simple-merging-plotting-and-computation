@@ -41,13 +41,14 @@ class SymmetricMergingTrack(Track):
         self._lower_bound_approximation_intersect = None
         self._lower_bound_constant_value = None
 
-        # if type(self) == SymmetricMergingTrack:
+        if type(self) == SymmetricMergingTrack:
             # only initialize the approximation when type is SymmetricMergingTrack to prevent this initialization to be called in a super().__init__() call
-        self._initialize_linear_bound_approximation(simulation_constants.vehicle_width, simulation_constants.vehicle_length)
+            self._initialize_linear_bound_approximation(simulation_constants.vehicle_width, simulation_constants.vehicle_length)
 
     def _initialize_linear_bound_approximation(self, vehicle_width, vehicle_length):
         self._upper_bound_threshold = self._section_length_before - (vehicle_width / 2.) / np.tan((np.pi / 2) - self._approach_angle) - (vehicle_length / 2)
         self._lower_bound_threshold = self._section_length_before - (vehicle_width / 2.) / np.tan((np.pi / 2) - self._approach_angle) + (vehicle_length / 2)
+
         if self._lower_bound_threshold > self._section_length_before:
             self._lower_bound_threshold = self._section_length_before
 
@@ -96,7 +97,7 @@ class SymmetricMergingTrack(Track):
                 # closest point is on left approach
                 return self._approach_angle
 
-    def closest_point_on_route(self, position):
+    def closest_point_on_route_rightvehicle(self, position):
         """
         Assumes that approach angle is <45 degrees and not 0 degrees.
         With these assumption, the relevant section can be determined based on the y coordinates only and the approach can be expressed as y = ax + b
@@ -108,16 +109,9 @@ class SymmetricMergingTrack(Track):
         else:
             before_or_after = 'before'
 
-            if position[0] >= 0.0:
-                # closest point is on right approach
-                track_side = TrackSide.RIGHT
-            else:
-                # closest point is on left approach
-                track_side = TrackSide.LEFT
+        return self._closest_point_on_route_forced_rightvehicle(position , before_or_after)
 
-        return self._closest_point_on_route_forced(position, track_side, before_or_after)
-
-    def _closest_point_on_route_forced(self, position, track_side: TrackSide, before_or_after_merge):
+    def _closest_point_on_route_forced_rightvehicle(self, position, before_or_after_merge):
         closest_point_on_route, shortest_distance = None, None
         if before_or_after_merge == 'after':
             closest_point_on_route = np.array([self._end_point[0], position[1]])
@@ -126,10 +120,42 @@ class SymmetricMergingTrack(Track):
             # define the approach line as y = ax + b and use the formula found here:
             # https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Another_formula
 
-            if track_side is TrackSide.RIGHT:
-                x0, y0 = self._right_way_points[0]
-            elif track_side is TrackSide.LEFT:
-                x0, y0 = self._left_way_points[0]
+            x0, y0 = self._right_way_points[0]
+
+            x1, y1 = self._merge_point
+            b = y1
+            a = - (b / x0)
+
+            x = (position[0] + a * position[1] - a * b) / (a ** 2 + 1)
+            y = a * x + b
+            closest_point_on_route = np.array([x, y])
+            shortest_distance = abs(b + a * position[0] - position[1]) / np.sqrt(a ** 2 + 1)
+        return closest_point_on_route, shortest_distance
+
+    def closest_point_on_route_leftvehicle(self, position):
+        """
+        Assumes that approach angle is <45 degrees and not 0 degrees.
+        With these assumption, the relevant section can be determined based on the y coordinates only and the approach can be expressed as y = ax + b
+        """
+
+        if position[1] < self._merge_point[1]:
+            before_or_after = 'after'
+            track_side = None
+        else:
+            before_or_after = 'before'
+
+        return self._closest_point_on_route_forced_leftvehicle(position, before_or_after)
+
+    def _closest_point_on_route_forced_leftvehicle(self, position, before_or_after_merge):
+        closest_point_on_route, shortest_distance = None, None
+        if before_or_after_merge == 'after':
+            closest_point_on_route = np.array([self._end_point[0], position[1]])
+            shortest_distance = abs(position[0] - self._end_point[0])
+        elif before_or_after_merge == 'before':
+            # define the approach line as y = ax + b and use the formula found here:
+            # https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Another_formula
+
+            x0, y0 = self._left_way_points[0]
 
             x1, y1 = self._merge_point
             b = y1
@@ -186,7 +212,7 @@ class SymmetricMergingTrack(Track):
 
     def _coordinates_to_traveled_distance_forced(self, point, before_or_after_merge):
         if before_or_after_merge == 'after':
-            distance = self._section_length + (point[1] - self._merge_point[1])
+            distance = self._section_length_after + (point[1] - self._merge_point[1])
         elif before_or_after_merge == 'before':
             if point[0] < 0:
                 distance = np.linalg.norm(point - self._left_way_points[0])
@@ -224,7 +250,10 @@ class SymmetricMergingTrack(Track):
         l = vehicle_length / 2
         w = vehicle_width / 2
 
-        straight_part = shapely.geometry.box(-w, self._merge_point[1] - l, w, self._merge_point[1] + self._section_length_after + l)
+        straight_part = shapely.geometry.box(-w, self._merge_point[1] - l, w, self._merge_point[1] - self._section_length_after - l)
+        # fig, (ax1, ax2) = plt.subplots(2)
+        # x, y = straight_part.exterior.xy
+        # ax1.plot(y, x)
 
         R = np.array([[np.cos(b), -np.sin(b)], [np.sin(b), np.cos(b)]])
 
@@ -232,11 +261,16 @@ class SymmetricMergingTrack(Track):
         top_right = R @ np.array([w, l]) + self._merge_point
 
         start_point_right = self.traveled_distance_to_coordinates_rightvehicle(-7.5)
+
         bottom_left = R @ np.array([-w, -l]) + start_point_right
         bottom_right = R @ np.array([w, -l]) + start_point_right
 
         approach_part = shapely.geometry.Polygon([top_left, top_right, bottom_right, bottom_left])
-
+        # x, y = approach_part.exterior.xy
+        # ax2.plot(y, x)
+        # ax2.invert_xaxis()
+        # ax2.invert_yaxis()
+        # plt.show()
         # setup polygon representing vehicle 1
         vehicle_1 = shapely.geometry.box(-w, -l, w, l)
 
@@ -244,7 +278,7 @@ class SymmetricMergingTrack(Track):
             vehicle_1 = shapely.affinity.rotate(vehicle_1, -b, use_radians=True)
 
         vehicle_1_position = self.traveled_distance_to_coordinates_leftvehicle(traveled_distance_vehicle_1)
-        vehicle_1 = shapely.affinity.translate(vehicle_1, vehicle_1_position[0], vehicle_1_position[1])
+        vehicle_1 = shapely.affinity.translate(vehicle_1, -vehicle_1_position[0], -vehicle_1_position[1])
 
 
         # get intersection between polygons
@@ -282,8 +316,8 @@ class SymmetricMergingTrack(Track):
             return min(lower_bounds, default=0), max(upper_bounds, default=0)
 
     def _get_straight_bounds_for_point(self, point, l):
-        closest_point_on_route_after_merge, _ = self._closest_point_on_route_forced(point, track_side=TrackSide.RIGHT, before_or_after_merge='after')
-        traveled_distance_after_merge = self._coordinates_to_traveled_distance_forced(closest_point_on_route_after_merge, track_side=TrackSide.RIGHT,
+        closest_point_on_route_after_merge, _ = self._closest_point_on_route_forced_rightvehicle(point, before_or_after_merge='after')
+        traveled_distance_after_merge = self._coordinates_to_traveled_distance_forced(closest_point_on_route_after_merge,
                                                                                       before_or_after_merge='after')
 
         after_merge_lb = traveled_distance_after_merge - l
@@ -297,8 +331,8 @@ class SymmetricMergingTrack(Track):
         return after_merge_lb, after_merge_ub, closest_point_on_route_after_merge
 
     def _get_approach_bounds_for_point(self, point, l):
-        closest_point_on_route_before_merge, _ = self._closest_point_on_route_forced(point, track_side=TrackSide.RIGHT, before_or_after_merge='before')
-        traveled_distance_before_merge = self._coordinates_to_traveled_distance_forced(closest_point_on_route_before_merge, track_side=TrackSide.RIGHT,
+        closest_point_on_route_before_merge, _ = self._closest_point_on_route_forced_rightvehicle(point, before_or_after_merge='before')
+        traveled_distance_before_merge = self._coordinates_to_traveled_distance_forced(closest_point_on_route_before_merge,
                                                                                        before_or_after_merge='before')
 
         before_merge_lb = traveled_distance_before_merge - l

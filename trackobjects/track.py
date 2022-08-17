@@ -18,7 +18,11 @@ class Track(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def closest_point_on_route(self, position: np.ndarray) -> (np.ndarray, float):
+    def closest_point_on_route_rightvehicle(self, position: np.ndarray) -> (np.ndarray, float):
+        pass
+
+    @abc.abstractmethod
+    def closest_point_on_route_leftvehicle(self, position: np.ndarray) -> (np.ndarray, float):
         pass
 
     @abc.abstractmethod

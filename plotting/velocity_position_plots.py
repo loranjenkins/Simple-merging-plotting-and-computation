@@ -45,9 +45,9 @@ xy_coordinates_vehicle2 = np.array(xy_coordinates_vehicle2)
 
 # x1, y1 = xy_coordinates_vehicle1.T
 # x2, y2 = xy_coordinates_vehicle2.T
-simulation_constants = SimulationConstants(vehicle_width=1.8,
-                                           vehicle_length=4.5,
-                                           track_width=4,
+simulation_constants = SimulationConstants(vehicle_width=2,
+                                           vehicle_length=4.7,
+                                           track_width=8,
                                            track_height=292.5,
                                            track_start_point_distance=60, #distance between centerpoints cars -> differs each trail
                                            track_section_length_before= 294, #length of section differs each trail
@@ -56,7 +56,8 @@ simulation_constants = SimulationConstants(vehicle_width=1.8,
 track = SymmetricMergingTrack(simulation_constants)
 # print(xy_coordinates_vehicle1[1])
 # print(track.closest_point_on_route(xy_coordinates_vehicle1[3903]))
-data_dict = {'x1_straight': [],
+data_dict = {'time': [],
+             'x1_straight': [],
              'y1_straight': [],
              'x2_straight': [],
              'y2_straight': [],
@@ -66,12 +67,12 @@ data_dict = {'x1_straight': [],
              'distance_traveled_vehicle2': []}
 
 for i in range(len(xy_coordinates_vehicle1)):
-    straight_line = track.closest_point_on_route(xy_coordinates_vehicle1[i])
+    straight_line = track.closest_point_on_route_rightvehicle(xy_coordinates_vehicle1[i])
     data_dict['x1_straight'].append(straight_line[0][0]+5)
     data_dict['y1_straight'].append(straight_line[0][1])
 
 for i in range(len(xy_coordinates_vehicle2)):
-    straight_line = track.closest_point_on_route(xy_coordinates_vehicle2[i])
+    straight_line = track.closest_point_on_route_leftvehicle(xy_coordinates_vehicle2[i])
     data_dict['x2_straight'].append(straight_line[0][0]-5)
     data_dict['y2_straight'].append(straight_line[0][1])
 
@@ -127,6 +128,7 @@ for i in range(len(velocity_vehicle1)):
 time_in_datetime = get_timestamps(0)
 time_in_seconds_trail = [(a - time_in_datetime[0]).total_seconds() for a in time_in_datetime]
 time_in_seconds_trail = np.array(time_in_seconds_trail)
+data_dict['time'] = time_in_seconds_trail
 
 # plt.xlabel('time [s]')
 # plt.ylabel('velocity [m/s]')
@@ -156,7 +158,7 @@ ax3.set_xlabel('Average travelled distance [m]')
 ax3.set_ylabel('Headway [m]')
 fig.tight_layout(pad=1.0)
 
-# plt.show()
+plt.show()
 
 ##compute crt
 
@@ -169,26 +171,26 @@ def check_if_on_collision_course_for_point(travelled_distance_collision_point, d
     point_predictions['vehicle2'] = np.array(data_dict['distance_traveled_vehicle2']) + np.array(data_dict['velocity_vehicle2']) * (
             travelled_distance_collision_point - np.array(data_dict['distance_traveled_vehicle1'])) / np.array(data_dict['velocity_vehicle1'])
 
-    # lb, ub = track.get_collision_bounds(travelled_distance_collision_point, 1.8, 4.5)
-    lb = 100
-    ub = 100
+    # lb, ub = track.get_collision_bounds(travelled_distance_collision_point, simulation_constants.vehicle_width, simulation_constants.vehicle_length)
+    lb = 150
+    ub = 0
     on_collision_course = ((lb < point_predictions['vehicle2']) & (point_predictions['vehicle2'] < ub)) | \
                           ((lb < point_predictions['vehicle1']) & (point_predictions['vehicle1'] < ub))
     return on_collision_course
 
-def calculate_conflict_resolved_time(data_dict, time, simulation_constants):
-    time = time
+def calculate_conflict_resolved_time(data_dict, simulation_constants):
+    time = data_dict['time']
     track = SymmetricMergingTrack(simulation_constants)
 
-    merge_point_collision_course = check_if_on_collision_course_for_point((track._section_length_before+track._section_length_after), data_dict, simulation_constants)
+    merge_point_collision_course = check_if_on_collision_course_for_point(2 * track._section_length_before, data_dict, simulation_constants)
     threshold_collision_course = check_if_on_collision_course_for_point(track._upper_bound_threshold + 1e-3, data_dict, simulation_constants)
 
     on_collision_course = merge_point_collision_course | threshold_collision_course
 
     approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track._section_length_before) &
-                     (np.array(data_dict['distance_traveled_vehicle1']) < track._section_length_before+track._section_length_after)) | \
+                     (np.array(data_dict['distance_traveled_vehicle1']) < 2 * track._section_length_before)) | \
                     ((np.array(data_dict['distance_traveled_vehicle2']) > track._section_length_before) &
-                     (np.array(data_dict['distance_traveled_vehicle2']) < track._section_length_before+track._section_length_after))
+                     (np.array(data_dict['distance_traveled_vehicle2']) < 2 * track._section_length_before))
 
     indices_of_conflict_resolved = ((on_collision_course == False) & approach_mask)
 
@@ -199,7 +201,10 @@ def calculate_conflict_resolved_time(data_dict, time, simulation_constants):
 
     return time_of_conflict_resolved
 
-# crt = calculate_conflict_resolved_time(data_dict, time_in_seconds_trail, simulation_constants)
-# print(crt)
+crt = calculate_conflict_resolved_time(data_dict, simulation_constants)
+print(crt)
+#
+# lb, ub = track.get_collision_bounds(2 * track._section_length_before, simulation_constants.vehicle_width, simulation_constants.vehicle_length)
+# print(lb, ub)
 # merge_point_collision_course = check_if_on_collision_course_for_point((track._section_length_before+track._section_length_after), data_dict, simulation_constants)
 # print(list(merge_point_collision_course))
