@@ -17,12 +17,13 @@ if __name__ == '__main__':
     print('Angle in radians:', angle_from_merge_point)
     print('Angle in degrees:', angle_from_merge_point*(180/math.pi))
     section_length = np.sqrt(width ** 2 + height ** 2)
-    # print('section length:', section_length)
+
+    print('section length:', section_length)
 
 
 # def _from_difference_at_point(left_velocity, right_velocity, left_headway, distance, name):
-    left_velocity = 40
-    right_velocity = 40
+    left_velocity = 37
+    right_velocity = 43
 
     headway = ConditionDefinition._from_difference_at_point(left_velocity, right_velocity, 0, section_length, 'test')
 
@@ -34,22 +35,22 @@ if __name__ == '__main__':
         difference_section_length_from_merge_point = section_length - length_tunnel/2
         x_condition_unreal = difference_section_length_from_merge_point * math.sin(angle_from_merge_point)
         y_condition_unreal = difference_section_length_from_merge_point * math.cos(angle_from_merge_point)
-        print('velocity_right_vehicle:', right_velocity, 'new_x_right_vehicle:', x_condition_unreal*100, 'new_y_right_vehicle:', y_merge_point-y_condition_unreal*100, 'Angle:', -90-angle_from_merge_point_degrees)
-        print('velocity_left_vehicle:', left_velocity, 'new_x_left_vehicle:', -x_condition_unreal * 100, 'new_y_left_vehicle:', y_merge_point-y_condition_unreal * 100, 'Angle:', -90+angle_from_merge_point_degrees)
+        print('velocity_right_vehicle:', right_velocity, 'new_x_right_vehicle:', x_condition_unreal*100, 'new_y_right_vehicle:', y_merge_point-y_condition_unreal*100, 'Angle:', 90+angle_from_merge_point_degrees)
+        print('velocity_left_vehicle:', left_velocity, 'new_x_left_vehicle:', -x_condition_unreal * 100, 'new_y_left_vehicle:', y_merge_point-y_condition_unreal * 100, 'Angle:', 90-angle_from_merge_point_degrees)
 
     elif right_velocity > left_velocity:
         difference_section_length_from_merge_point = section_length - headway.left_initial_position_offset
         x_condition_unreal = difference_section_length_from_merge_point * math.sin(angle_from_merge_point)
         y_condition_unreal = difference_section_length_from_merge_point * math.cos(angle_from_merge_point)
-        print('velocity_right_vehicle:', right_velocity, 'new_x_right_vehicle:', width*100, 'new_y_right_vehicle:', initial_start_point_y*100, 'Angle:', -90-angle_from_merge_point_degrees)
-        print('velocity_left_vehicle:', left_velocity, 'new_x_left_vehicle:', -x_condition_unreal*100,'new_y_left_vehicle:', y_merge_point-y_condition_unreal*100, 'Angle:', -90+angle_from_merge_point_degrees)
+        print('velocity_right_vehicle:', right_velocity, 'new_x_right_vehicle:', width*100, 'new_y_right_vehicle:', initial_start_point_y*100, 'Angle:', 90+angle_from_merge_point_degrees)
+        print('velocity_left_vehicle:', left_velocity, 'new_x_left_vehicle:', -x_condition_unreal*100,'new_y_left_vehicle:', y_merge_point-y_condition_unreal*100, 'Angle:', 90-angle_from_merge_point_degrees)
 
     elif left_velocity > right_velocity:
         difference_section_length_from_merge_point = section_length - headway.right_initial_position_offset
         x_condition_unreal = difference_section_length_from_merge_point * math.sin(angle_from_merge_point)
         y_condition_unreal = difference_section_length_from_merge_point * math.cos(angle_from_merge_point)
-        print('velocity_right_vehicle:', right_velocity, 'new_x_right_vehicle:', x_condition_unreal*100, 'new_y_right_vehicle:', y_merge_point-y_condition_unreal*100, 'Angle:', -90-angle_from_merge_point_degrees)
-        print('velocity_left_vehicle:', left_velocity, 'new_x_left_vehicle:', -width*100, 'new_y_left_vehicle:', initial_start_point_y*100, 'Angle:', -90+angle_from_merge_point_degrees)
+        print('velocity_right_vehicle:', right_velocity, 'new_x_right_vehicle:', x_condition_unreal*100, 'new_y_right_vehicle:', y_merge_point-y_condition_unreal*100, 'Angle:', 90+angle_from_merge_point_degrees)
+        print('velocity_left_vehicle:', left_velocity, 'new_x_left_vehicle:', -width*100, 'new_y_left_vehicle:', initial_start_point_y*100, 'Angle:', 90-angle_from_merge_point_degrees)
 
 
 

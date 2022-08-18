@@ -28,51 +28,8 @@ class SymmetricMergingTrack(Track):
         self._end_point = np.array([0.0, self._merge_point[1] - self._section_length_after])
 
         self._left_way_points = [np.array([-self._start_point_distance / 2., -7.5]), self._merge_point, self._end_point]
-        self._left_run_up_point = np.array([-self._start_point_distance, -np.sqrt(self._section_length_before ** 2 - (self._start_point_distance / 2) ** 2)])
         self._right_way_points = [np.array([self._start_point_distance / 2., -7.5]), self._merge_point, self._end_point]
-        self._right_run_up_point = np.array([self._start_point_distance, -np.sqrt(self._section_length_before ** 2 - (self._start_point_distance / 2) ** 2)])
 
-        self._lower_bound_threshold = None
-        self._upper_bound_threshold = None
-
-        self._upper_bound_approximation_slope = None
-        self._upper_bound_approximation_intersect = None
-        self._lower_bound_approximation_slope = None
-        self._lower_bound_approximation_intersect = None
-        self._lower_bound_constant_value = None
-
-        if type(self) == SymmetricMergingTrack:
-            # only initialize the approximation when type is SymmetricMergingTrack to prevent this initialization to be called in a super().__init__() call
-            self._initialize_linear_bound_approximation(simulation_constants.vehicle_width, simulation_constants.vehicle_length)
-
-    def _initialize_linear_bound_approximation(self, vehicle_width, vehicle_length):
-        self._upper_bound_threshold = self._section_length_before - (vehicle_width / 2.) / np.tan((np.pi / 2) - self._approach_angle) - (vehicle_length / 2)
-        self._lower_bound_threshold = self._section_length_before - (vehicle_width / 2.) / np.tan((np.pi / 2) - self._approach_angle) + (vehicle_length / 2)
-
-        if self._lower_bound_threshold > self._section_length_before:
-            self._lower_bound_threshold = self._section_length_before
-
-        last_point = 2 * self._section_length_before
-
-        # 10 cm resolution lookup
-        entries = [i for i in range(int(self._upper_bound_threshold * 10 + 1), int(last_point * 10))]
-
-        look_up_table = np.zeros((len(entries), 2))
-
-        for index in range(len(entries)):
-            travelled_distance = entries[index] / 10.
-            look_up_table[index, :] = self.get_collision_bounds(travelled_distance, vehicle_width, vehicle_length)
-
-        self._upper_bound_approximation_slope, self._upper_bound_approximation_intersect, _, _, _ = stats.linregress(np.array(entries) / 10., look_up_table[:, 1])
-        lower_bound_index = []
-        for i in range(len(entries)):
-            comparision = np.where(entries[i] > self._lower_bound_threshold * 10)
-            lower_bound_index.append(comparision)
-
-        # self._lower_bound_approximation_slope, self._lower_bound_approximation_intersect, _, _, _ = stats.linregress(np.array(entries[lower_bound_index:]) / 10.,
-        #                                                                                                            look_up_table[lower_bound_index:, 0])
-
-        self._lower_bound_constant_value, _ = self.get_collision_bounds(self._lower_bound_threshold - 0.1, vehicle_width, vehicle_length)
 
     def is_beyond_track_bounds(self, position):
         _, distance_to_track = self.closest_point_on_route(position)
@@ -212,7 +169,7 @@ class SymmetricMergingTrack(Track):
 
     def _coordinates_to_traveled_distance_forced(self, point, before_or_after_merge):
         if before_or_after_merge == 'after':
-            distance = self._section_length_after + (point[1] - self._merge_point[1])
+            distance = self._section_length_before + (point[1] - self._merge_point[1])
         elif before_or_after_merge == 'before':
             if point[0] < 0:
                 distance = np.linalg.norm(point - self._left_way_points[0])

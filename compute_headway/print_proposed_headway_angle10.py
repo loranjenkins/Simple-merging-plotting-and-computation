@@ -21,8 +21,8 @@ if __name__ == '__main__':
 
 
 # def _from_difference_at_point(left_velocity, right_velocity, left_headway, distance, name):
-    left_velocity = 40
-    right_velocity = 40
+    left_velocity = 34
+    right_velocity = 46
 
     headway = ConditionDefinition._from_difference_at_point(left_velocity, right_velocity, 0, section_length, 'test')
 
