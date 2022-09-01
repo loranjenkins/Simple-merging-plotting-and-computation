@@ -1,7 +1,7 @@
 import abc
 
 import numpy as np
-from trackobjects.trackside import TrackSide
+
 
 
 class Track(abc.ABC):
@@ -18,19 +18,11 @@ class Track(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def closest_point_on_route_rightvehicle(self, position: np.ndarray) -> (np.ndarray, float):
+    def closest_point_on_route(self, position: np.ndarray) -> (np.ndarray, float):
         pass
 
     @abc.abstractmethod
-    def closest_point_on_route_leftvehicle(self, position: np.ndarray) -> (np.ndarray, float):
-        pass
-
-    @abc.abstractmethod
-    def traveled_distance_to_coordinates_rightvehicle(self, distance: float, track_side: TrackSide) -> np.ndarray:
-        pass
-
-    @abc.abstractmethod
-    def traveled_distance_to_coordinates_leftvehicle(self, distance: float, track_side: TrackSide) -> np.ndarray:
+    def traveled_distance_to_coordinates(self, distance: float, vehicle: str) -> np.ndarray:
         pass
 
     @abc.abstractmethod
@@ -49,13 +41,13 @@ class Track(abc.ABC):
     def get_track_bounding_rect(self) -> (float, float, float, float):
         pass
 
-    @abc.abstractmethod
-    def get_way_points(self, track_side: TrackSide, show_run_up=False) -> list:
-        pass
-
-    @abc.abstractmethod
-    def get_start_position(self, track_side: TrackSide) -> np.ndarray:
-        pass
+    # @abc.abstractmethod
+    # def get_way_points(self, track_side: TrackSide, show_run_up=False) -> list:
+    #     pass
+    #
+    # @abc.abstractmethod
+    # def get_start_position(self, track_side: TrackSide) -> np.ndarray:
+    #     pass
 
     @property
     @abc.abstractmethod

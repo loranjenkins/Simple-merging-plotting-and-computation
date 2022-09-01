@@ -9,20 +9,29 @@ from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
 
 if __name__ == '__main__':
-    # data = pd.read_csv(
-    #     r'D:\Pycharmprojects\Simple-merging-plotting-and-computation\data_folder\joan_data_experment_2vehicles.csv',
-    #     sep=';', converters={'Carla Interface.agents.Ego Vehicle_1.transform': literal_eval})
     data = pd.read_csv(
-        r'C:\Users\localadmin\PycharmProjects\Simple-merging-plotting-and-computation\data_folder\joan_data_experment_2vehicles.csv',
+        'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
         sep=';')
-    data.values.tolist()
-    data = data.iloc[500:,:]
 
-def vehicle_xy_coordinates(intcolumnname):
+    data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
+    data = data.iloc[10:,:]
+    data = data.drop_duplicates(subset=['Carla Interface.time'], keep=False)
+
+    simulation_constants = SimulationConstants(vehicle_width=2,
+                                               vehicle_length=4.7,
+                                               track_width=8,
+                                               track_height=195,
+                                               track_start_point_distance=390,
+                                               track_section_length_before=275.77164466275354,
+                                               track_section_length_after=150)
+
+    track = SymmetricMergingTrack(simulation_constants)
+
+def vehicle_xy_coordinates(intcolumn):
     list_x = []
     list_y = []
-    for i in range(len(data.iloc[:, intcolumnname])):
-        transform_vehicle1 = eval(data.iloc[i, intcolumnname])
+    for i in range(len(data.iloc[:, intcolumn])):
+        transform_vehicle1 = eval(data.iloc[i, intcolumn])
         x_loc = transform_vehicle1[0]
         y_loc = transform_vehicle1[1]
 
@@ -43,19 +52,6 @@ xy_coordinates_vehicle2 = [list(a) for a in zip(xy_coordinates_vehicle2[0], xy_c
 xy_coordinates_vehicle1 = np.array(xy_coordinates_vehicle1)
 xy_coordinates_vehicle2 = np.array(xy_coordinates_vehicle2)
 
-# x1, y1 = xy_coordinates_vehicle1.T
-# x2, y2 = xy_coordinates_vehicle2.T
-simulation_constants = SimulationConstants(vehicle_width=2,
-                                           vehicle_length=4.7,
-                                           track_width=8,
-                                           track_height=292.5,
-                                           track_start_point_distance=60, #distance between centerpoints cars -> differs each trail
-                                           track_section_length_before= 294, #length of section differs each trail
-                                           track_section_length_after = 150)
-
-track = SymmetricMergingTrack(simulation_constants)
-# print(xy_coordinates_vehicle1[1])
-# print(track.closest_point_on_route(xy_coordinates_vehicle1[3903]))
 data_dict = {'time': [],
              'x1_straight': [],
              'y1_straight': [],
@@ -67,13 +63,13 @@ data_dict = {'time': [],
              'distance_traveled_vehicle2': []}
 
 for i in range(len(xy_coordinates_vehicle1)):
-    straight_line = track.closest_point_on_route_rightvehicle(xy_coordinates_vehicle1[i])
-    data_dict['x1_straight'].append(straight_line[0][0]+5)
+    straight_line = track.closest_point_on_route(xy_coordinates_vehicle1[i])
+    data_dict['x1_straight'].append(straight_line[0][0]+20)
     data_dict['y1_straight'].append(straight_line[0][1])
 
 for i in range(len(xy_coordinates_vehicle2)):
-    straight_line = track.closest_point_on_route_leftvehicle(xy_coordinates_vehicle2[i])
-    data_dict['x2_straight'].append(straight_line[0][0]-5)
+    straight_line = track.closest_point_on_route(xy_coordinates_vehicle2[i])
+    data_dict['x2_straight'].append(straight_line[0][0]-20)
     data_dict['y2_straight'].append(straight_line[0][1])
 
 fig, (ax1, ax2, ax3) = plt.subplots(3)
@@ -81,9 +77,9 @@ fig, (ax1, ax2, ax3) = plt.subplots(3)
 # plt.title('positions over time')
 ax1.set_xlabel('y position [m]')
 ax1.set_ylabel('x position [m]')
-ax1.set_yticks([-30, -5, 5, 30])
-ax1.set_yticklabels([30, 0, 0, -30])
-ax1.invert_xaxis()
+ax1.set_yticks([-175, -20, 20, 175])
+ax1.set_yticklabels([175, 0, 0, -175])
+
 # ax1.tick_params(axis='y', labelsize=10)
 # ax1.tick_params(axis='x', labelsize=10)
 
@@ -111,7 +107,6 @@ def get_timestamps(intcolumnname):
     for i in range(len(data.iloc[:, intcolumnname])):
         epoch_in_nanoseconds = data.iloc[i, intcolumnname]
         epoch_in_seconds = epoch_in_nanoseconds / 1000000000
-        # we need to remove doubles??
         datetimes = datetime.datetime.fromtimestamp(epoch_in_seconds)
         time.append(datetimes)
     return time
