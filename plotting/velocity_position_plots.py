@@ -13,7 +13,7 @@ if __name__ == '__main__':
     #     r'D:\Pycharmprojects\Simple-merging-plotting-and-computation\data_folder\joan_data_experment_2vehicles.csv',
     #     sep=';', converters={'Carla Interface.agents.Ego Vehicle_1.transform': literal_eval})
     data = pd.read_csv(
-        r'D:\Pycharmprojects\Simple-merging-plotting-and-computation\data_folder\joan_data_experment_2vehicles.csv',
+        r'C:\Users\localadmin\PycharmProjects\Simple-merging-plotting-and-computation\data_folder\joan_data_experment_2vehicles.csv',
         sep=';')
     data.values.tolist()
     data = data.iloc[500:,:]
@@ -201,8 +201,8 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
     return time_of_conflict_resolved
 
-crt = calculate_conflict_resolved_time(data_dict, simulation_constants)
-print(crt)
+# crt = calculate_conflict_resolved_time(data_dict, simulation_constants)
+# print(crt)
 #
 # lb, ub = track.get_collision_bounds(2 * track._section_length_before, simulation_constants.vehicle_width, simulation_constants.vehicle_length)
 # print(lb, ub)

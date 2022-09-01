@@ -9,7 +9,7 @@ if __name__ == '__main__':
     #     r'D:\Pycharmprojects\Simple-merging-plotting-and-computation\data_folder\joan_data_experment_2vehicles.csv',
     #     sep=';', converters={'Carla Interface.agents.Ego Vehicle_1.transform': literal_eval})
     data = pd.read_csv(
-        r'D:\Pycharmprojects\ObjectDetection\Plotting\Varjo_experiment_data.csv_2022-08-11 143010 - olger right - arkady left.csv',
+        r'C:\Users\localadmin\PycharmProjects\Simple-merging-plotting-and-computation\Varjo_hmd_plot\Varjo_experiment_data.csv_2022-08-11 143010 - olger right - arkady left.csv',
         sep=',')
     data.values.tolist()
 
@@ -35,6 +35,7 @@ if __name__ == '__main__':
             return True
         else:
             return False
+
     #define bounding box
     bounding_box_looking_front = [-0.5, -1, 0.5, 0.1] #collect this data better!
     bounding_box_interest_other_vehicle = [-1, -0.25, 1, 0.25]
@@ -42,7 +43,7 @@ if __name__ == '__main__':
 
     #Bounding areas HMD rotation
     data_looking_front = Filtered_gaze_data[Filtered_gaze_data['HMD_rotation'].between(0.80, 1)]
-    data_looking_other_vehicle = Filtered_gaze_data[Filtered_gaze_data['HMD_rotation'].between(-0.2, 0.6)]
+    data_looking_other_vehicle = Filtered_gaze_data[Filtered_gaze_data['HMD_rotation'].between(-1, 0.6)]
     data_looking_other = Filtered_gaze_data[Filtered_gaze_data['HMD_rotation'].between(0.6, 0.80)]
     # print(data_looking_front)
     # print(data_looking_interest_other_vehicle)
@@ -98,7 +99,7 @@ if __name__ == '__main__':
     merged_all_looking_other = pd.concat([merged_front_and_othervehicle,data_is_inside_looking_other_true])
 
     #Plot %looking vs time
-    # print(data_looking_front_true)
-    # print(len(data_looking_other_vehicle_true))
-    # print(len(merged_all_looking_other))
+    print(len(data_looking_front_true))
+    print(len(data_looking_other_vehicle_true))
+    print(len(merged_all_looking_other))
 
