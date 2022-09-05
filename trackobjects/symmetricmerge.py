@@ -4,6 +4,7 @@ import shapely.affinity
 import shapely.geometry
 import shapely.ops
 import math
+from scipy import optimize
 
 
 class SymmetricMergingTrack:
@@ -20,6 +21,83 @@ class SymmetricMergingTrack:
 
         self.left_way_points = [np.array([-self.start_point_distance / 2., 5]), self.merge_point, self.end_point]
         self.right_way_points = [np.array([self.start_point_distance / 2., 5]), self.merge_point, self.end_point]
+
+        self.lower_bound_threshold = None
+        self.upper_bound_threshold = None
+
+        self.initialize_linear_bound_approximation(simulation_constants.vehicle_width,
+                                                    simulation_constants.vehicle_length)
+
+    def initialize_linear_bound_approximation(self, vehicle_width, vehicle_length):
+        self.upper_bound_threshold = self.section_length_before - (vehicle_width / 2.) / np.tan(
+            (np.pi / 2) - self.approach_angle) - (vehicle_length / 2)
+        self.lower_bound_threshold = self.section_length_before - (vehicle_width / 2.) / np.tan(
+            (np.pi / 2) - self.approach_angle) + (vehicle_length / 2)
+        if self.lower_bound_threshold > self.section_length_before:
+            self.lower_bound_threshold = self.section_length_before
+
+        # # last_point = 2 * self.section_length #what is this
+        # last_point = self.end_point[1]
+        #
+        # # 10 cm resolution lookup
+        # entries = [i for i in range(int(self._upper_bound_threshold * 10 + 1), int(last_point * 10))]
+        #
+        # look_up_table = np.zeros((len(entries), 2))
+        #
+        # for index in range(len(entries)):
+        #     travelled_distance = entries[index] / 10.
+        #     look_up_table[index, :] = self.get_collision_bounds(travelled_distance, vehicle_width, vehicle_length)
+        #
+        # self._upper_bound_approximation_slope, self._upper_bound_approximation_intersect, _, _, _ = stats.linregress(
+        #     np.array(entries) / 10., look_up_table[:, 1])
+        # lower_bound_index = np.where(entries > self._lower_bound_threshold * 10)[0][0]
+        #
+        # self._lower_bound_approximation_slope, self._lower_bound_approximation_intersect, _, _, _ = stats.linregress(
+        #     np.array(entries[lower_bound_index:]) / 10.,
+        #     look_up_table[lower_bound_index:, 0])
+        #
+        # self._lower_bound_constant_value, _ = self.get_collision_bounds(self._lower_bound_threshold - 0.1,
+        #                                                                 vehicle_width, vehicle_length)
+    def get_headway_bounds(self, average_travelled_distance, vehicle_width, vehicle_length):
+        """
+        Returns the bounds on the headway that spans the set of all collision positions. Assumes both vehicles have the same dimensions.
+        returns (None, None) when no collisions are possible.
+
+        This method uses scipy optimize to find the minimal headway without a collision, this is inefficient but this method is only used for plotting purposes.
+        In the simulations, please use the get_collision_bounds method, it has a closed form solution.
+
+        :param average_travelled_distance:
+        :param vehicle_width:
+        :param vehicle_length:
+        :return:
+        """
+        if average_travelled_distance > 2 * self.section_length_before + vehicle_length / 2.:
+            # both vehicles are on the straight section
+            return -vehicle_length, vehicle_length
+        elif average_travelled_distance < self.upper_bound_threshold:
+            # at least one of the vehicles is on the approach on a position where it cannot collide
+            return None, None
+        else:
+            # find the minimal headway (x) where the overlap between the vehicles is negative (no collision) and x is positive
+            solution = optimize.minimize(lambda x: abs(x), np.array([0.]), constraints=[{'type': 'ineq',
+                                                                            'fun': self._collision_constraint,
+                                                                            'args': (average_travelled_distance, vehicle_width, vehicle_length)},
+                                                                           {'type': 'ineq',
+                                                                            'fun': lambda x: x}])
+            headway = solution.x[0]
+            # the headway bounds are completely symmetrical
+            return -headway, headway
+
+    def _collision_constraint(self, head_way, average_travelled_distance, vehicle_width, vehicle_length):
+        left = average_travelled_distance + head_way / 2.
+        right = average_travelled_distance - head_way / 2.
+
+        lb, ub = self.get_collision_bounds(left, vehicle_width, vehicle_length)
+
+        if lb is None:
+            return 1.
+        else:
+            return lb - right
 
     def position_is_beyond_track_bounds(self, position):
         _, distance_to_track = self.closest_point_on_route(position)
@@ -90,7 +168,7 @@ class SymmetricMergingTrack:
         return closest_point_on_route, shortest_distance
 
     def traveled_distance_to_coordinates(self, distance, vehicle='left'):
-        if distance <= self.section_length:
+        if distance <= self.section_length_before:
             before_or_after = 'before'
         else:
             before_or_after = 'after'
@@ -100,16 +178,16 @@ class SymmetricMergingTrack:
 
     def _traveled_distance_to_coordinates_forced(self, distance, left_or_right, before_or_after_merge):
         if left_or_right == 'left':
-            x_axis = -1
-        elif left_or_right == 'right':
             x_axis = 1
+        elif left_or_right == 'right':
+            x_axis = -1
 
         if before_or_after_merge == 'before':
             x = ((self.start_point_distance / 2.) - np.cos(self.approach_angle) * distance) * x_axis
-            y = np.sin(self.approach_angle) * distance
+            y = np.sin(self.approach_angle) * distance + 5
         elif before_or_after_merge == 'after':
             x = 0.0
-            y = np.sin(self.approach_angle) * self.section_length + (distance - self.section_length)
+            y = np.sin(self.approach_angle) * self.section_length_before + (distance - self.section_length_before)
         return np.array([x, y])
 
     def coordinates_to_traveled_distance(self, point):
@@ -127,7 +205,7 @@ class SymmetricMergingTrack:
 
     def _coordinates_to_traveled_distance_forced(self, point, left_or_right, before_or_after_merge):
         if before_or_after_merge == 'after':
-            distance = self.section_length + (point[1] - self.merge_point[1])
+            distance = self.section_length_after + (point[1] - self.merge_point[1])
         elif before_or_after_merge == 'before':
             if left_or_right == 'left':
                 distance = np.linalg.norm(point - self.left_way_points[0])
@@ -153,27 +231,36 @@ class SymmetricMergingTrack:
         w = vehicle_width / 2
 
         straight_part = shapely.geometry.box(-w, self.merge_point[1] - l, w,
-                                             self.merge_point[1] + self.section_length + l)
+                                             self.merge_point[1] + self.section_length_after + l)
+        # plt.plot(*straight_part.exterior.xy)
+        # plt.show()
 
         R = np.array([[np.cos(b), -np.sin(b)], [np.sin(b), np.cos(b)]])
 
         top_left = R @ np.array([-w, l]) + self.merge_point
         top_right = R @ np.array([w, l]) + self.merge_point
 
-        start_point_right = self.traveled_distance_to_coordinates(0.0, vehicle='right')
+        start_point_right = self.traveled_distance_to_coordinates(0.0, vehicle='left')
+
         bottom_left = R @ np.array([-w, -l]) + start_point_right
         bottom_right = R @ np.array([w, -l]) + start_point_right
 
         approach_part = shapely.geometry.Polygon([top_left, top_right, bottom_right, bottom_left])
+        # plt.plot(*approach_part.exterior.xy)
 
         # setup polygon representing vehicle 1
         vehicle_1 = shapely.geometry.box(-w, -l, w, l)
 
-        if traveled_distance_vehicle_1 <= self.section_length:
-            vehicle_1 = shapely.affinity.rotate(vehicle_1, -b, use_radians=True)
+        if traveled_distance_vehicle_1 <= self.section_length_before:
+            vehicle_1 = shapely.affinity.rotate(vehicle_1, b, use_radians=True)
 
         vehicle_1_position = self.traveled_distance_to_coordinates(traveled_distance_vehicle_1)
+
+
         vehicle_1 = shapely.affinity.translate(vehicle_1, vehicle_1_position[0], vehicle_1_position[1])
+
+        # plt.plot(*vehicle_1.exterior.xy)
+        # plt.show()
 
         # get intersection between polygons
         straight_intersection = straight_part.intersection(vehicle_1)
@@ -210,7 +297,7 @@ class SymmetricMergingTrack:
             return min(lower_bounds), max(upper_bounds)
 
     def _get_straight_bounds_for_point(self, point, l):
-        closest_point_on_route_after_merge, _ = self._closest_point_on_route_forced(point, left_or_right='right',
+        closest_point_on_route_after_merge, _ = self._closest_point_on_route_forced(point, left_or_right='left',
                                                                                     before_or_after_merge='after')
         traveled_distance_after_merge = self._coordinates_to_traveled_distance_forced(
             closest_point_on_route_after_merge, left_or_right='right',
@@ -219,27 +306,27 @@ class SymmetricMergingTrack:
         after_merge_lb = traveled_distance_after_merge - l
         after_merge_ub = traveled_distance_after_merge + l
 
-        if after_merge_lb < self.section_length:
-            after_merge_lb = self.section_length
-        if after_merge_ub < self.section_length:
+        if after_merge_lb < self.section_length_after:
+            after_merge_lb = self.section_length_after
+        if after_merge_ub < self.section_length_after:
             after_merge_ub = np.nan
 
         return after_merge_lb, after_merge_ub, closest_point_on_route_after_merge
 
     def _get_approach_bounds_for_point(self, point, l):
-        closest_point_on_route_before_merge, _ = self._closest_point_on_route_forced(point, left_or_right='right',
+        closest_point_on_route_before_merge, _ = self._closest_point_on_route_forced(point, left_or_right='left',
                                                                                      before_or_after_merge='before')
         traveled_distance_before_merge = self._coordinates_to_traveled_distance_forced(
-            closest_point_on_route_before_merge, left_or_right='right',
+            closest_point_on_route_before_merge, left_or_right='left',
             before_or_after_merge='before')
 
         before_merge_lb = traveled_distance_before_merge - l
         before_merge_ub = traveled_distance_before_merge + l
 
-        if before_merge_lb > self.section_length:
+        if before_merge_lb > self.section_length_before:
             before_merge_lb = np.nan
-        if before_merge_ub > self.section_length:
-            before_merge_ub = self.section_length
+        if before_merge_ub > self.section_length_before:
+            before_merge_ub = self.section_length_before
 
         return before_merge_lb, before_merge_ub, closest_point_on_route_before_merge
 
