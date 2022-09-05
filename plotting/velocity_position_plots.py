@@ -201,10 +201,10 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
                     ((np.array(data_dict['distance_traveled_vehicle2']) > track.section_length_before) &
                      (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before + track.section_length_after))
 
-    print((on_collision_course == False))
+
     indices_of_conflict_resolved = ((on_collision_course == False) & approach_mask)
 
-    print(np.array(time)[indices_of_conflict_resolved][0])
+    # print(np.array[indices_of_conflict_resolved][0]) # this one not working
 
     try:
         time_of_conflict_resolved = np.array(time)[indices_of_conflict_resolved][0]
