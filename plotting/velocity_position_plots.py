@@ -197,10 +197,10 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
 
     approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.section_length_before) &
-                     (np.array(data_dict['distance_traveled_vehicle1']) < track.section_length_before + track.section_length_after)) | \
+                     (np.array(data_dict['distance_traveled_vehicle1']) < 2 * track.section_length_before)) | \
                     ((np.array(data_dict['distance_traveled_vehicle2']) > track.section_length_before) &
-                     (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before + track.section_length_after))
-
+                     (np.array(data_dict['distance_traveled_vehicle2']) < 2 * track.section_length_before))
+    # why times 2 here
 
     indices_of_conflict_resolved = ((on_collision_course == False) & approach_mask)
 

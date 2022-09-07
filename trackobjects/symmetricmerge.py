@@ -246,7 +246,7 @@ class SymmetricMergingTrack:
         bottom_right = R @ np.array([w, -l]) + start_point_right
 
         approach_part = shapely.geometry.Polygon([top_left, top_right, bottom_right, bottom_left])
-        # plt.plot(*approach_part.exterior.xy)
+        plt.plot(*approach_part.exterior.xy)
 
         # setup polygon representing vehicle 1
         vehicle_1 = shapely.geometry.box(-w, -l, w, l)
@@ -259,8 +259,8 @@ class SymmetricMergingTrack:
 
         vehicle_1 = shapely.affinity.translate(vehicle_1, vehicle_1_position[0], vehicle_1_position[1])
 
-        # plt.plot(*vehicle_1.exterior.xy)
-        # plt.show()
+        plt.plot(*vehicle_1.exterior.xy)
+        plt.show()
 
         # get intersection between polygons
         straight_intersection = straight_part.intersection(vehicle_1)
