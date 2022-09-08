@@ -1,6 +1,6 @@
 import pickle
 from trackobjects.simulationconstants import SimulationConstants
-from trackobjects.symmetricmerge import SymmetricMergingTrack
+from trackobjects.symmetricmerge_old import SymmetricMergingTrack
 import numpy as np
 
 

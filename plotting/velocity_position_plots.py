@@ -79,7 +79,7 @@ fig, (ax1, ax2, ax3) = plt.subplots(3)
 # plt.title('positions over time')
 ax1.set_xlabel('y position [m]')
 ax1.set_ylabel('x position [m]')
-ax1.set_yticks([-175, -20, 20, 175])
+ax1.set_yticks([175, -20, 20, -175])
 ax1.set_yticklabels([175, 0, 0, -175])
 
 
@@ -92,6 +92,10 @@ ax1.set_xlim(50,450)
 
 ax1.plot(data_dict['y1_straight'], data_dict['x1_straight'])
 ax1.plot(data_dict['y2_straight'], data_dict['x2_straight'])
+# ax1.plot(data_dict['x1_straight'], data_dict['y1_straight'])
+# ax1.plot(data_dict['x2_straight'], data_dict['y2_straight'])
+
+
 
 
 # velocity_time plot
@@ -177,7 +181,7 @@ def check_if_on_collision_course_for_point(travelled_distance_collision_point, d
 
     on_collision_course = ((lb < point_predictions['vehicle2']) & (point_predictions['vehicle2'] < ub)) | \
                           ((lb < point_predictions['vehicle1']) & (point_predictions['vehicle1'] < ub))
-    print(on_collision_course)
+
     return on_collision_course
 
 def calculate_conflict_resolved_time(data_dict, simulation_constants):
@@ -186,20 +190,21 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
     merge_point_collision_course = check_if_on_collision_course_for_point(track.section_length_before, data_dict,
                                                                           simulation_constants)
-    # why are you using * 2?
-    # threshold_collision_course = check_if_on_collision_course_for_point(track.upper_bound_threshold + 1e-3, data_dict, simulation_constants)
-    # # #why + 1e-3
-    # end_point_collision_course = check_if_on_collision_course_for_point(track.section_length_before + track.section_length_after,
-    #                                                                     data_dict, simulation_constants)
+
+    threshold_collision_course = check_if_on_collision_course_for_point(track.upper_bound_threshold + 1e-3, data_dict, simulation_constants)
+    # 1e-3 is used for straight approach (always inside)
+    end_point_collision_course = check_if_on_collision_course_for_point(track.section_length_before + track.section_length_after,
+                                                                        data_dict, simulation_constants)
 
     on_collision_course = merge_point_collision_course \
-                          # | threshold_collision_course | end_point_collision_course
+                          | threshold_collision_course \
+                          | end_point_collision_course
 
 
-    approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.section_length_before) &
-                     (np.array(data_dict['distance_traveled_vehicle1']) < 2 * track.section_length_before)) | \
-                    ((np.array(data_dict['distance_traveled_vehicle2']) > track.section_length_before) &
-                     (np.array(data_dict['distance_traveled_vehicle2']) < 2 * track.section_length_before))
+    approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > 120) & # tunnel length
+                     (np.array(data_dict['distance_traveled_vehicle1']) < track.section_length_before)) | \
+                    ((np.array(data_dict['distance_traveled_vehicle2']) > 120) &
+                     (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
     # why times 2 here
 
     indices_of_conflict_resolved = ((on_collision_course == False) & approach_mask)
