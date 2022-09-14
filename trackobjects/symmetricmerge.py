@@ -232,11 +232,9 @@ class SymmetricMergingTrack:
 
         straight_part = shapely.geometry.box(-w, self.merge_point[1] - l, w,
                                              self.merge_point[1] + self.section_length_after + l)
-        # plt.plot(*straight_part.exterior.xy)
-        # plt.show()
 
         # R = np.array([[np.cos(b), -np.sin(b)], [np.sin(b), np.cos(b)]])
-        R = np.array([[np.cos(b), np.sin(b)], [-np.sin(b), np.cos(b)]]) #with y down positive
+        R = np.array([[np.cos(b), -np.sin(b)], [np.sin(b), np.cos(b)]]) #with y down positive
         # https://stackoverflow.com/questions/24675945/rotating-a-matrix-in-a-non-standard-2d-plane
 
         top_left = R @ np.array([-w, l]) + self.merge_point
@@ -248,7 +246,6 @@ class SymmetricMergingTrack:
         bottom_right = R @ np.array([w, -l]) + start_point_right
 
         approach_part = shapely.geometry.Polygon([top_left, top_right, bottom_right, bottom_left])
-        plt.plot(*approach_part.exterior.xy)
 
         # setup polygon representing vehicle 1
         vehicle_1 = shapely.geometry.box(-w, -l, w, l)
@@ -260,9 +257,6 @@ class SymmetricMergingTrack:
         print(vehicle_1_position)
 
         vehicle_1 = shapely.affinity.translate(vehicle_1, vehicle_1_position[0], vehicle_1_position[1])
-
-        plt.plot(*ve
-
 
         # get intersection between polygons
         straight_intersection = straight_part.intersection(vehicle_1)
@@ -308,9 +302,9 @@ class SymmetricMergingTrack:
         after_merge_lb = traveled_distance_after_merge - l
         after_merge_ub = traveled_distance_after_merge + l
 
-        if after_merge_lb < self.section_length_after:
-            after_merge_lb = self.section_length_after
-        if after_merge_ub < self.section_length_after:
+        if after_merge_lb < self.section_length_before:
+            after_merge_lb = self.section_length_before
+        if after_merge_ub < self.section_length_before:
             after_merge_ub = np.nan
 
         return after_merge_lb, after_merge_ub, closest_point_on_route_after_merge

@@ -177,12 +177,11 @@ def check_if_on_collision_course_for_point(travelled_distance_collision_point, d
     #what are these point_predictions -> start array with section_length_before
 
     lb, ub = track.get_collision_bounds(travelled_distance_collision_point, simulation_constants.vehicle_width, simulation_constants.vehicle_length)
-    #
 
     on_collision_course = ((lb < point_predictions['vehicle2']) & (point_predictions['vehicle2'] < ub)) | \
                           ((lb < point_predictions['vehicle1']) & (point_predictions['vehicle1'] < ub))
 
-    return on_collision_course
+    return on_collision_course[0]
 
 def calculate_conflict_resolved_time(data_dict, simulation_constants):
     time = data_dict['time']
@@ -200,16 +199,13 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
                           | threshold_collision_course \
                           | end_point_collision_course
 
-
     approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > 120) & # tunnel length
                      (np.array(data_dict['distance_traveled_vehicle1']) < track.section_length_before)) | \
                     ((np.array(data_dict['distance_traveled_vehicle2']) > 120) &
                      (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
-    # why times 2 here
 
-    indices_of_conflict_resolved = ((on_collision_course == False) & approach_mask)
 
-    # print(np.array[indices_of_conflict_resolved][0]) # this one not working
+    indices_of_conflict_resolved = ((on_collision_course == False))
 
     try:
         time_of_conflict_resolved = np.array(time)[indices_of_conflict_resolved][0]
