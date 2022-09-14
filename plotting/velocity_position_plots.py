@@ -94,7 +94,7 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
 if __name__ == '__main__':
     data = pd.read_csv(
-        'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
+        'C:\\Users\loran\Desktop\Data_CRT\joan_data_20220901_14h00m40s.csv',
         sep=';')
 
     data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
@@ -145,8 +145,8 @@ if __name__ == '__main__':
     # plt.title('positions over time')
     ax1.set_xlabel('y position [m]')
     ax1.set_ylabel('x position [m]')
-    # ax1.set_yticks([175, -20, 20, -175])
-    # ax1.set_yticklabels([175, 0, 0, -175])
+    ax1.set_yticks([175, -20, 20, -175])
+    ax1.set_yticklabels([175, 0, 0, -175])
 
 
     # ax1.tick_params(axis='y', labelsize=10)
@@ -156,8 +156,8 @@ if __name__ == '__main__':
     ax1.scatter(data_dict['y2_straight'][0::300], data_dict['x2_straight'][0::300], s=10)
     ax1.set_xlim(50,450)
 
-    ax1.plot(data_dict['y1_straight'], data_dict['x1_straight'])
-    ax1.plot(data_dict['y2_straight'], data_dict['x2_straight'])
+    ax1.plot(data_dict['y1_straight'], data_dict['x1_straight'], label='right vehicle')
+    ax1.plot(data_dict['y2_straight'], data_dict['x2_straight'], label='left vehicle')
     # ax1.plot(data_dict['x1_straight'], data_dict['y1_straight'])
     # ax1.plot(data_dict['x2_straight'], data_dict['y2_straight'])
 
@@ -202,32 +202,64 @@ if __name__ == '__main__':
 
     headway = np.array(data_dict['distance_traveled_vehicle1']) - np.array(data_dict['distance_traveled_vehicle2'])
 
-    ax3.plot(average_travelled_distance_trace, headway)
+    ax3.plot(average_travelled_distance_trace, headway, c = 'lightgray')
     ax3.set_xlabel('Average travelled distance [m]')
     ax3.set_ylabel('Headway [m]')
     ax3.set_xlim(50,450)
     fig.tight_layout(pad=1.0)
 
-
-
-    ##compute crt
+    ##compute/plot crt
     crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants)
     crt = crt_object[1]
-    print(crt)
 
     index_crt = np.where(crt_object[0] == True)[0][0]
-    print(index_crt)
-
-    ax1.scatter(data_dict['x1_straight'][index_crt], -data_dict['y1_straight'][index_crt], c='black', marker='x', s=50)
-    # ax1.scatter(data_dict['x2_straight'][index_crt], data_dict['y2_straight'][index_crt], c='black', marker='x', s=50)
-    print(data_dict['x1_straight'][index_crt])
-    print(data_dict['x2_straight'][index_crt])
-    print(data_dict['y1_straight'][index_crt])
-    print(data_dict['y2_straight'][index_crt])
-    # ax2.scatter(data_dict['x1_straight'][index_crt], data_dict['y1_straight'][index_crt], c='black', marker='x', s=50)
-    # ax2.scatter(data_dict['x2_straight'][index_crt], data_dict['y2_straight'][index_crt], c='black', marker='x', s=50)
 
 
+    ax1.scatter(data_dict['x1_straight'][index_crt], data_dict['y1_straight'][index_crt], c='purple', marker='x', s=50,zorder=2, label = 'tunnel exit')
+    ax1.scatter(-data_dict['x2_straight'][index_crt], -data_dict['y2_straight'][index_crt], c='orange', marker='x', s=50,zorder=2)
+
+    ax2.scatter(data_dict['time'][index_crt], velocity_vehicle1[index_crt], c='purple', marker='x', s=50,zorder=2)
+    ax2.scatter(data_dict['time'][index_crt], velocity_vehicle2[index_crt], c='orange', marker='x', s=50,zorder=2)
+
+    if average_travelled_distance_trace[index_crt] < 120 and headway[index_crt] < 0.5:
+        ax3.scatter(120, 0, c='black', marker='x', s=50,zorder=2)
+    else:
+        ax3.scatter(average_travelled_distance_trace[index_crt], headway[index_crt], c='black', marker='x', s=50,zorder=2)
+
+
+    #plot merge point
+    index_of_mergepoint_vehicle1 = min(range(len(data_dict['y1_straight'])), key=lambda i: abs(data_dict['y1_straight'][i] - track.merge_point[1]))
+    index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])), key=lambda i: abs(data_dict['y2_straight'][i] - track.merge_point[1]))
+
+    ax1.scatter(track.merge_point[1], track.merge_point[0]+20, c='purple', marker='s', s=30,zorder=2, label = 'merge point')
+    ax1.scatter(track.merge_point[1], track.merge_point[0]-20, c='orange', marker='s', s=30,zorder=2)
+
+
+    ax2.scatter(data_dict['time'][index_of_mergepoint_vehicle1], velocity_vehicle1[index_of_mergepoint_vehicle1], c='purple', marker='s', s=30,zorder=2)
+    ax2.scatter(data_dict['time'][index_of_mergepoint_vehicle2], velocity_vehicle2[index_of_mergepoint_vehicle2], c='orange', marker='s', s=30,zorder=2)
+
+    ax3.scatter(average_travelled_distance_trace[index_of_mergepoint_vehicle1], headway[index_of_mergepoint_vehicle1], c='purple', marker='s', s=30,zorder=2)
+    ax3.scatter(average_travelled_distance_trace[index_of_mergepoint_vehicle2], headway[index_of_mergepoint_vehicle2], c='orange', marker='s', s=30,zorder=2)
+
+    # plot tunnel exit
+    index_of_tunnel_vehicle1 = min(range(len(data_dict['distance_traveled_vehicle1'])), key=lambda i: abs(data_dict['distance_traveled_vehicle1'][i] - 120))
+    index_of_tunnel_vehicle2 = min(range(len(data_dict['distance_traveled_vehicle2'])), key=lambda i: abs(data_dict['distance_traveled_vehicle2'][i] - 120))
+
+    ax1.scatter(data_dict['x1_straight'][index_of_tunnel_vehicle1], data_dict['y1_straight'][index_of_tunnel_vehicle1], c='purple', marker='>', s=50,zorder=2, label = 'tunnel exit')
+    ax1.scatter(-data_dict['x2_straight'][index_of_tunnel_vehicle2], -data_dict['y2_straight'][index_of_tunnel_vehicle2], c='orange', marker='>', s=50,zorder=2)
+
+    ax2.scatter(data_dict['time'][index_of_tunnel_vehicle1], velocity_vehicle1[index_of_tunnel_vehicle1],
+                c='purple', marker='>', s=30, zorder=2)
+    ax2.scatter(data_dict['time'][index_of_tunnel_vehicle2], velocity_vehicle2[index_of_tunnel_vehicle2],
+                c='orange', marker='>', s=30, zorder=2)
+
+    ax3.scatter(120, 0, c='red', marker='>', s=30, zorder=2)
+
+    legend = ax1.legend(loc='upper right')
+    # list = []
+    # for text in legend.get_texts():
+    #     list.append(text)
+    # list[3].set_color("black")
 
     plt.show()
 
