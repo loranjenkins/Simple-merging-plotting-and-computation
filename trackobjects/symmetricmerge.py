@@ -16,7 +16,7 @@ class SymmetricMergingTrack:
         self.track_height = simulation_constants.track_height
         self.approach_angle = math.atan((self.start_point_distance / 2) / self.track_height)
 
-        self.merge_point = np.array([0.0, 200]) #discuss which point you need -> change to continue with course prob 240
+        self.merge_point = np.array([0.0, 200]) #discuss which point you need, change to continue with course prob 240
         self.end_point = np.array([0.0, self.merge_point[1] + self.section_length_after])
 
         self.left_way_points = [np.array([-self.start_point_distance / 2., 5]), self.merge_point, self.end_point]

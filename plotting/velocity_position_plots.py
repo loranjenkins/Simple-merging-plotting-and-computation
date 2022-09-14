@@ -164,7 +164,7 @@ fig.tight_layout(pad=1.0)
 
 plt.show()
 
-##compute crt
+##compute crt new
 
 def check_if_on_collision_course_for_point(travelled_distance_collision_point, data_dict, simulation_constants):
     track = SymmetricMergingTrack(simulation_constants)
