@@ -9,25 +9,6 @@ import datetime
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
 
-if __name__ == '__main__':
-    data = pd.read_csv(
-        'C:\\Users\loran\Desktop\Data_CRT\joan_data_20220901_14h00m40s.csv',
-        sep=';')
-
-    data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
-    data = data.iloc[10:,:]
-    data = data.drop_duplicates(subset=['Carla Interface.time'], keep=False)
-
-    simulation_constants = SimulationConstants(vehicle_width=2,
-                                               vehicle_length=4.7,
-                                               track_width=8,
-                                               track_height=195,
-                                               track_start_point_distance=390,
-                                               track_section_length_before=275.77164466275354,
-                                               track_section_length_after=150)
-
-    track = SymmetricMergingTrack(simulation_constants)
-
 def vehicle_xy_coordinates(intcolumn):
     list_x = []
     list_y = []
@@ -43,62 +24,6 @@ def vehicle_xy_coordinates(intcolumn):
 
     return list_x, list_y
 
-
-xy_coordinates_vehicle1 = vehicle_xy_coordinates(2)
-xy_coordinates_vehicle2 = vehicle_xy_coordinates(5)
-
-xy_coordinates_vehicle1 = [list(a) for a in zip(xy_coordinates_vehicle1[0], xy_coordinates_vehicle1[1])]
-xy_coordinates_vehicle2 = [list(a) for a in zip(xy_coordinates_vehicle2[0], xy_coordinates_vehicle2[1])]
-
-xy_coordinates_vehicle1 = np.array(xy_coordinates_vehicle1)
-xy_coordinates_vehicle2 = np.array(xy_coordinates_vehicle2)
-
-data_dict = {'time': [],
-             'x1_straight': [],
-             'y1_straight': [],
-             'x2_straight': [],
-             'y2_straight': [],
-             'velocity_vehicle1': [],
-             'velocity_vehicle2': [],
-             'distance_traveled_vehicle1': [],
-             'distance_traveled_vehicle2': []}
-
-for i in range(len(xy_coordinates_vehicle1)):
-    straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
-    data_dict['x1_straight'].append(straight_line_vehicle1[0][0]+20)
-    data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
-
-
-for i in range(len(xy_coordinates_vehicle2)):
-    straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
-    data_dict['x2_straight'].append(straight_line_vehicle2[0][0]-20)
-    data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
-
-fig, (ax1, ax2, ax3) = plt.subplots(3)
-# fig.suptitle('-')
-# plt.title('positions over time')
-ax1.set_xlabel('y position [m]')
-ax1.set_ylabel('x position [m]')
-ax1.set_yticks([175, -20, 20, -175])
-ax1.set_yticklabels([175, 0, 0, -175])
-
-
-# ax1.tick_params(axis='y', labelsize=10)
-# ax1.tick_params(axis='x', labelsize=10)
-
-ax1.scatter(data_dict['y1_straight'][0::300], data_dict['x1_straight'][0::300], s=10)
-ax1.scatter(data_dict['y2_straight'][0::300], data_dict['x2_straight'][0::300], s=10)
-ax1.set_xlim(50,450)
-
-ax1.plot(data_dict['y1_straight'], data_dict['x1_straight'])
-ax1.plot(data_dict['y2_straight'], data_dict['x2_straight'])
-# ax1.plot(data_dict['x1_straight'], data_dict['y1_straight'])
-# ax1.plot(data_dict['x2_straight'], data_dict['y2_straight'])
-
-
-
-
-# velocity_time plot
 def vehicle_velocity(intcolumnname):
     velocity = []
     for i in range(len(data.iloc[:, intcolumnname])):
@@ -117,54 +42,6 @@ def get_timestamps(intcolumnname):
         datetimes = datetime.datetime.fromtimestamp(epoch_in_seconds)
         time.append(datetimes)
     return time
-
-
-velocity_vehicle1 = vehicle_velocity(3)
-velocity_vehicle2 = vehicle_velocity(6)
-
-for i in range(len(velocity_vehicle1)):
-    data_dict['velocity_vehicle1'].append(velocity_vehicle1)
-    data_dict['velocity_vehicle2'].append(velocity_vehicle2)
-
-
-time_in_datetime = get_timestamps(0)
-time_in_seconds_trail = [(a - time_in_datetime[0]).total_seconds() for a in time_in_datetime]
-time_in_seconds_trail = np.array(time_in_seconds_trail)
-data_dict['time'] = time_in_seconds_trail
-
-# plt.xlabel('time [s]')
-# plt.ylabel('velocity [m/s]')
-# plt.title('velocity at times')
-ax2.set_xlabel('Time [s]')
-ax2.set_ylabel('Velocity [m/s]')
-ax2.set_xlim(0, 30)
-ax2.plot(time_in_seconds_trail, velocity_vehicle1)
-ax2.plot(time_in_seconds_trail, velocity_vehicle2)
-
-fig.tight_layout(pad=1.0)
-
-##collision bound plot
-
-for i in range(len(xy_coordinates_vehicle1)):
-    traveled_distance1 = track.coordinates_to_traveled_distance(xy_coordinates_vehicle1[i])
-    traveled_distance2 = track.coordinates_to_traveled_distance(xy_coordinates_vehicle2[i])
-    data_dict['distance_traveled_vehicle1'].append(traveled_distance1)
-    data_dict['distance_traveled_vehicle2'].append(traveled_distance2)
-
-average_travelled_distance_trace = list((np.array(data_dict['distance_traveled_vehicle1']) + np.array(
-    data_dict['distance_traveled_vehicle2'])) / 2.)
-
-headway = np.array(data_dict['distance_traveled_vehicle1']) - np.array(data_dict['distance_traveled_vehicle2'])
-
-ax3.plot(average_travelled_distance_trace, headway)
-ax3.set_xlabel('Average travelled distance [m]')
-ax3.set_ylabel('Headway [m]')
-ax3.set_xlim(50,450)
-fig.tight_layout(pad=1.0)
-
-plt.show()
-
-##compute crt new
 
 def check_if_on_collision_course_for_point(travelled_distance_collision_point, data_dict, simulation_constants):
     track = SymmetricMergingTrack(simulation_constants)
@@ -205,20 +82,156 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
                      (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
 
 
-    indices_of_conflict_resolved = ((on_collision_course == False))
+    indices_of_conflict_resolved = ((on_collision_course == False & approach_mask))
+    # indices_of_conflict_resolved = ((on_collision_course == False ))
 
     try:
         time_of_conflict_resolved = np.array(time)[indices_of_conflict_resolved][0]
     except IndexError:
         time_of_conflict_resolved = None
 
-    return time_of_conflict_resolved
+    return indices_of_conflict_resolved, time_of_conflict_resolved
+
+if __name__ == '__main__':
+    data = pd.read_csv(
+        'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
+        sep=';')
+
+    data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
+    data = data.iloc[10:,:]
+    data = data.drop_duplicates(subset=['Carla Interface.time'], keep=False)
+
+    simulation_constants = SimulationConstants(vehicle_width=2,
+                                               vehicle_length=4.7,
+                                               track_width=8,
+                                               track_height=195,
+                                               track_start_point_distance=390,
+                                               track_section_length_before=275.77164466275354,
+                                               track_section_length_after=150)
+
+    track = SymmetricMergingTrack(simulation_constants)
+
+    xy_coordinates_vehicle1 = vehicle_xy_coordinates(2)
+    xy_coordinates_vehicle2 = vehicle_xy_coordinates(5)
+
+    xy_coordinates_vehicle1 = [list(a) for a in zip(xy_coordinates_vehicle1[0], xy_coordinates_vehicle1[1])]
+    xy_coordinates_vehicle2 = [list(a) for a in zip(xy_coordinates_vehicle2[0], xy_coordinates_vehicle2[1])]
+
+    xy_coordinates_vehicle1 = np.array(xy_coordinates_vehicle1)
+    xy_coordinates_vehicle2 = np.array(xy_coordinates_vehicle2)
+
+    data_dict = {'time': [],
+                 'x1_straight': [],
+                 'y1_straight': [],
+                 'x2_straight': [],
+                 'y2_straight': [],
+                 'velocity_vehicle1': [],
+                 'velocity_vehicle2': [],
+                 'distance_traveled_vehicle1': [],
+                 'distance_traveled_vehicle2': []}
+
+    for i in range(len(xy_coordinates_vehicle1)):
+        straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
+        data_dict['x1_straight'].append(straight_line_vehicle1[0][0]+20)
+        data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
+
+    for i in range(len(xy_coordinates_vehicle2)):
+        straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
+        data_dict['x2_straight'].append(straight_line_vehicle2[0][0]-20)
+        data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
+
+    fig, (ax1, ax2, ax3) = plt.subplots(3)
+    # fig.suptitle('-')
+    # plt.title('positions over time')
+    ax1.set_xlabel('y position [m]')
+    ax1.set_ylabel('x position [m]')
+    # ax1.set_yticks([175, -20, 20, -175])
+    # ax1.set_yticklabels([175, 0, 0, -175])
 
 
-crt = calculate_conflict_resolved_time(data_dict, simulation_constants)
-print(crt)
+    # ax1.tick_params(axis='y', labelsize=10)
+    # ax1.tick_params(axis='x', labelsize=10)
 
-a_file = open("global_data_dict.pkl", "wb")
-pickle.dump(data_dict, a_file)
-a_file.close()
+    ax1.scatter(data_dict['y1_straight'][0::300], data_dict['x1_straight'][0::300], s=10)
+    ax1.scatter(data_dict['y2_straight'][0::300], data_dict['x2_straight'][0::300], s=10)
+    ax1.set_xlim(50,450)
+
+    ax1.plot(data_dict['y1_straight'], data_dict['x1_straight'])
+    ax1.plot(data_dict['y2_straight'], data_dict['x2_straight'])
+    # ax1.plot(data_dict['x1_straight'], data_dict['y1_straight'])
+    # ax1.plot(data_dict['x2_straight'], data_dict['y2_straight'])
+
+    #------------------------------------------------------------------------#
+    # velocity_time plot
+    velocity_vehicle1 = vehicle_velocity(3)
+    velocity_vehicle2 = vehicle_velocity(6)
+
+    for i in range(len(velocity_vehicle1)):
+        data_dict['velocity_vehicle1'].append(velocity_vehicle1)
+
+        data_dict['velocity_vehicle2'].append(velocity_vehicle2)
+
+
+    time_in_datetime = get_timestamps(0)
+    time_in_seconds_trail = [(a - time_in_datetime[0]).total_seconds() for a in time_in_datetime]
+    time_in_seconds_trail = np.array(time_in_seconds_trail)
+    data_dict['time'] = time_in_seconds_trail
+
+    # plt.xlabel('time [s]')
+    # plt.ylabel('velocity [m/s]')
+    # plt.title('velocity at times')
+    ax2.set_xlabel('Time [s]')
+    ax2.set_ylabel('Velocity [m/s]')
+    ax2.set_xlim(0, 30)
+    ax2.plot(data_dict['time'], velocity_vehicle1)
+    ax2.plot(data_dict['time'], velocity_vehicle2)
+
+    fig.tight_layout(pad=1.0)
+
+    # ------------------------------------------------------------------------#
+    #average travelled against headway
+
+    for i in range(len(xy_coordinates_vehicle1)):
+        traveled_distance1 = track.coordinates_to_traveled_distance(xy_coordinates_vehicle1[i])
+        traveled_distance2 = track.coordinates_to_traveled_distance(xy_coordinates_vehicle2[i])
+        data_dict['distance_traveled_vehicle1'].append(traveled_distance1)
+        data_dict['distance_traveled_vehicle2'].append(traveled_distance2)
+
+    average_travelled_distance_trace = list((np.array(data_dict['distance_traveled_vehicle1']) + np.array(
+        data_dict['distance_traveled_vehicle2'])) / 2.)
+
+    headway = np.array(data_dict['distance_traveled_vehicle1']) - np.array(data_dict['distance_traveled_vehicle2'])
+
+    ax3.plot(average_travelled_distance_trace, headway)
+    ax3.set_xlabel('Average travelled distance [m]')
+    ax3.set_ylabel('Headway [m]')
+    ax3.set_xlim(50,450)
+    fig.tight_layout(pad=1.0)
+
+
+
+    ##compute crt
+    crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants)
+    crt = crt_object[1]
+    print(crt)
+
+    index_crt = np.where(crt_object[0] == True)[0][0]
+    print(index_crt)
+
+    ax1.scatter(data_dict['x1_straight'][index_crt], -data_dict['y1_straight'][index_crt], c='black', marker='x', s=50)
+    # ax1.scatter(data_dict['x2_straight'][index_crt], data_dict['y2_straight'][index_crt], c='black', marker='x', s=50)
+    print(data_dict['x1_straight'][index_crt])
+    print(data_dict['x2_straight'][index_crt])
+    print(data_dict['y1_straight'][index_crt])
+    print(data_dict['y2_straight'][index_crt])
+    # ax2.scatter(data_dict['x1_straight'][index_crt], data_dict['y1_straight'][index_crt], c='black', marker='x', s=50)
+    # ax2.scatter(data_dict['x2_straight'][index_crt], data_dict['y2_straight'][index_crt], c='black', marker='x', s=50)
+
+
+
+    plt.show()
+
+    a_file = open("global_data_dict.pkl", "wb")
+    pickle.dump(data_dict, a_file)
+    a_file.close()
 

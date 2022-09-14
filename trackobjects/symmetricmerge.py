@@ -254,7 +254,6 @@ class SymmetricMergingTrack:
             vehicle_1 = shapely.affinity.rotate(vehicle_1, -b, use_radians=True)
 
         vehicle_1_position = self.traveled_distance_to_coordinates(traveled_distance_vehicle_1)
-        print(vehicle_1_position)
 
         vehicle_1 = shapely.affinity.translate(vehicle_1, vehicle_1_position[0], vehicle_1_position[1])
 
