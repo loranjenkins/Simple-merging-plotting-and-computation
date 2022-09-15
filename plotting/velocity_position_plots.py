@@ -95,7 +95,7 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
 if __name__ == '__main__':
     data = pd.read_csv(
-        'C:\\Users\loran\Desktop\Data_CRT\joan_data_20220901_14h00m40s.csv',
+        'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
         sep=';')
 
     data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
@@ -108,7 +108,7 @@ if __name__ == '__main__':
                                                track_height=195,
                                                track_start_point_distance=390,
                                                track_section_length_before=275.77164466275354,
-                                               track_section_length_after=150)
+                                               track_section_length_after=200) #goes until 400
 
     track = SymmetricMergingTrack(simulation_constants)
 
@@ -216,7 +216,7 @@ if __name__ == '__main__':
     index_crt = np.where(crt_object[0] == True)[0][0]
 
 
-    ax1.scatter(data_dict['x1_straight'][index_crt], data_dict['y1_straight'][index_crt], c='purple', marker='x', s=50,zorder=2, label = 'tunnel exit')
+    ax1.scatter(data_dict['x1_straight'][index_crt], data_dict['y1_straight'][index_crt], c='purple', marker='x', s=50,zorder=2, label = 'crt')
     ax1.scatter(-data_dict['x2_straight'][index_crt], -data_dict['y2_straight'][index_crt], c='orange', marker='x', s=50,zorder=2)
 
     ax2.scatter(data_dict['time'][index_crt], velocity_vehicle1[index_crt], c='purple', marker='x', s=50,zorder=2)
@@ -264,37 +264,42 @@ if __name__ == '__main__':
 
 
     # Question for olger:
+
     data_dict_bounds = {'positive_headway_bound': [],
                         'negative_headway_bound': [],
                         'average_travelled_distance': []}
 
-    for average_y_position_in_mm in tqdm.trange(int((track.section_length_before+track.section_length_after) * 1000)):
+    for average_y_position_in_mm in tqdm.trange(int((track.section_length_before) * 1000)):
         average_y_position = average_y_position_in_mm / 1000.
 
-    lb, ub = track.get_headway_bounds(average_y_position,
-                                      vehicle_length=simulation_constants.vehicle_length,
-                                      vehicle_width=simulation_constants.vehicle_width)
+        lb, ub = track.get_headway_bounds(average_y_position,
+                                          vehicle_length=simulation_constants.vehicle_length,
+                                          vehicle_width=simulation_constants.vehicle_width)
 
-    data_dict_bounds['positive_headway_bound'].append(ub)
-    data_dict_bounds['negative_headway_bound'].append(lb)
-    data_dict_bounds['average_travelled_distance'].append(average_y_position)
-    print(data_dict_bounds['average_travelled_distance'])
+        data_dict_bounds['positive_headway_bound'].append(ub)
+        data_dict_bounds['negative_headway_bound'].append(lb)
+        data_dict_bounds['average_travelled_distance'].append(average_y_position)
 
-    ax3.plot(np.array(data_dict_bounds['average_travelled_distance'], dtype=object),
-                  np.array(data_dict_bounds['negative_headway_bound'], dtype=object),
-                  linestyle='dashed', c='black')
-
-    ax3.plot(np.array(data_dict_bounds['average_travelled_distance'], dtype=object),
-             np.array(data_dict_bounds['positive_headway_bound'], dtype=object),
-             linestyle='dashed', c='black')
+    # for key in data_dict_bounds.keys():
+    #     data_dict_bounds[key] = np.array(data_dict_bounds[key], dtype=float)
 
 
-    ax3.fill_between(data_dict_bounds['average_travelled_distance'], data_dict_bounds['negative_headway_bound'],
+    ax3.plot(data_dict_bounds['average_travelled_distance'], data_dict_bounds['positive_headway_bound'], c='gray')
+    ax3.plot(data_dict_bounds['average_travelled_distance'], data_dict_bounds['negative_headway_bound'], c='gray')
+    # ax3.plot(np.array(data_dict_bounds['average_travelled_distance'], dtype=object),
+    #          np.array(data_dict_bounds['positive_headway_bound'], dtype=object),
+    #          linestyle='dashed', c='black')
+
+
+    ax3.fill_between(range(200,400), data_dict_bounds['negative_headway_bound'],
                           data_dict_bounds['positive_headway_bound'],
                           color='lightgrey')
 
-    # ax3.text(110., -2, 'Collision area', verticalalignment='center', clip_on=True)
-    # ax3.text(110., 2, 'Collision area', verticalalignment='center', clip_on=True)
+    for key in data_dict.keys():
+        data_dict[key] = np.array(data_dict[key], dtype=float)
+
+
+    ax3.text(290., 0, 'Collision area', verticalalignment='center', clip_on=True)
 
     plt.show()
 
