@@ -5,6 +5,7 @@ import numpy as np
 # import seaborn as sns
 import pickle
 import datetime
+import tqdm
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
@@ -255,11 +256,45 @@ if __name__ == '__main__':
 
     ax3.scatter(120, 0, c='red', marker='>', s=30, zorder=2)
 
-    legend = ax1.legend(loc='upper right')
-    # list = []
-    # for text in legend.get_texts():
-    #     list.append(text)
-    # list[3].set_color("black")
+    #final plotting
+    ax1.legend(loc='upper right')
+    leg = ax1.get_legend()
+    for i in range(2,5):
+        leg.legendHandles[i].set_color('black')
+
+
+    # Question for olger:
+    data_dict_bounds = {'positive_headway_bound': [],
+                        'negative_headway_bound': [],
+                        'average_travelled_distance': []}
+
+    for average_y_position_in_mm in tqdm.trange(int((track.section_length_before+track.section_length_after) * 1000)):
+        average_y_position = average_y_position_in_mm / 1000.
+
+    lb, ub = track.get_headway_bounds(average_y_position,
+                                      vehicle_length=simulation_constants.vehicle_length,
+                                      vehicle_width=simulation_constants.vehicle_width)
+
+    data_dict_bounds['positive_headway_bound'].append(ub)
+    data_dict_bounds['negative_headway_bound'].append(lb)
+    data_dict_bounds['average_travelled_distance'].append(average_y_position)
+    print(data_dict_bounds['average_travelled_distance'])
+
+    ax3.plot(np.array(data_dict_bounds['average_travelled_distance'], dtype=object),
+                  np.array(data_dict_bounds['negative_headway_bound'], dtype=object),
+                  linestyle='dashed', c='black')
+
+    ax3.plot(np.array(data_dict_bounds['average_travelled_distance'], dtype=object),
+             np.array(data_dict_bounds['positive_headway_bound'], dtype=object),
+             linestyle='dashed', c='black')
+
+
+    ax3.fill_between(data_dict_bounds['average_travelled_distance'], data_dict_bounds['negative_headway_bound'],
+                          data_dict_bounds['positive_headway_bound'],
+                          color='lightgrey')
+
+    # ax3.text(110., -2, 'Collision area', verticalalignment='center', clip_on=True)
+    # ax3.text(110., 2, 'Collision area', verticalalignment='center', clip_on=True)
 
     plt.show()
 

@@ -36,68 +36,48 @@ class SymmetricMergingTrack:
         if self.lower_bound_threshold > self.section_length_before:
             self.lower_bound_threshold = self.section_length_before #This should be before right?
 
-        # # last_point = 2 * self.section_length #what is this
-        # last_point = self.end_point[1]
-        #
-        # # 10 cm resolution lookup
-        # entries = [i for i in range(int(self._upper_bound_threshold * 10 + 1), int(last_point * 10))]
-        #
-        # look_up_table = np.zeros((len(entries), 2))
-        #
-        # for index in range(len(entries)):
-        #     travelled_distance = entries[index] / 10.
-        #     look_up_table[index, :] = self.get_collision_bounds(travelled_distance, vehicle_width, vehicle_length)
-        #
-        # self._upper_bound_approximation_slope, self._upper_bound_approximation_intersect, _, _, _ = stats.linregress(
-        #     np.array(entries) / 10., look_up_table[:, 1])
-        # lower_bound_index = np.where(entries > self._lower_bound_threshold * 10)[0][0]
-        #
-        # self._lower_bound_approximation_slope, self._lower_bound_approximation_intersect, _, _, _ = stats.linregress(
-        #     np.array(entries[lower_bound_index:]) / 10.,
-        #     look_up_table[lower_bound_index:, 0])
-        #
-        # self._lower_bound_constant_value, _ = self.get_collision_bounds(self._lower_bound_threshold - 0.1,
-        #                                                                 vehicle_width, vehicle_length)
-    # def get_headway_bounds(self, average_travelled_distance, vehicle_width, vehicle_length):
-    #     #     """
-    #     #     Returns the bounds on the headway that spans the set of all collision positions. Assumes both vehicles have the same dimensions.
-    #     #     returns (None, None) when no collisions are possible.
-    #     #
-    #     #     This method uses scipy optimize to find the minimal headway without a collision, this is inefficient but this method is only used for plotting purposes.
-    #     #     In the simulations, please use the get_collision_bounds method, it has a closed form solution.
-    #     #
-    #     #     :param average_travelled_distance:
-    #     #     :param vehicle_width:
-    #     #     :param vehicle_length:
-    #     #     :return:
-    #     #     """
-    #     #     if average_travelled_distance > 2 * self.section_length_before + vehicle_length / 2.:
-    #     #         # both vehicles are on the straight section
-    #     #         return -vehicle_length, vehicle_length
-    #     #     elif average_travelled_distance < self.upper_bound_threshold:
-    #     #         # at least one of the vehicles is on the approach on a position where it cannot collide
-    #     #         return None, None
-    #     #     else:
-    #     #         # find the minimal headway (x) where the overlap between the vehicles is negative (no collision) and x is positive
-    #     #         solution = optimize.minimize(lambda x: abs(x), np.array([0.]), constraints=[{'type': 'ineq',
-    #     #                                                                         'fun': self._collision_constraint,
-    #     #                                                                         'args': (average_travelled_distance, vehicle_width, vehicle_length)},
-    #     #                                                                        {'type': 'ineq',
-    #     #                                                                         'fun': lambda x: x}])
-    #     #         headway = solution.x[0]
-    #     #         # the headway bounds are completely symmetrical
-    #     #         return -headway, headway
-    #
-    # def _collision_constraint(self, head_way, average_travelled_distance, vehicle_width, vehicle_length):
-    #     left = average_travelled_distance + head_way / 2.
-    #     right = average_travelled_distance - head_way / 2.
-    #
-    #     lb, ub = self.get_collision_bounds(left, vehicle_width, vehicle_length)
-    #
-    #     if lb is None:
-    #         return 1.
-    #     else:
-    #         return lb - right
+    def get_headway_bounds(self, average_travelled_distance, vehicle_width, vehicle_length):
+            """
+            Returns the bounds on the headway that spans the set of all collision positions. Assumes both vehicles have the same dimensions.
+            returns (None, None) when no collisions are possible.
+
+            This method uses scipy optimize to find the minimal headway without a collision, this is inefficient but this method is only used for plotting purposes.
+            In the simulations, please use the get_collision_bounds method, it has a closed form solution.
+
+            :param average_travelled_distance:
+            :param vehicle_width:
+            :param vehicle_length:
+            :return:
+            """
+            if average_travelled_distance > self.section_length_before + vehicle_length / 2.:
+                # both vehicles are on the straight section
+                return -vehicle_length, vehicle_length
+            elif average_travelled_distance < self.upper_bound_threshold:
+                # at least one of the vehicles is on the approach on a position where it cannot collide
+                return None, None
+            else:
+                # find the minimal headway (x) where the overlap between the vehicles is negative (no collision) and x is positive
+                solution = optimize.minimize(lambda x: abs(x), np.array([0.]), constraints=[{'type': 'ineq',
+                                                                                             'fun': self._collision_constraint,
+                                                                                             'args': (
+                                                                                             average_travelled_distance,
+                                                                                             vehicle_width,
+                                                                                             vehicle_length)},
+                                                                                            {'type': 'ineq',
+                                                                                             'fun': lambda x: x}])
+                headway = solution.x[0]
+                # the headway bounds are completely symmetrical
+                return -headway, headway
+    def _collision_constraint(self, head_way, average_travelled_distance, vehicle_width, vehicle_length):
+        left = average_travelled_distance + head_way / 2.
+        right = average_travelled_distance - head_way / 2.
+
+        lb, ub = self.get_collision_bounds(left, vehicle_width, vehicle_length)
+
+        if lb is None:
+            return 1.
+        else:
+            return lb - right
 
     def position_is_beyond_track_bounds(self, position):
         _, distance_to_track = self.closest_point_on_route(position)
