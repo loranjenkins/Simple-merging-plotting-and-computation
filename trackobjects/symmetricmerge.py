@@ -12,6 +12,7 @@ class SymmetricMergingTrack:
         self.start_point_distance = simulation_constants.track_start_point_distance
         self.section_length_before = simulation_constants.track_section_length_before
         self.section_length_after = simulation_constants.track_section_length_after
+        self.tunnel_length = simulation_constants.tunnel_length
         self.track_width = simulation_constants.track_width
         self.track_height = simulation_constants.track_height
         self.approach_angle = math.atan((self.start_point_distance / 2) / self.track_height)
