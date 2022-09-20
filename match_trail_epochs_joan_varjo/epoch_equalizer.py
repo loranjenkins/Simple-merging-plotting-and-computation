@@ -4,19 +4,19 @@ import pandas as pd
 
 
 #locate all files joan
-files_directory= 'C:\\Users\localadmin\Desktop\Match_epochs\JoanMultitrail'
+files_directory= 'C:\\Users\localadmin\Desktop\ExperimentOlgerArkady'
 
 #locate csv files varjo
 data_varjo_vehicle1 = pd.read_csv(
-    'C:\\Users\localadmin\Desktop\Match_epochs\Varjo\Varjo_experiment_data.csv_2022-09-01 111840.csv',
+    'C:\\Users\localadmin\Desktop\ExperimentOlgerArkady\Varjo\Varjo_data_vehicle1_2022-09-15 142838.csv',
     sep=',')
 
 data_varjo_vehicle2 = pd.read_csv(
-    'C:\\Users\localadmin\Desktop\Match_epochs\Varjo\Varjo_experiment_data.csv_2022-09-01 111840.csv',
+    'C:\\Users\localadmin\Desktop\ExperimentOlgerArkady\Varjo\Varjo_data_vehicle2_2022-09-15 142842.csv',
     sep=',')
 
-data_varjo_vehicle1['date'] = pd.to_datetime(data_varjo_vehicle1['epoch'])
-data_varjo_vehicle2['date'] = pd.to_datetime(data_varjo_vehicle2['epoch'])
+data_varjo_vehicle1['date'] = pd.to_datetime(data_varjo_vehicle1['epoch_vehicle1'])
+data_varjo_vehicle2['date'] = pd.to_datetime(data_varjo_vehicle2['epoch_vehicle2'])
 
 #Combining Varjo data to each trail seperate
 
@@ -40,7 +40,7 @@ for file in Path(files_directory).glob('*.csv'):
                                                direction='nearest',
                                                )
 
-    files_directory_combined="C:\\Users\localadmin\Desktop\Match_epochs\JoancombinedVarjo\Joan_Varjo_combinded_Trail#"
+    files_directory_combined="C:\\Users\localadmin\Desktop\ExperimentOlgerArkady\Joan.Varjo.combined\Joan_Varjo_combinded_Trail#"
     merged_varjo_joan_total.to_csv('{}{}.csv'.format(files_directory_combined, str(trail)))
     trail += 1
 
