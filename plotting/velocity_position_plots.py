@@ -111,6 +111,7 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
     # x = [i for i, x in enumerate(approach_mask) if x]
     # # ->https://stackoverflow.com/questions/21448225/getting-indices-of-true-values-in-a-boolean-list
     print(list(on_collision_course))
+    # print(list(approach_mask))
     print(list(approach_mask == False))
     # print(x)
     indices_of_conflict_resolved = (on_collision_course & approach_mask)
@@ -125,7 +126,7 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
 
 # if __name__ == '__main__':
-def plot_trail_regular(path_to_data_csv):
+def plot_trail_regular(path_to_data_csv, left_or_right):
     # data = pd.read_csv(
     #     'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
     #     sep=';')
@@ -166,15 +167,27 @@ def plot_trail_regular(path_to_data_csv):
                  'average_travelled_distance_trace': [],
                  'headway': []}
 
-    for i in range(len(xy_coordinates_vehicle1)):
-        straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
-        data_dict['x1_straight'].append(straight_line_vehicle1[0][0] + 5)
-        data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
+    if left_or_right == 'right':
+        for i in range(len(xy_coordinates_vehicle1)):
+            straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
+            data_dict['x1_straight'].append(straight_line_vehicle1[0][0] + 5)
+            data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
 
-    for i in range(len(xy_coordinates_vehicle2)):
-        straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
-        data_dict['x2_straight'].append(straight_line_vehicle2[0][0] - 5)
-        data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
+        for i in range(len(xy_coordinates_vehicle2)):
+            straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
+            data_dict['x2_straight'].append(straight_line_vehicle2[0][0] - 5)
+            data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
+
+    elif left_or_right == 'left':
+        for i in range(len(xy_coordinates_vehicle1)):
+            straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
+            data_dict['x1_straight'].append(straight_line_vehicle1[0][0] - 5)
+            data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
+
+        for i in range(len(xy_coordinates_vehicle2)):
+            straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
+            data_dict['x2_straight'].append(straight_line_vehicle2[0][0] + 5)
+            data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
 
     fig, (ax1, ax2, ax3) = plt.subplots(3)
     # fig.suptitle('-')
@@ -272,9 +285,14 @@ def plot_trail_regular(path_to_data_csv):
     index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
                                        key=lambda i: abs(data_dict['y2_straight'][i] - track.merge_point[1]))
 
-    ax1.scatter(track.merge_point[1], track.merge_point[0] + 5, c='purple', marker='s', s=30, zorder=2,
-                label='merge point')
-    ax1.scatter(track.merge_point[1], track.merge_point[0] - 5, c='orange', marker='s', s=30, zorder=2)
+    if left_or_right == 'right':
+        ax1.scatter(track.merge_point[1], track.merge_point[0] + 5, c='purple', marker='s', s=30, zorder=2,
+                    label='merge point')
+        ax1.scatter(track.merge_point[1], track.merge_point[0] - 5, c='orange', marker='s', s=30, zorder=2)
+    elif left_or_right == 'left':
+        ax1.scatter(track.merge_point[1], track.merge_point[0] - 5, c='purple', marker='s', s=30, zorder=2,
+                    label='merge point')
+        ax1.scatter(track.merge_point[1], track.merge_point[0] + 5, c='orange', marker='s', s=30, zorder=2)
 
     ax2.scatter(data_dict['time'][index_of_mergepoint_vehicle1], velocity_vehicle1[index_of_mergepoint_vehicle1],
                 c='purple', marker='s', s=30, zorder=2)
