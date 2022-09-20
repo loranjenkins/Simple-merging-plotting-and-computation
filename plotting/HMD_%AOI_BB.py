@@ -37,8 +37,8 @@ if __name__ == '__main__':
             return False
 
     #define bounding box
-    bounding_box_looking_front = [-0.5, -1, 0.5, 0.1] #collect this data better!
-    bounding_box_interest_other_vehicle = [-1, -0.25, 1, 0.25]
+    bounding_box_looking_front = [-0.5, -.125, 0.5, 1] #collect this data better!
+    bounding_box_interest_other_vehicle = [-1, -.125, 1, 1]
     bounding_box_other = [-1, -1, 1, 1]
 
     #Bounding areas HMD rotation

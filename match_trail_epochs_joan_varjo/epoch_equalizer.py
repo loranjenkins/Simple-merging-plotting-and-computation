@@ -41,7 +41,7 @@ for file in Path(files_directory).glob('*.csv'):
                                                )
 
     files_directory_combined="C:\\Users\localadmin\Desktop\ExperimentOlgerArkady\Joan.Varjo.combined\Joan_Varjo_combinded_Trail#"
-    merged_varjo_joan_total.to_csv('{}{}.csv'.format(files_directory_combined, str(trail)))
+    merged_varjo_joan_total.to_csv('{}{}.csv'.format(files_directory_combined, str(trail)), index=False)
     trail += 1
 
 

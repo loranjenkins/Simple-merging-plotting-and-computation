@@ -134,6 +134,7 @@ def plot_trail(path_to_data_csv, left_or_right_ahead):
     #     'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
     #     sep=';')
     data = pd.read_csv(path_to_data_csv, sep=';')
+
     data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
     data = data.iloc[10:, :]
     data.drop_duplicates(subset=['Carla Interface.time'], keep=False)
@@ -381,7 +382,7 @@ def plot_trail(path_to_data_csv, left_or_right_ahead):
 
 if __name__ == '__main__':
     # sort condition1
-    files_directory = 'C:\\Users\localadmin\Desktop\ExperimentOlgerArkady'
+    files_directory = r'C:\Users\localadmin\Desktop\ExperimentOlgerArkady'
     trails = []
     for file in Path(files_directory).glob('*.csv'):
         # trail_condition = plot_trail(file)
