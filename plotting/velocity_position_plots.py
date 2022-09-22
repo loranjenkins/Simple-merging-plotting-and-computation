@@ -129,7 +129,7 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
 
 # if __name__ == '__main__':
-def plot_trail(path_to_data_csv, left_or_right_ahead):
+def plot_trail(path_to_data_csv, regular_or_flipped):
     # data = pd.read_csv(
     #     'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
     #     sep=';')
@@ -171,7 +171,7 @@ def plot_trail(path_to_data_csv, left_or_right_ahead):
                  'average_travelled_distance_trace': [],
                  'headway': []}
 
-    if left_or_right_ahead == 'right':
+    if regular_or_flipped == 'regular':
         for i in range(len(xy_coordinates_vehicle1)):
             straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
             data_dict['x1_straight'].append(straight_line_vehicle1[0][0] + 5)
@@ -182,7 +182,7 @@ def plot_trail(path_to_data_csv, left_or_right_ahead):
             data_dict['x2_straight'].append(straight_line_vehicle2[0][0] - 5)
             data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
 
-    elif left_or_right_ahead == 'left':
+    elif regular_or_flipped == 'flipped':
         for i in range(len(xy_coordinates_vehicle1)):
             straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
             data_dict['x1_straight'].append(straight_line_vehicle1[0][0] - 5)
@@ -288,11 +288,11 @@ def plot_trail(path_to_data_csv, left_or_right_ahead):
     index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
                                        key=lambda i: abs(data_dict['y2_straight'][i] - track.merge_point[1]))
 
-    if left_or_right_ahead == 'right':
+    if regular_or_flipped == 'regular':
         ax1.scatter(track.merge_point[1], track.merge_point[0] + 5, c='purple', marker='s', s=30, zorder=2,
                     label='merge point')
         ax1.scatter(track.merge_point[1], track.merge_point[0] - 5, c='orange', marker='s', s=30, zorder=2)
-    elif left_or_right_ahead == 'left':
+    elif regular_or_flipped == 'flipped':
         ax1.scatter(track.merge_point[1], track.merge_point[0] - 5, c='purple', marker='s', s=30, zorder=2,
                     label='merge point')
         ax1.scatter(track.merge_point[1], track.merge_point[0] + 5, c='orange', marker='s', s=30, zorder=2)
@@ -382,7 +382,7 @@ def plot_trail(path_to_data_csv, left_or_right_ahead):
 
 if __name__ == '__main__':
     # sort condition1
-    files_directory = r'C:\Users\localadmin\Desktop\ExperimentOlgerArkady'
+    files_directory = r'C:\Users\loran\Desktop\ExperimentOlgerArkady'
     trails = []
     for file in Path(files_directory).glob('*.csv'):
         # trail_condition = plot_trail(file)
@@ -390,17 +390,17 @@ if __name__ == '__main__':
 
     print(trails)
     # path_to_csv = 'C:\\Users\loran\Desktop\ExperimentOlgerArkady\joan_data_20220915_14h15m00s.csv'
-    trail_condition2 = plot_trail(trails[2], left_or_right_ahead = 'right')  # 46-34
-    trail_condition6 = plot_trail(trails[6], left_or_right_ahead = 'right')  # "43-37",
-    trail_condition8 = plot_trail(trails[8], left_or_right_ahead = 'right')  # "equal40-40",
-    trail_condition10 = plot_trail(trails[10], left_or_right_ahead = 'right')  # "34-46",
-    trail_condition12 = plot_trail(trails[12], left_or_right_ahead = 'right')  # "37-43",
+    # trail_condition2 = plot_trail(trails[2], regular_or_flipped = 'regular')  # 46-34
+    # trail_condition6 = plot_trail(trails[6], regular_or_flipped = 'regular')  # "43-37",
+    # trail_condition8 = plot_trail(trails[8], regular_or_flipped = 'regular')  # "equal40-40",
+    # trail_condition10 = plot_trail(trails[10], regular_or_flipped = 'regular')  # "34-46",
+    # trail_condition12 = plot_trail(trails[12], regular_or_flipped = 'regular')  # "37-43",
 
-    trail_condition3 = plot_trail(trails[3], left_or_right_ahead = 'left') #equal40-40-flipped-side
+    trail_condition3 = plot_trail(trails[3], regular_or_flipped = 'flipped') #equal40-40-flipped-side
     # trail_condition = plot_trail(trails[5], left_or_right_ahead = 'left') #"46-34-flipped-side", -> collision
-    trail_condition7 = plot_trail(trails[7], left_or_right_ahead = 'left') # "43-37-flipped-side",
-    trail_condition11 = plot_trail(trails[11], left_or_right_ahead = 'left') #"37-43-flipped-side",
-    trail_condition13 = plot_trail(trails[13], left_or_right_ahead = 'left') #"34-46-flipped-side"
+    trail_condition7 = plot_trail(trails[7], regular_or_flipped = 'flipped') # "43-37-flipped-side",
+    trail_condition11 = plot_trail(trails[11], regular_or_flipped = 'flipped') #"37-43-flipped-side",
+    trail_condition13 = plot_trail(trails[13], regular_or_flipped = 'flipped') #"34-46-flipped-side"
 
     # trail_condition = plot_trail(trails[4]) #random-equal-40
     # trail_condition = plot_trail(trails[9]) #"random-equal-40-flipped-side",
