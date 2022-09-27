@@ -388,19 +388,18 @@ if __name__ == '__main__':
         # trail_condition = plot_trail(file)
         trails.append(file)
 
-    print(trails)
     # path_to_csv = 'C:\\Users\loran\Desktop\ExperimentOlgerArkady\joan_data_20220915_14h15m00s.csv'
     # trail_condition2 = plot_trail(trails[2], regular_or_flipped = 'regular')  # 46-34
     # trail_condition6 = plot_trail(trails[6], regular_or_flipped = 'regular')  # "43-37",
     # trail_condition8 = plot_trail(trails[8], regular_or_flipped = 'regular')  # "equal40-40",
-    # trail_condition10 = plot_trail(trails[10], regular_or_flipped = 'regular')  # "34-46",
+    trail_condition10 = plot_trail(trails[10], regular_or_flipped = 'regular')  # "34-46",
     # trail_condition12 = plot_trail(trails[12], regular_or_flipped = 'regular')  # "37-43",
-
-    trail_condition3 = plot_trail(trails[3], regular_or_flipped = 'flipped') #equal40-40-flipped-side
-    # trail_condition = plot_trail(trails[5], left_or_right_ahead = 'left') #"46-34-flipped-side", -> collision
-    trail_condition7 = plot_trail(trails[7], regular_or_flipped = 'flipped') # "43-37-flipped-side",
-    trail_condition11 = plot_trail(trails[11], regular_or_flipped = 'flipped') #"37-43-flipped-side",
-    trail_condition13 = plot_trail(trails[13], regular_or_flipped = 'flipped') #"34-46-flipped-side"
+    #
+    # trail_condition3 = plot_trail(trails[3], regular_or_flipped = 'flipped') #equal40-40-flipped-side
+    # # trail_condition = plot_trail(trails[5], left_or_right_ahead = 'left') #"46-34-flipped-side", -> collision
+    # trail_condition7 = plot_trail(trails[7], regular_or_flipped = 'flipped') # "43-37-flipped-side",
+    # trail_condition11 = plot_trail(trails[11], regular_or_flipped = 'flipped') #"37-43-flipped-side",
+    # trail_condition13 = plot_trail(trails[13], regular_or_flipped = 'flipped') #"34-46-flipped-side"
 
     # trail_condition = plot_trail(trails[4]) #random-equal-40
     # trail_condition = plot_trail(trails[9]) #"random-equal-40-flipped-side",

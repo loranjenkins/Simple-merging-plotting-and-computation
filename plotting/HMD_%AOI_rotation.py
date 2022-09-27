@@ -87,7 +87,7 @@ def plot_varjo(path_to_csv_folder):
         individual_hmd_rot_list = hmd_rot_interactive_area[list_index]
         inner_attention_list = []
         for i in range(len(individual_hmd_rot_list)):
-            if individual_hmd_rot_list[i] > 0.99:
+            if individual_hmd_rot_list[i] > 0.98:
                 inner_attention_list.append(1)
             else:
                 inner_attention_list.append(0)
@@ -113,7 +113,8 @@ def plot_varjo(path_to_csv_folder):
     print(df_traces)
 
     ysmoothed = gaussian_filter1d(y_mean_traces, sigma=10)
-    ax1.plot(df_traces.iloc[5], ysmoothed)
+
+    ax1.plot(df_traces.iloc[3], ysmoothed)
 
     # spl = make_interp_spline(x_mean_traces[0:750], y_mean_traces[0:750], k=3) #type: BSpline
     # xnew = np.linspace(x_mean_traces[0:750].min(), x_mean_traces[0:750].max(), 100)
@@ -121,7 +122,6 @@ def plot_varjo(path_to_csv_folder):
     # plt.plot(xnew, power_smooth)
 
     plt.show()
-
 
 
 if __name__ == '__main__':
