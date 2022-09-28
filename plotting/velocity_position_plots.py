@@ -1,13 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from ast import literal_eval
 import numpy as np
-# import seaborn as sns
-import pickle
 import datetime
-import tqdm
 from pathlib import Path
-import statistics
+import os
+import pickle
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
@@ -129,7 +126,7 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
 
 # if __name__ == '__main__':
-def plot_trail(path_to_data_csv, regular_or_flipped):
+def plot_trail(path_to_data_csv, headway_bounds, regular_or_flipped):
     # data = pd.read_csv(
     #     'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
     #     sep=';')
@@ -335,43 +332,16 @@ def plot_trail(path_to_data_csv, regular_or_flipped):
     for i in range(2, 5):
         leg.legendHandles[i].set_color('black')
 
-    # # Question for olger:
-    #
-    # data_dict_bounds = {'positive_headway_bound': [],
-    #                     'negative_headway_bound': [],
-    #                     'average_travelled_distance': []}
-    #
-    # for average_y_position_in_mm in tqdm.trange(int((track.section_length_before) * 1000)):
-    #     average_y_position = average_y_position_in_mm / 1000.
-    #
-    #     lb, ub = track.get_headway_bounds(average_y_position,
-    #                                       vehicle_length=simulation_constants.vehicle_length,
-    #                                       vehicle_width=simulation_constants.vehicle_width)
-    #
-    #     data_dict_bounds['positive_headway_bound'].append(ub)
-    #     data_dict_bounds['negative_headway_bound'].append(lb)
-    #     data_dict_bounds['average_travelled_distance'].append(average_y_position)
-    #
-    # # for key in data_dict_bounds.keys():
-    # #     data_dict_bounds[key] = np.array(data_dict_bounds[key], dtype=float)
-    #
-    #
-    # ax3.plot(data_dict_bounds['average_travelled_distance'], data_dict_bounds['positive_headway_bound'], c='gray')
-    # ax3.plot(data_dict_bounds['average_travelled_distance'], data_dict_bounds['negative_headway_bound'], c='gray')
-    # # ax3.plot(np.array(data_dict_bounds['average_travelled_distance'], dtype=object),
-    # #          np.array(data_dict_bounds['positive_headway_bound'], dtype=object),
-    # #          linestyle='dashed', c='black')
-    #
-    #
-    # ax3.fill_between(range(200,400), data_dict_bounds['negative_headway_bound'],
-    #                       data_dict_bounds['positive_headway_bound'],
-    #                       color='lightgrey')
-    #
-    # for key in data_dict.keys():
-    #     data_dict[key] = np.array(data_dict[key], dtype=float)
-    #
-    #
-    # ax3.text(290., 0, 'Collision area', verticalalignment='center', clip_on=True)
+    ax3.plot(np.array(headway_bounds['average_travelled_distance'], dtype=object),
+                  np.array(headway_bounds['negative_headway_bound'], dtype=object),
+                  linestyle='dashed', c='grey')
+    ax3.plot(np.array(headway_bounds['average_travelled_distance'], dtype=object),
+                  np.array(headway_bounds['positive_headway_bound'], dtype=object),
+                  linestyle='dashed', c='grey')
+
+    ax3.fill_between(headway_bounds['average_travelled_distance'], headway_bounds['negative_headway_bound'],
+                          headway_bounds['positive_headway_bound'],
+                          color='lightgrey')
 
     plt.show()
 
@@ -388,18 +358,21 @@ if __name__ == '__main__':
         # trail_condition = plot_trail(file)
         trails.append(file)
 
+    with open(os.path.join('..', 'data_folder', 'headway_bounds.pkl'), 'rb') as f:
+        headway_bounds = pickle.load(f)
+
     # path_to_csv = 'C:\\Users\loran\Desktop\ExperimentOlgerArkady\joan_data_20220915_14h15m00s.csv'
-    # trail_condition2 = plot_trail(trails[2], regular_or_flipped = 'regular')  # 46-34
-    # trail_condition6 = plot_trail(trails[6], regular_or_flipped = 'regular')  # "43-37",
-    # trail_condition8 = plot_trail(trails[8], regular_or_flipped = 'regular')  # "equal40-40",
-    trail_condition10 = plot_trail(trails[10], regular_or_flipped = 'regular')  # "34-46",
-    # trail_condition12 = plot_trail(trails[12], regular_or_flipped = 'regular')  # "37-43",
-    #
-    # trail_condition3 = plot_trail(trails[3], regular_or_flipped = 'flipped') #equal40-40-flipped-side
-    # # trail_condition = plot_trail(trails[5], left_or_right_ahead = 'left') #"46-34-flipped-side", -> collision
-    # trail_condition7 = plot_trail(trails[7], regular_or_flipped = 'flipped') # "43-37-flipped-side",
-    # trail_condition11 = plot_trail(trails[11], regular_or_flipped = 'flipped') #"37-43-flipped-side",
-    # trail_condition13 = plot_trail(trails[13], regular_or_flipped = 'flipped') #"34-46-flipped-side"
+    trail_condition2 = plot_trail(trails[2], headway_bounds, regular_or_flipped = 'regular')  # 46-34
+    trail_condition6 = plot_trail(trails[6], headway_bounds, regular_or_flipped = 'regular')  # "43-37",
+    trail_condition8 = plot_trail(trails[8], headway_bounds, regular_or_flipped = 'regular')  # "equal40-40",
+    trail_condition10 = plot_trail(trails[10], headway_bounds, regular_or_flipped = 'regular')  # "34-46",
+    trail_condition12 = plot_trail(trails[12], headway_bounds, regular_or_flipped = 'regular')  # "37-43",
+
+    trail_condition3 = plot_trail(trails[3], headway_bounds, regular_or_flipped = 'flipped') #equal40-40-flipped-side
+    # trail_condition = plot_trail(trails[5], left_or_right_ahead = 'left') #"46-34-flipped-side", -> collision
+    trail_condition7 = plot_trail(trails[7], headway_bounds, regular_or_flipped = 'flipped') # "43-37-flipped-side",
+    trail_condition11 = plot_trail(trails[11], headway_bounds, regular_or_flipped = 'flipped') #"37-43-flipped-side",
+    trail_condition13 = plot_trail(trails[13], headway_bounds, regular_or_flipped = 'flipped') #"34-46-flipped-side"
 
     # trail_condition = plot_trail(trails[4]) #random-equal-40
     # trail_condition = plot_trail(trails[9]) #"random-equal-40-flipped-side",
