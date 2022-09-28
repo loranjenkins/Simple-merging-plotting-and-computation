@@ -306,34 +306,7 @@ class SymmetricMergingTrack:
 
         return before_merge_lb, before_merge_ub, closest_point_on_route_before_merge
 
-    @staticmethod
-    def _plot_polygons(polygons: list, points=None):
-        """
-        For debugging of the collision bounds
 
-        :param polygons:
-        :param points:
-        :return:
-        """
-        from matplotlib import pyplot
-        from descartes import PolygonPatch
-
-        fig = pyplot.figure()
-        ax = fig.add_subplot(111)
-
-        colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray',
-                  'tab:olive', 'tab:cyan']
-        color_index = 0
-
-        for polygon in polygons:
-            ax.add_patch(PolygonPatch(polygon, fc=colors[color_index], alpha=0.5))
-            color_index += 1
-            if color_index >= len(colors):
-                color_index = 0
-
-        if points is not None:
-            for points_set in points:
-                pyplot.scatter(x=points_set[:, 0], y=points_set[:, 1])
-
-        ax.autoscale(enable=True)
-        pyplot.show()
+    @property
+    def total_distance(self) -> float:
+        return self.section_length_before + self.section_length_after
