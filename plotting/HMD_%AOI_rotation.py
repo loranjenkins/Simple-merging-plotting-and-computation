@@ -114,7 +114,7 @@ def plot_varjo(path_to_csv_folder):
 
     ysmoothed = gaussian_filter1d(y_mean_traces, sigma=10)
 
-    ax1.plot(df_traces.iloc[3], ysmoothed)
+    ax1.plot(df_traces.iloc[5], ysmoothed)
 
     # spl = make_interp_spline(x_mean_traces[0:750], y_mean_traces[0:750], k=3) #type: BSpline
     # xnew = np.linspace(x_mean_traces[0:750].min(), x_mean_traces[0:750].max(), 100)
@@ -126,6 +126,6 @@ def plot_varjo(path_to_csv_folder):
 
 if __name__ == '__main__':
 
-    plot_varjo(r'C:\Users\loran\Desktop\ExperimentOlgerArkady\Joan.Varjo.combined')
+    plot_varjo(r'C:\Users\localadmin\Desktop\ExperimentOlgerArkady\Joan.Varjo.combined')
 
 

@@ -35,7 +35,7 @@ class SymmetricMergingTrack:
         self.lower_bound_threshold = self.section_length_before - (vehicle_width / 2.) / np.tan(
             (np.pi / 2) - self.approach_angle) + (vehicle_length / 2)
         if self.lower_bound_threshold > self.section_length_before:
-            self.lower_bound_threshold = self.section_length_before #This should be before right?
+            self.lower_bound_threshold = self.section_length_before
 
     def get_headway_bounds(self, average_travelled_distance, vehicle_width, vehicle_length):
             """
@@ -69,6 +69,7 @@ class SymmetricMergingTrack:
                 headway = solution.x[0]
                 # the headway bounds are completely symmetrical
                 return -headway, headway
+
     def _collision_constraint(self, head_way, average_travelled_distance, vehicle_width, vehicle_length):
         left = average_travelled_distance + head_way / 2.
         right = average_travelled_distance - head_way / 2.
@@ -186,7 +187,7 @@ class SymmetricMergingTrack:
 
     def _coordinates_to_traveled_distance_forced(self, point, left_or_right, before_or_after_merge):
         if before_or_after_merge == 'after':
-            distance = self.section_length_after + (point[1] - self.merge_point[1])
+            distance = self.section_length_before + (point[1] - self.merge_point[1])
         elif before_or_after_merge == 'before':
             if left_or_right == 'left':
                 distance = np.linalg.norm(point - self.left_way_points[0])

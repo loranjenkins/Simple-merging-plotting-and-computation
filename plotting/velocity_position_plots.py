@@ -382,7 +382,7 @@ def plot_trail(path_to_data_csv, regular_or_flipped):
 
 if __name__ == '__main__':
     # sort condition1
-    files_directory = r'C:\Users\loran\Desktop\ExperimentOlgerArkady'
+    files_directory = r'C:\Users\localadmin\Desktop\ExperimentOlgerArkady'
     trails = []
     for file in Path(files_directory).glob('*.csv'):
         # trail_condition = plot_trail(file)
