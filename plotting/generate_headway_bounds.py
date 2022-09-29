@@ -39,7 +39,6 @@ def generate_data_dict():
 
     track = SymmetricMergingTrack(simulation_constants)
     end_point = track.total_distance
-    print(end_point)
 
     data_dict = {'positive_headway_bound': [],
                  'negative_headway_bound': [],
@@ -63,7 +62,7 @@ def generate_data_dict():
 
 if __name__ == '__main__':
 
-    path_to_saved_dict = os.path.join('..', 'data', 'headway_bounds.pkl')
+    path_to_saved_dict = os.path.join('..', 'data_folder', 'headway_bounds.pkl')
     if not os.path.isfile(path_to_saved_dict):
         data_dict = generate_data_dict()
 

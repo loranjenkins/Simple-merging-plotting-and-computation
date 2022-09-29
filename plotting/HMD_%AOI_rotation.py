@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from scipy.interpolate import make_interp_spline, BSpline
 from scipy.ndimage import gaussian_filter1d
+import numpy as np
+import seaborn as sns
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
@@ -98,7 +100,9 @@ def plot_varjo(path_to_csv_folder):
     df_traces = pd.DataFrame(interactive_area_travelled_traces)
     x_mean_traces = df_traces.mean()
     df_hmd_rotations = pd.DataFrame(on_ramp_vs_opponent)
-    y_mean_traces = df_hmd_rotations.mean()
+    y_mean = df_hmd_rotations.mean()
+
+
 
     fig, (ax1) = plt.subplots(1)
     #
@@ -110,22 +114,46 @@ def plot_varjo(path_to_csv_folder):
     # print(len(y_mean_traces))
 
     #find longest column and put in gaussian
-    print(df_traces)
+    # print(df_traces)
 
-    ysmoothed = gaussian_filter1d(y_mean_traces, sigma=10)
+    # ysmoothed = gaussian_filter1d(y_mean_traces, sigma=10)
+    x = np.linspace(120, 275, len(y_mean))
 
-    ax1.plot(df_traces.iloc[5], ysmoothed)
+    d = {'Average travelled distance': [], 'hmd_mean': []}
+
+    for i in range(len(x)):
+        d['Average travelled distance'].append(x[i])
+        d['hmd_mean'].append(y_mean[i])
+
+    data = pd.DataFrame(d)
+    print(data)
+
+
+    sns.displot(
+        data=data
+    )
+    plt.show()
+
+    #
+    # sns.displot(
+    #     data=data,
+    #     x="average travelled distance", hue="cut",
+    #     kind="kde", height=6,
+    #     multiple="fill", clip=(0, None),
+    #     palette="ch:rot=-.25,hue=1,light=.75",
+    # )
+    # ax1.plot(x, ysmoothed)
 
     # spl = make_interp_spline(x_mean_traces[0:750], y_mean_traces[0:750], k=3) #type: BSpline
     # xnew = np.linspace(x_mean_traces[0:750].min(), x_mean_traces[0:750].max(), 100)
     # power_smooth = spl(xnew)
     # plt.plot(xnew, power_smooth)
 
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':
 
-    plot_varjo(r'C:\Users\localadmin\Desktop\ExperimentOlgerArkady\Joan.Varjo.combined')
+    plot_varjo(r'C:\Users\loran\Desktop\ExperimentOlgerArkady\Joan.Varjo.combined')
 
 
