@@ -104,18 +104,12 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
                          (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
         indices_of_conflict_resolved = (on_collision_course & approach_mask)
 
-
-    # # approach_mask = (approach_mask == False)
-    #
-    # ###PROBLEM IS HERE
-    # # x = [i for i, x in enumerate(approach_mask) if x]
-    # # # ->https://stackoverflow.com/questions/21448225/getting-indices-of-true-values-in-a-boolean-list
-    # print(list(on_collision_course))
-    # # print(list(approach_mask))
-    # print(list(approach_mask == False))
-    # # print(x)
+    # approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
+    #                  (np.array(data_dict['distance_traveled_vehicle1']) < track.section_length_before)) | \
+    #                 ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
+    #                  (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
     # indices_of_conflict_resolved = (on_collision_course == False & approach_mask)
-    # print(list(indices_of_conflict_resolved))
+
 
     try:
         time_of_conflict_resolved = np.array(time)[indices_of_conflict_resolved]
@@ -342,6 +336,8 @@ def plot_trail(path_to_data_csv, headway_bounds, regular_or_flipped):
     ax3.fill_between(headway_bounds['average_travelled_distance'], headway_bounds['negative_headway_bound'],
                           headway_bounds['positive_headway_bound'],
                           color='lightgrey')
+
+    ax3.text(320, 0, 'Collision area', verticalalignment='center', size=7, clip_on=True)
 
     plt.show()
 

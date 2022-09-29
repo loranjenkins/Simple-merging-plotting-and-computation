@@ -50,6 +50,7 @@ class SymmetricMergingTrack:
             :param vehicle_length:
             :return:
             """
+
             if average_travelled_distance > self.section_length_before + vehicle_length / 2.:
                 # both vehicles are on the straight section
                 return -vehicle_length, vehicle_length

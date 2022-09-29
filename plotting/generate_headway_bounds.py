@@ -29,13 +29,13 @@ from trackobjects.symmetricmerge import SymmetricMergingTrack
 
 def generate_data_dict():
     simulation_constants = SimulationConstants(vehicle_width=2,
-                                               vehicle_length=4.7,
+                                               vehicle_length=5,
                                                tunnel_length=118,
                                                track_width=8,
                                                track_height=195,
                                                track_start_point_distance=390,
                                                track_section_length_before=275.77164466275354,
-                                               track_section_length_after=200)  # goes until 400
+                                               track_section_length_after=150)  # goes until 400
 
     track = SymmetricMergingTrack(simulation_constants)
     end_point = track.total_distance
@@ -49,7 +49,7 @@ def generate_data_dict():
 
         lb, ub = track.get_headway_bounds(average_y_position,
                                           vehicle_length=simulation_constants.vehicle_length,
-                                          vehicle_width=simulation_constants.vehicle_width)
+                                          vehicle_width=simulation_constants.vehicle_width) #if we switch length with width it plots
 
         data_dict['positive_headway_bound'].append(ub)
         data_dict['negative_headway_bound'].append(lb)
@@ -75,4 +75,5 @@ if __name__ == '__main__':
     plt.figure()
     plt.plot(data_dict['average_travelled_distance'], data_dict['positive_headway_bound'])
     plt.plot(data_dict['average_travelled_distance'], data_dict['negative_headway_bound'])
+
     plt.show()
