@@ -6,6 +6,7 @@ from scipy.ndimage import gaussian_filter1d
 import numpy as np
 import seaborn as sns
 from scipy import interpolate
+import os
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
@@ -25,7 +26,7 @@ def vehicle_xy_coordinates(intcolumn, data_csv):
 
     return list_x, list_y
 
-def plot_varjo(path_to_csv_folder):
+def plot_varjo(path_to_csv_folder, condition):
     simulation_constants = SimulationConstants(vehicle_width=2,
                                                vehicle_length=4.7,
                                                tunnel_length=118,
@@ -41,7 +42,6 @@ def plot_varjo(path_to_csv_folder):
     for file in Path(files_directory).glob('*.csv'):
         # trail_condition = plot_trail(file)
         trails.append(file)
-
 
     all_pds_list = []
     for i in range(len(trails)):
@@ -114,7 +114,7 @@ def plot_varjo(path_to_csv_folder):
     # print(len(y_mean_traces))
 
     # find longest column and put in gaussian
-    print(df_traces)
+    # print(df_traces)
 
     ysmoothed = gaussian_filter1d(y_mean, sigma=4)
     x = np.linspace(120, 275, len(y_mean))
@@ -136,18 +136,55 @@ def plot_varjo(path_to_csv_folder):
     #     palette="tab10", linewidth=1
     # )
 
+    ##get median lines
+    path_to_data_csv = os.path.join('..', 'data_folder', 'medians_crt_index.csv')
+    global_crt_index = pd.read_csv(path_to_data_csv, sep=',')
+
+    if condition == '50-50':
+        travelled_distances_on_crt_index = []
+        for i in range(len(travelled_distance)):
+            value_on_crt_index = travelled_distance[i][global_crt_index.iloc[0][0]]
+            travelled_distances_on_crt_index.append(value_on_crt_index)
+        average_travelled_distance_on_index_crt = sum(travelled_distances_on_crt_index) / len(
+            travelled_distances_on_crt_index)
+        plt.axvline(average_travelled_distance_on_index_crt, 0, 1, color='r', label='Average crt')
+    elif condition == '55-45':
+        travelled_distances_on_crt_index = []
+        for i in range(len(travelled_distance)):
+            value_on_crt_index = travelled_distance[i][global_crt_index.iloc[0][1]]
+            travelled_distances_on_crt_index.append(value_on_crt_index)
+        average_travelled_distance_on_index_crt = sum(travelled_distances_on_crt_index) / len(
+            travelled_distances_on_crt_index)
+        plt.axvline(average_travelled_distance_on_index_crt, 0, 1, color='r', label='Average crt')
+    elif condition == '60-40':
+        travelled_distances_on_crt_index = []
+        for i in range(len(travelled_distance)):
+            value_on_crt_index = travelled_distance[i][global_crt_index.iloc[0][2]]
+            travelled_distances_on_crt_index.append(value_on_crt_index)
+        average_travelled_distance_on_index_crt = sum(travelled_distances_on_crt_index) / len(
+            travelled_distances_on_crt_index)
+        plt.axvline(average_travelled_distance_on_index_crt, 0, 1, color='r', label='Average crt')
+
     # plt.plot(y, c='red')
     ax1.fill_between(x, ysmoothed, color='blue', alpha=0.1)
     ax1.fill_between(x, ysmoothed, 1, color='red', alpha=0.1)
     ax1.set_xlim([120, 275])
     ax1.set_ylim([0, 1])
+    ax1.legend(loc='upper right')
+
+
 
     plt.show()
 
 
 
 if __name__ == '__main__':
+    #
+    # plot_varjo(r'C:\Users\loran\Desktop\data_formatter\condition_50_50', '50-50')
+    # plot_varjo(r'C:\Users\loran\Desktop\data_formatter\condition_60_40', '60-40')
+    # plot_varjo(r'C:\Users\loran\Desktop\data_formatter\condition_55_45', '55-45')
 
-    plot_varjo(r'C:\Users\localadmin\Desktop\ExperimentOlgerArkady\Joan.Varjo.combined')
+    #test
+    plot_varjo(r'C:\Users\loran\Desktop\ExperimentOlgerArkady\Joan.Varjo.combined', '60-40')
 
 
