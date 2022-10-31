@@ -3,6 +3,7 @@ import numpy as np
 import datetime
 from pathlib import Path
 import os
+from natsort import natsorted
 
 
 from trackobjects.simulationconstants import SimulationConstants
@@ -85,28 +86,11 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
                           | threshold_collision_course \
                           | end_point_collision_course
 
-    if 13.5 < sum(data_dict['velocity_vehicle1'][0][0:10]) / len(data_dict['velocity_vehicle1'][0][0:10]) < 14:
-        approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
-                         (np.array(data_dict['distance_traveled_vehicle1']) < track.section_length_before)) |\
-                         ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
-                         (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
-        indices_of_conflict_resolved = (on_collision_course == False & approach_mask)
-
-    elif sum(data_dict['velocity_vehicle1'][0][0:10]) / len(data_dict['velocity_vehicle1'][0][0:10]) > 14:
-        approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
-                         (np.array(data_dict['distance_traveled_vehicle1']) < track.section_length_before))
-        indices_of_conflict_resolved = (on_collision_course & approach_mask)
-
-    elif sum(data_dict['velocity_vehicle1'][0][0:10]) / len(data_dict['velocity_vehicle1'][0][0:10]) < 13.5:
-        approach_mask = ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
-                         (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
-        indices_of_conflict_resolved = (on_collision_course & approach_mask)
-
-    # approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
-    #                  (np.array(data_dict['distance_traveled_vehicle1']) < track.section_length_before)) | \
-    #                 ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
-    #                  (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
-    # indices_of_conflict_resolved = (on_collision_course == False & approach_mask)
+    approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
+                     (np.array(data_dict['distance_traveled_vehicle1']) < track.section_length_before)) | \
+                    ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
+                     (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
+    indices_of_conflict_resolved = (on_collision_course & approach_mask)
 
     try:
         time_of_conflict_resolved = np.array(time)[indices_of_conflict_resolved]
@@ -119,7 +103,7 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 # if __name__ == '__main__':
 def compute_crt(path_to_data_csv):
 
-    data = pd.read_csv(path_to_data_csv, sep=';')
+    data = pd.read_csv(path_to_data_csv, sep=',')
 
     data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
     data = data.iloc[10:, :]
@@ -182,17 +166,24 @@ def compute_crt(path_to_data_csv):
     if not crt_object[1].size:
         crt = 0
     else:
-        crt = crt_object[1][1]
+        crt = crt_object[1][-1]
 
-    return crt, np.where(crt_object[0] == True)[0][0]
+    if not crt_object[1].size:
+        crt_index = 0
+    else:
+        crt_index = min(range(len(data_dict['time'])),
+                                   key=lambda i: abs(data_dict['time'][i] - crt))
+
+    return crt, crt_index
 
 if __name__ == '__main__':
     #condition50-50
-    files_directory1 = r'C:\Users\loran\Desktop\data_formatter\condition_50_50'
+    files_directory1 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50'
 
     trails_condition_50_50 = []
     for file in Path(files_directory1).glob('*.csv'):
         trails_condition_50_50.append(file)
+    trails_condition_50_50 = natsorted(trails_condition_50_50, key=str)
 
     crts_50_50 = []
     crt_indexes_50_50 = []
@@ -203,10 +194,11 @@ if __name__ == '__main__':
         crt_indexes_50_50.append(crt_index)
 
     #condition55-45
-    files_directory2 = r'C:\Users\loran\Desktop\data_formatter\condition_55_45'
+    files_directory2 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45'
     trails_condition_55_45 = []
     for file in Path(files_directory2).glob('*.csv'):
         trails_condition_55_45.append(file)
+    trails_condition_55_45 = natsorted(trails_condition_55_45, key=str)
 
     crts_55_45 = []
     crt_indexes_55_45 = []
@@ -217,10 +209,11 @@ if __name__ == '__main__':
         crt_indexes_55_45.append(crt_index)
 
     # condition60-40
-    files_directory3 = r'C:\Users\loran\Desktop\data_formatter\condition_60_40'
+    files_directory3 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40'
     trails_condition_60_40 = []
     for file in Path(files_directory3).glob('*.csv'):
         trails_condition_60_40.append(file)
+    trails_condition_60_40 = natsorted(trails_condition_60_40, key=str)
 
     crts_60_40 = []
     crt_indexes_60_40 = []

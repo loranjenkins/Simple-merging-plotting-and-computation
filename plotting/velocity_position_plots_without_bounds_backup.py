@@ -5,6 +5,7 @@ import datetime
 from pathlib import Path
 import os
 import pickle
+from natsort import natsorted
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
@@ -88,9 +89,9 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
                           | end_point_collision_course
 
     if 13.5 < sum(data_dict['velocity_vehicle1'][0][0:10]) / len(data_dict['velocity_vehicle1'][0][0:10]) < 14:
-        approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
+        approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > 200) &
                          (np.array(data_dict['distance_traveled_vehicle1']) < track.section_length_before)) |\
-                         ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
+                         ((np.array(data_dict['distance_traveled_vehicle2']) > 200) &
                          (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
         indices_of_conflict_resolved = (on_collision_course == False & approach_mask)
 
@@ -119,11 +120,11 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
 
 # if __name__ == '__main__':
-def plot_trail(path_to_data_csv, regular_or_flipped):
+def plot_trail(path_to_data_csv):
     # data = pd.read_csv(
     #     'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
     #     sep=';')
-    data = pd.read_csv(path_to_data_csv, sep=';')
+    data = pd.read_csv(path_to_data_csv, sep=',')
 
     data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
     data = data.iloc[10:, :]
@@ -131,7 +132,7 @@ def plot_trail(path_to_data_csv, regular_or_flipped):
 
     simulation_constants = SimulationConstants(vehicle_width=2,
                                                vehicle_length=4.7,
-                                               tunnel_length=118,
+                                               tunnel_length=117,
                                                track_width=8,
                                                track_height=195,
                                                track_start_point_distance=390,
@@ -161,7 +162,7 @@ def plot_trail(path_to_data_csv, regular_or_flipped):
                  'average_travelled_distance_trace': [],
                  'headway': []}
 
-    if regular_or_flipped == 'regular':
+    if abs(xy_coordinates_vehicle1[0][0]) < abs(xy_coordinates_vehicle2[0][0]):
         for i in range(len(xy_coordinates_vehicle1)):
             straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
             data_dict['x1_straight'].append(straight_line_vehicle1[0][0] + 5)
@@ -172,7 +173,7 @@ def plot_trail(path_to_data_csv, regular_or_flipped):
             data_dict['x2_straight'].append(straight_line_vehicle2[0][0] - 5)
             data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
 
-    elif regular_or_flipped == 'flipped':
+    elif abs(xy_coordinates_vehicle1[0][0]) > abs(xy_coordinates_vehicle2[0][0]):
         for i in range(len(xy_coordinates_vehicle1)):
             straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
             data_dict['x1_straight'].append(straight_line_vehicle1[0][0] - 5)
@@ -257,13 +258,18 @@ def plot_trail(path_to_data_csv, regular_or_flipped):
 
     ##compute/plot crt
     crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants)
-    crt = crt_object[1]
+    # crt = crt_object[1][1]
 
+    if not crt_object[1].size:
+        crt = 0
+    else:
+        crt = crt_object[1][1]
 
-    # if all(item is False for item in crt_object[0]):
-    #     crt_object[0] = 0
-    # else:
-    index_crt = np.where(crt_object[0] == True)[0][0]
+    if not crt_object[1].size:
+        index_crt = 0
+    else:
+        index_crt = np.where(crt_object[0] == True)[0][0]
+
 
     ax1.scatter(data_dict['y1_straight'][index_crt], data_dict['x1_straight'][index_crt], c='purple', marker='x', s=50,
                 zorder=2, label='crt')
@@ -282,11 +288,11 @@ def plot_trail(path_to_data_csv, regular_or_flipped):
     index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
                                        key=lambda i: abs(data_dict['y2_straight'][i] - track.merge_point[1]))
 
-    if regular_or_flipped == 'regular':
+    if abs(xy_coordinates_vehicle1[0][0]) < abs(xy_coordinates_vehicle2[0][0]):
         ax1.scatter(track.merge_point[1], track.merge_point[0] + 5, c='purple', marker='s', s=30, zorder=2,
                     label='merge point')
         ax1.scatter(track.merge_point[1], track.merge_point[0] - 5, c='orange', marker='s', s=30, zorder=2)
-    elif regular_or_flipped == 'flipped':
+    elif abs(xy_coordinates_vehicle1[0][0]) > abs(xy_coordinates_vehicle2[0][0]):
         ax1.scatter(track.merge_point[1], track.merge_point[0] - 5, c='purple', marker='s', s=30, zorder=2,
                     label='merge point')
         ax1.scatter(track.merge_point[1], track.merge_point[0] + 5, c='orange', marker='s', s=30, zorder=2)
@@ -323,11 +329,13 @@ def plot_trail(path_to_data_csv, regular_or_flipped):
     ax3.scatter(data_dict['average_travelled_distance_trace'][index_of_tunnel_vehicle2],
                 data_dict['headway'][index_of_tunnel_vehicle2], c='orange', marker='>', s=30, zorder=2)
 
-    # # final plotting
-    # ax1.legend(loc='upper right')
-    # leg = ax1.get_legend()
-    # for i in range(2, 5):
-    #     leg.legendHandles[i].set_color('black')
+    # final plotting
+    ax1.plot([], [], ' ', label='crt: ' + str(round(crt, 2)))
+    ax1.legend(loc='upper right')
+    leg = ax1.get_legend()
+    for i in range(2, 5):
+        leg.legendHandles[i].set_color('black')
+
 
     plt.show()
 
@@ -337,17 +345,46 @@ def plot_trail(path_to_data_csv, regular_or_flipped):
 
 
 if __name__ == '__main__':
-    # sort condition1
-    files_directory = r'C:\Users\loran\Desktop\data_formatter\condition_50_50'
+    # 55-45
+    files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45'
     trails = []
     for file in Path(files_directory).glob('*.csv'):
         # trail_condition = plot_trail(file)
         trails.append(file)
+    trails = natsorted(trails, key=str)
 
-    for i in range(len(trails)):
-        plot_trail(trails[i], regular_or_flipped='regular')
+    # index = 15
+    # plot_trail(trails[index-2])
 
-
-
-
+    # figure_amount = 0
+    # for i in range(len(trails)):
+    #     plot_trail(trails[i])
+    #     plt.savefig(r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45\figures\trail_{}'.format(str(figure_amount)))
+    #     figure_amount += 1
+    #
+    # ## 50-50
+    # files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50'
+    # trails = []
+    # for file in Path(files_directory).glob('*.csv'):
+    #     # trail_condition = plot_trail(file)
+    #     trails.append(file)
+    # trails = natsorted(trails, key=str)
+    # figure_amount = 0
+    # for i in range(len(trails)):
+    #     plot_trail(trails[i])
+    #     plt.savefig(r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50\figures\trail_{}'.format(str(figure_amount)))
+    #     figure_amount += 1
+    #
+    # ##60-40
+    # files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40'
+    # trails = []
+    # for file in Path(files_directory).glob('*.csv'):
+    #     # trail_condition = plot_trail(file)
+    #     trails.append(file)
+    # trails = natsorted(trails, key=str)
+    # figure_amount = 0
+    # for i in range(len(trails)):
+    #     plot_trail(trails[i])
+    #     plt.savefig(r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40\figures\trail_{}'.format(str(figure_amount)))
+    #     figure_amount += 1
 

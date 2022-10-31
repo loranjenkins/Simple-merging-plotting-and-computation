@@ -10,8 +10,6 @@ path_to_data_csv_index = os.path.join('..', 'data_folder', 'crt_index_all_condit
 global_crt = pd.read_csv(path_to_data_csv_crt, sep=',')
 global_crt.replace(0, np.nan, inplace=True)
 global_crt_index = pd.read_csv(path_to_data_csv_index, sep=',')
-#CHECK FOR THE WEIRD ZEROS INDEX VALUES
-
 
 medians_crt = global_crt.median()
 medians_index = global_crt_index.median()
@@ -30,7 +28,11 @@ df5 = pd.DataFrame({'median_60_40': [round(medians_index[2])]})
 pd.concat([df3, df4, df5], axis=1).to_csv(path_to_saved_dict, index=False)
 
 
-sns.boxplot(data=global_crt)
+a = sns.boxplot(data=global_crt)
+
+# for _, line_list in a.items():
+#     for line in line_list:
+#         line.set_color('r')
 
 plt.ylabel('CRT [s]')
 plt.xlabel('Condition')
