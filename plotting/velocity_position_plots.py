@@ -120,7 +120,7 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
 
 # if __name__ == '__main__':
-def plot_trail(path_to_data_csv, headway_bounds, regular_or_flipped):
+def plot_trail(path_to_data_csv, headway_bounds):
     # data = pd.read_csv(
     #     'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
     #     sep=';')
@@ -132,7 +132,7 @@ def plot_trail(path_to_data_csv, headway_bounds, regular_or_flipped):
 
     simulation_constants = SimulationConstants(vehicle_width=2,
                                                vehicle_length=4.7,
-                                               tunnel_length=118,
+                                               tunnel_length=110, # original = 118 -> check in unreal
                                                track_width=8,
                                                track_height=195,
                                                track_start_point_distance=390,
@@ -162,26 +162,26 @@ def plot_trail(path_to_data_csv, headway_bounds, regular_or_flipped):
                  'average_travelled_distance_trace': [],
                  'headway': []}
 
-    if abs(xy_coordinates_vehicle1[0][0]) < abs(xy_coordinates_vehicle2[0][0]):
+    if xy_coordinates_vehicle1[0][0] > 0:
         for i in range(len(xy_coordinates_vehicle1)):
             straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
-            data_dict['x1_straight'].append(straight_line_vehicle1[0][0] + 5)
+            data_dict['x1_straight'].append(straight_line_vehicle1[0][0] + 15)
             data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
 
         for i in range(len(xy_coordinates_vehicle2)):
             straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
-            data_dict['x2_straight'].append(straight_line_vehicle2[0][0] - 5)
+            data_dict['x2_straight'].append(straight_line_vehicle2[0][0] - 15)
             data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
 
-    elif abs(xy_coordinates_vehicle1[0][0]) > abs(xy_coordinates_vehicle2[0][0]):
+    elif xy_coordinates_vehicle2[0][0] > 0:
         for i in range(len(xy_coordinates_vehicle1)):
             straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
-            data_dict['x1_straight'].append(straight_line_vehicle1[0][0] - 5)
+            data_dict['x1_straight'].append(straight_line_vehicle1[0][0] - 15)
             data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
 
         for i in range(len(xy_coordinates_vehicle2)):
             straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
-            data_dict['x2_straight'].append(straight_line_vehicle2[0][0] + 5)
+            data_dict['x2_straight'].append(straight_line_vehicle2[0][0] + 15)
             data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
 
     fig, (ax1, ax2, ax3) = plt.subplots(3)
@@ -189,20 +189,22 @@ def plot_trail(path_to_data_csv, headway_bounds, regular_or_flipped):
     # plt.title('positions over time')
     ax1.set_xlabel('y position [m]')
     ax1.set_ylabel('x position [m]')
-    ax1.set_yticks([175, -5, 5, -175])
+    ax1.set_yticks([175, -15, 15, -175])
     ax1.set_yticklabels([175, 0, 0, -175])
+    ax1.set_xlim(60, 450)
+    ax1.set_ylim(-200, 200)
 
-    # ax1.tick_params(axis='y', labelsize=10)
-    # ax1.tick_params(axis='x', labelsize=10)
+    right_positions_per_second = list(zip(data_dict['x1_straight'], data_dict['y1_straight']))[0::300]
+    left_positions_per_second = list(zip(data_dict['x2_straight'], data_dict['y2_straight']))[0::300]
 
-    ax1.scatter(data_dict['y1_straight'][0::300], data_dict['x1_straight'][0::300], s=10)
-    ax1.scatter(data_dict['y2_straight'][0::300], data_dict['x2_straight'][0::300], s=10)
-    ax1.set_xlim(50, 450)
+    for right_point, left_point in zip(left_positions_per_second, right_positions_per_second):
+        ax1.plot([left_point[1], right_point[1]], [left_point[0], right_point[0]], c='lightgrey', linestyle='dashed')
+        ax1.scatter([left_point[1], right_point[1]], [left_point[0], right_point[0]], c='lightgrey')
+
 
     ax1.plot(data_dict['y1_straight'], data_dict['x1_straight'], label='right vehicle')
     ax1.plot(data_dict['y2_straight'], data_dict['x2_straight'], label='left vehicle')
-    # ax1.plot(data_dict['x1_straight'], data_dict['y1_straight'])
-    # ax1.plot(data_dict['x2_straight'], data_dict['y2_straight'])
+
 
     # ------------------------------------------------------------------------#
     # velocity_time plot
@@ -219,12 +221,11 @@ def plot_trail(path_to_data_csv, headway_bounds, regular_or_flipped):
     time_in_seconds_trail = np.array(time_in_seconds_trail)
     data_dict['time'] = time_in_seconds_trail
 
-    # plt.xlabel('time [s]')
-    # plt.ylabel('velocity [m/s]')
-    # plt.title('velocity at times')
+
     ax2.set_xlabel('Time [s]')
     ax2.set_ylabel('Velocity [m/s]')
     ax2.set_xlim(0, 30)
+
     ax2.plot(data_dict['time'], velocity_vehicle1)
     ax2.plot(data_dict['time'], velocity_vehicle2)
 
@@ -256,44 +257,20 @@ def plot_trail(path_to_data_csv, headway_bounds, regular_or_flipped):
     ax3.set_xlim(50, 450)
     fig.tight_layout(pad=1.0)
 
-    ##compute/plot crt
-    crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants)
-    # crt = crt_object[1][1]
-
-    if not crt_object[1].size:
-        crt = 0
-    else:
-        crt = crt_object[1][1]
-
-    if not crt_object[1].size:
-        index_crt = 0
-    else:
-        index_crt = np.where(crt_object[0] == True)[0][0]
-
-    ax1.scatter(data_dict['y1_straight'][index_crt], data_dict['x1_straight'][index_crt], c='purple', marker='x', s=50,
-                zorder=2, label='crt')
-    ax1.scatter(data_dict['y2_straight'][index_crt], data_dict['x2_straight'][index_crt], c='orange', marker='x',
-                s=50, zorder=2)
-
-    ax2.scatter(data_dict['time'][index_crt], velocity_vehicle1[index_crt], c='purple', marker='x', s=50, zorder=2)
-    ax2.scatter(data_dict['time'][index_crt], velocity_vehicle2[index_crt], c='orange', marker='x', s=50, zorder=2)
-
-    ax3.scatter(average_travelled_distance_trace[index_crt], headway[index_crt], c='black', marker='x', s=50, zorder=2)
-
     # plot merge point
     index_of_mergepoint_vehicle1 = min(range(len(data_dict['y1_straight'])),
                                        key=lambda i: abs(data_dict['y1_straight'][i] - track.merge_point[1]))
     index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
                                        key=lambda i: abs(data_dict['y2_straight'][i] - track.merge_point[1]))
 
-    if abs(xy_coordinates_vehicle1[0][0]) < abs(xy_coordinates_vehicle2[0][0]):
-        ax1.scatter(track.merge_point[1], track.merge_point[0] + 5, c='purple', marker='s', s=30, zorder=2,
+    if xy_coordinates_vehicle1[0][0] > 0:
+        ax1.scatter(track.merge_point[1], track.merge_point[0] + 15, c='purple', marker='s', s=30, zorder=2,
                     label='merge point')
-        ax1.scatter(track.merge_point[1], track.merge_point[0] - 5, c='orange', marker='s', s=30, zorder=2)
-    elif abs(xy_coordinates_vehicle1[0][0]) > abs(xy_coordinates_vehicle2[0][0]):
-        ax1.scatter(track.merge_point[1], track.merge_point[0] - 5, c='purple', marker='s', s=30, zorder=2,
+        ax1.scatter(track.merge_point[1], track.merge_point[0] - 15, c='orange', marker='s', s=30, zorder=2)
+    elif xy_coordinates_vehicle2[0][0] > 0:
+        ax1.scatter(track.merge_point[1], track.merge_point[0] - 15, c='purple', marker='s', s=30, zorder=2,
                     label='merge point')
-        ax1.scatter(track.merge_point[1], track.merge_point[0] + 5, c='orange', marker='s', s=30, zorder=2)
+        ax1.scatter(track.merge_point[1], track.merge_point[0] + 15, c='orange', marker='s', s=30, zorder=2)
 
     ax2.scatter(data_dict['time'][index_of_mergepoint_vehicle1], velocity_vehicle1[index_of_mergepoint_vehicle1],
                 c='purple', marker='s', s=30, zorder=2)
@@ -327,12 +304,56 @@ def plot_trail(path_to_data_csv, headway_bounds, regular_or_flipped):
     ax3.scatter(data_dict['average_travelled_distance_trace'][index_of_tunnel_vehicle2],
                 data_dict['headway'][index_of_tunnel_vehicle2], c='orange', marker='>', s=30, zorder=2)
 
+    ##compute/plot crt
+    crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants)
+    # crt = crt_object[1][1]
+
+    if not crt_object[1].size:
+        crt = 0
+    else:
+        crt = crt_object[1][-1]
+
+    if not crt_object[1].size:
+        index_crt = 0
+    else:
+        index_crt = min(range(len(data_dict['time'])),
+                                   key=lambda i: abs(data_dict['time'][i] - crt))
+
+    # limit CRT
+    if index_crt > min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2):
+        index_crt = min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2)-10
+        crt = data_dict['time'][index_crt]
+
+
+    ax1.scatter(data_dict['y1_straight'][index_crt], data_dict['x1_straight'][index_crt], c='black', marker='x', s=50,
+                zorder=2, label='crt: ' + str(round(crt, 2)) + ' sec')
+    ax1.scatter(data_dict['y2_straight'][index_crt], data_dict['x2_straight'][index_crt], c='black', marker='x',
+                s=50, zorder=2)
+
+    ax2.scatter(data_dict['time'][index_crt], velocity_vehicle1[index_crt], c='black', marker='x',  s=50, zorder=2)
+    ax2.scatter(data_dict['time'][index_crt], velocity_vehicle2[index_crt], c='black', marker='x', s=50, zorder=2)
+
+    ax3.scatter(average_travelled_distance_trace[index_crt], headway[index_crt], c='black', marker='x', s=50, zorder=2)
+
+    # collision area
+    ax3.plot(np.array(headway_bounds['average_travelled_distance'], dtype=object),
+             np.array(headway_bounds['negative_headway_bound'], dtype=object),
+             linestyle='dashed', c='grey')
+    ax3.plot(np.array(headway_bounds['average_travelled_distance'], dtype=object),
+             np.array(headway_bounds['positive_headway_bound'], dtype=object),
+             linestyle='dashed', c='grey')
+
+    ax3.fill_between(headway_bounds['average_travelled_distance'], headway_bounds['negative_headway_bound'],
+                     headway_bounds['positive_headway_bound'],
+                     color='lightgrey')
+
     # final plotting
-    ax1.plot([], [], ' ', label='crt: ' + str(round(crt, 2)))
-    ax1.legend(loc='upper right')
+    ax1.legend(loc='upper right', prop={'size': 8})
     leg = ax1.get_legend()
     for i in range(2, 5):
         leg.legendHandles[i].set_color('black')
+
+
 
     plt.show()
 
@@ -341,17 +362,22 @@ def plot_trail(path_to_data_csv, headway_bounds, regular_or_flipped):
     # a_file.close()
 
 
+
+
 if __name__ == '__main__':
     # sort condition1
-    files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40'
+    files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45'
     trails = []
     for file in Path(files_directory).glob('*.csv'):
         # trail_condition = plot_trail(file)
         trails.append(file)
+    trails = natsorted(trails, key=str)
 
     with open(os.path.join('..', 'data_folder', 'headway_bounds.pkl'), 'rb') as f:
         headway_bounds = pickle.load(f)
 
-    trail_condition2 = plot_trail(trails[2], headway_bounds, regular_or_flipped = 'regular')  # 46-34
-
-
+    index = 19
+    plot_trail(trails[index-2], headway_bounds)
+    # #
+    # for i in range(len(trails)):
+    #     plot_trail(trails[5+i], headway_bounds)
