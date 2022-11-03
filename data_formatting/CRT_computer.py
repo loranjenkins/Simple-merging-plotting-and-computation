@@ -123,6 +123,8 @@ def compute_crt(path_to_data_csv):
     data_dict = {'time': [],
                  'velocity_vehicle1': [],
                  'velocity_vehicle2': [],
+                 'y1_straight': [],
+                 'y2_straight': [],
                  'distance_traveled_vehicle1': [],
                  'distance_traveled_vehicle2': [],
                  }
@@ -135,6 +137,25 @@ def compute_crt(path_to_data_csv):
 
     xy_coordinates_vehicle1 = np.array(xy_coordinates_vehicle1)
     xy_coordinates_vehicle2 = np.array(xy_coordinates_vehicle2)
+
+    if xy_coordinates_vehicle1[0][0] > 0:
+        for i in range(len(xy_coordinates_vehicle1)):
+            straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
+            data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
+
+        for i in range(len(xy_coordinates_vehicle2)):
+            straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
+            data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
+
+    elif xy_coordinates_vehicle2[0][0] > 0:
+        for i in range(len(xy_coordinates_vehicle1)):
+            straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
+            data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
+
+        for i in range(len(xy_coordinates_vehicle2)):
+            straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
+            data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
+
 
     # ------------------------------------------------------------------------#
     # velocity
@@ -173,6 +194,16 @@ def compute_crt(path_to_data_csv):
     else:
         crt_index = min(range(len(data_dict['time'])),
                                    key=lambda i: abs(data_dict['time'][i] - crt))
+
+    index_of_mergepoint_vehicle1 = min(range(len(data_dict['y1_straight'])),
+                                       key=lambda i: abs(data_dict['y1_straight'][i] - 200)) #change track 200 merge point!
+    index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
+                                       key=lambda i: abs(data_dict['y2_straight'][i] - 200)) #change track merge point!
+
+    if crt_index > min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2):
+        crt_index = min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2)-10
+        crt = data_dict['time'][crt_index]
+
 
     return crt, crt_index
 

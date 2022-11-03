@@ -164,8 +164,8 @@ def plot_varjo(path_to_csv_folder, condition):
         index_of_average_crt = min(range(len(x)), key=lambda i: abs(
             x[i] - average_travelled_distance_on_index_crt))
 
-        before_crt_average = y_mean[0:index_of_average_crt].mean()
-        after_crt_average = y_mean[index_of_average_crt:len(y_mean)].mean()
+        # before_crt_average = y_mean[0:index_of_average_crt].mean()
+        # after_crt_average = y_mean[index_of_average_crt:len(y_mean)].mean()
 
 
     elif condition == '55-45':
@@ -184,8 +184,8 @@ def plot_varjo(path_to_csv_folder, condition):
         index_of_average_crt = min(range(len(x)), key=lambda i: abs(
             x[i] - average_travelled_distance_on_index_crt))
 
-        before_crt_average = y_mean[0:index_of_average_crt].mean()
-        after_crt_average = y_mean[index_of_average_crt:len(y_mean)].mean()
+        # before_crt_average = y_mean[0:index_of_average_crt].mean()
+        # after_crt_average = y_mean[index_of_average_crt:len(y_mean)].mean()
 
     elif condition == '60-40':
         travelled_distances_on_crt_index = []
@@ -203,8 +203,9 @@ def plot_varjo(path_to_csv_folder, condition):
         index_of_average_crt = min(range(len(x)), key=lambda i: abs(
             x[i] - average_travelled_distance_on_index_crt))
 
-        before_crt_average = y_mean[0:index_of_average_crt].mean()
-        after_crt_average = y_mean[index_of_average_crt:len(y_mean)].mean()
+    average = y_mean.mean()
+    before_crt_average = y_mean[0:index_of_average_crt].mean()
+    after_crt_average = y_mean[index_of_average_crt:len(y_mean)].mean()
 
 
 
@@ -212,18 +213,19 @@ def plot_varjo(path_to_csv_folder, condition):
     ax1.fill_between(x, ysmoothed, color='blue', alpha=0.1, label='Fixation on road')
     ax1.fill_between(x, ysmoothed, 1, color='red', alpha=0.1, label='Fixation on opponent')
 
+    ax1.plot([], [], ' ', label='Average: ' + str(round(average, 2)))
     ax1.plot([], [], ' ', label='Average before crt: ' + str(round(before_crt_average, 2)))
     ax1.plot([], [], ' ', label='Average after crt: ' + str(round(after_crt_average, 2)))
 
     ax1.set_xlim([120, 275])
     ax1.set_ylim([0, 1])
-    ax1.legend(loc='lower right')
+    ax1.legend(loc='lower left')
 
     plt.show()
 
 
 if __name__ == '__main__':
-    #
+
     plot_varjo(
         r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40',
         '60-40')

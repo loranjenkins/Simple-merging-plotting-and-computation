@@ -27,12 +27,14 @@ df4 = pd.DataFrame({'median_55_45': [round(medians_index[1])]})
 df5 = pd.DataFrame({'median_60_40': [round(medians_index[2])]})
 pd.concat([df3, df4, df5], axis=1).to_csv(path_to_saved_dict, index=False)
 
+PROPS = {
+    'boxprops':{'facecolor':'none', 'edgecolor':'black'},
+    'medianprops':{'color':'red'},
+    'whiskerprops':{'color':'black'},
+    'capprops':{'color':'black'}
+}
 
-a = sns.boxplot(data=global_crt)
-
-# for _, line_list in a.items():
-#     for line in line_list:
-#         line.set_color('r')
+sns.boxplot(data=global_crt, **PROPS)
 
 plt.ylabel('CRT [s]')
 plt.xlabel('Condition')
