@@ -17,11 +17,11 @@ class SymmetricMergingTrack:
         self.track_height = simulation_constants.track_height
         self.approach_angle = math.atan((self.start_point_distance / 2) / self.track_height)
 
-        self.merge_point = np.array([0.0, 200])
+        self.merge_point = np.array([0.0, 215])
         self.end_point = np.array([0.0, self.merge_point[1] + self.section_length_after])
 
-        self.left_way_points = [np.array([-self.start_point_distance / 2., 5]), self.merge_point, self.end_point]
-        self.right_way_points = [np.array([self.start_point_distance / 2., 5]), self.merge_point, self.end_point]
+        self.left_way_points = [np.array([-self.start_point_distance / 2., 0]), self.merge_point, self.end_point]
+        self.right_way_points = [np.array([self.start_point_distance / 2., 0]), self.merge_point, self.end_point]
 
         self.lower_bound_threshold = None
         self.upper_bound_threshold = None
@@ -216,12 +216,18 @@ class SymmetricMergingTrack:
         straight_part = shapely.geometry.box(-w, self.merge_point[1] - l, w,
                                              self.merge_point[1] + self.section_length_after + l)
 
+        # straight_part = shapely.geometry.box(-w, 235 - l, w,
+        #                                      235 + self.section_length_after + l)
+
         # R = np.array([[np.cos(b), -np.sin(b)], [np.sin(b), np.cos(b)]])
         R = np.array([[np.cos(b), -np.sin(b)], [np.sin(b), np.cos(b)]]) #with y down positive
         # https://stackoverflow.com/questions/24675945/rotating-a-matrix-in-a-non-standard-2d-plane
 
         top_left = R @ np.array([-w, l]) + self.merge_point
         top_right = R @ np.array([w, l]) + self.merge_point
+
+        # top_left = R @ np.array([-w, l]) + 235
+        # top_right = R @ np.array([w, l]) + 235
 
         start_point_right = self.traveled_distance_to_coordinates(0.0, vehicle='right')
 
@@ -239,7 +245,10 @@ class SymmetricMergingTrack:
         vehicle_1_position = self.traveled_distance_to_coordinates(traveled_distance_vehicle_1)
 
         vehicle_1 = shapely.affinity.translate(vehicle_1, vehicle_1_position[0], vehicle_1_position[1])
-
+        # plt.plot(*straight_part.exterior.xy)
+        # plt.plot(*approach_part.exterior.xy)
+        # plt.plot(*vehicle_1.exterior.xy)
+        # plt.show()
         # get intersection between polygons
         straight_intersection = straight_part.intersection(vehicle_1)
         approach_intersection = approach_part.intersection(vehicle_1)

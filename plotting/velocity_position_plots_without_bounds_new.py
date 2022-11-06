@@ -138,11 +138,11 @@ def plot_trail(path_to_data_csv):
 
     simulation_constants = SimulationConstants(vehicle_width=2,
                                                vehicle_length=4.7,
-                                               tunnel_length=110, # original = 118 -> check in unreal
+                                               tunnel_length=110,  # original = 118 -> check in unreal
                                                track_width=8,
-                                               track_height=195,
-                                               track_start_point_distance=390,
-                                               track_section_length_before=275.77164466275354,
+                                               track_height=215,
+                                               track_start_point_distance=430,
+                                               track_section_length_before=304.056,
                                                track_section_length_after=200)  # goes until 400
 
     track = SymmetricMergingTrack(simulation_constants)
@@ -331,14 +331,14 @@ def plot_trail(path_to_data_csv):
                                    key=lambda i: abs(data_dict['time'][i] - crt))
 
 
-    # limit CRT
-    if index_crt > min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2):
-        # crt = crt_object[1][1]
-        #
-        # index_crt = min(range(len(data_dict['time'])),
-        #                 key=lambda i: abs(data_dict['time'][i] - crt))
-        index_crt = min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2)-10
-        crt = data_dict['time'][index_crt]
+    # # limit CRT
+    # if index_crt > min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2):
+    #     # crt = crt_object[1][1]
+    #     #
+    #     # index_crt = min(range(len(data_dict['time'])),
+    #     #                 key=lambda i: abs(data_dict['time'][i] - crt))
+    #     index_crt = min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2)-10
+    #     crt = data_dict['time'][index_crt]
 
 
 
@@ -370,14 +370,14 @@ def plot_trail(path_to_data_csv):
 
 if __name__ == '__main__':
     # 55-45
-    files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50'
+    files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40'
     trails = []
     for file in Path(files_directory).glob('*.csv'):
         # trail_condition = plot_trail(file)
         trails.append(file)
     trails = natsorted(trails, key=str)
 
-    index = 29
+    index = 1
     plot_trail(trails[index])
     # #
     # for i in range(len(trails)):

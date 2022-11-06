@@ -28,15 +28,24 @@ def vehicle_xy_coordinates(intcolumn, data_csv):
     return list_x, list_y
 
 
+def average_nested(l):
+    llen = len(l)
+
+    def divide(x): return x / llen
+
+    return map(divide, map(sum, zip(*l)))
+
+
 def plot_varjo(path_to_csv_folder, condition):
     simulation_constants = SimulationConstants(vehicle_width=2,
                                                vehicle_length=4.7,
-                                               tunnel_length=118,
+                                               tunnel_length=118,  # original = 118 -> check in unreal
                                                track_width=8,
-                                               track_height=195,
-                                               track_start_point_distance=390,
-                                               track_section_length_before=275.77164466275354,
+                                               track_height=215,
+                                               track_start_point_distance=430,
+                                               track_section_length_before=304.056,
                                                track_section_length_after=200)  # goes until 400
+
     track = SymmetricMergingTrack(simulation_constants)
 
     files_directory = path_to_csv_folder
@@ -50,99 +59,124 @@ def plot_varjo(path_to_csv_folder, condition):
         all_pds = pd.read_csv(trails[i], sep=',')
         all_pds_list.append(all_pds)
 
-    xy_coordinates_for_trace = []
+    xy_coordinates_for_vehicle1 = []
+    xy_coordinates_for_vehicle2 = []
+
     for i in range(len(all_pds_list)):
         xy_coordinates_vehicle = vehicle_xy_coordinates(2, all_pds_list[i])
+        xy_coordinates_vehicle2 = vehicle_xy_coordinates(5, all_pds_list[i])
+
         xy_coordinates_zip = [list(a) for a in zip(xy_coordinates_vehicle[0], xy_coordinates_vehicle[1])]
-        xy_coordinates_for_trace.append(xy_coordinates_zip)
+        xy_coordinates_zip2 = [list(a) for a in zip(xy_coordinates_vehicle2[0], xy_coordinates_vehicle2[1])]
 
-    # print(xy_coordinates_for_trace[0])
+        xy_coordinates_for_vehicle1.append(xy_coordinates_zip)
+        xy_coordinates_for_vehicle2.append(xy_coordinates_zip2)
 
-    travelled_distance = []
-    for list_index in range(len(xy_coordinates_for_trace)):
-        individual_xy_vehicle = xy_coordinates_for_trace[list_index]
-        inner_xy_list = []
-        for xy in range(len(individual_xy_vehicle)):
-            traveled_distance_vehicle = track.coordinates_to_traveled_distance(individual_xy_vehicle[xy])
-            inner_xy_list.append(traveled_distance_vehicle)
-        travelled_distance.append(inner_xy_list)
+    # compute travelled distance for indexes tunnel and merge
+    travelled_distance_vehicle1 = []
+    travelled_distance_vehicle2 = []
+    for list_index in range(len(xy_coordinates_for_vehicle1)):
+        individual_xy_vehicle1 = xy_coordinates_for_vehicle1[list_index]
+        individual_xy_vehicle2 = xy_coordinates_for_vehicle2[list_index]
+        inner_xy_list_1 = []
+        inner_xy_list_2 = []
+        for xy in range(len(individual_xy_vehicle1)):
+            traveled_distance_vehicle_1 = track.coordinates_to_traveled_distance(individual_xy_vehicle1[xy])
+            traveled_distance_vehicle_2 = track.coordinates_to_traveled_distance(individual_xy_vehicle2[xy])
+            inner_xy_list_1.append(traveled_distance_vehicle_1)
+            inner_xy_list_2.append(traveled_distance_vehicle_2)
 
-    indexes_of_tunnel_and_merge = []
-    for list_index in range(len(travelled_distance)):
-        individual_travelled_distance_vehicle = travelled_distance[list_index]
-        inner_tunnel_merge = []
+        travelled_distance_vehicle1.append(inner_xy_list_1)
+        travelled_distance_vehicle2.append(inner_xy_list_2)
+
+    # compute the indexes
+    indexes_of_tunnel_and_merge_vehicle1 = []
+    indexes_of_tunnel_and_merge_vehicle2 = []
+
+    for list_index in range(len(travelled_distance_vehicle1)):
+        individual_travelled_distance_vehicle1 = travelled_distance_vehicle1[list_index]
+        individual_travelled_distance_vehicle2 = travelled_distance_vehicle2[list_index]
+        inner_tunnel_merge_1 = []
+        inner_tunnel_merge_2 = []
         for i in range(0, 1):
-            index_of_tunnel_vehicle = min(range(len(individual_travelled_distance_vehicle)), key=lambda i: abs(
-                individual_travelled_distance_vehicle[i] - track.tunnel_length))
-            index_of_mergepoint_vehicle = min(range(len(individual_travelled_distance_vehicle)), key=lambda i: abs(
-                individual_travelled_distance_vehicle[i] - simulation_constants.track_section_length_before))
-            inner_tunnel_merge.append(index_of_tunnel_vehicle)
-            inner_tunnel_merge.append(index_of_mergepoint_vehicle)
-        indexes_of_tunnel_and_merge.append(inner_tunnel_merge)
+            index_of_tunnel_vehicle_1 = min(range(len(individual_travelled_distance_vehicle1)), key=lambda i: abs(
+                individual_travelled_distance_vehicle1[i] - track.tunnel_length))
+            index_of_mergepoint_vehicle_1 = min(range(len(individual_travelled_distance_vehicle1)), key=lambda i: abs(
+                individual_travelled_distance_vehicle1[i] - simulation_constants.track_section_length_before))
 
-    interactive_area_travelled_traces = []
-    hmd_rot_interactive_area = []
+            index_of_tunnel_vehicle_2 = min(range(len(individual_travelled_distance_vehicle2)), key=lambda i: abs(
+                individual_travelled_distance_vehicle2[i] - track.tunnel_length))
+            index_of_mergepoint_vehicle_2 = min(range(len(individual_travelled_distance_vehicle2)), key=lambda i: abs(
+                individual_travelled_distance_vehicle2[i] - simulation_constants.track_section_length_before))
 
-    for i in range(len(indexes_of_tunnel_and_merge)):
-        hmd_rot = list(all_pds_list[i]['HMD_rotation_vehicle1'][
-                       indexes_of_tunnel_and_merge[i][0]:indexes_of_tunnel_and_merge[i][1]])
-        interactive_trace = travelled_distance[i][indexes_of_tunnel_and_merge[i][0]:indexes_of_tunnel_and_merge[i][1]]
-        hmd_rot_interactive_area.append(hmd_rot)
-        interactive_area_travelled_traces.append(interactive_trace)
+            inner_tunnel_merge_1.append(index_of_tunnel_vehicle_1)
+            inner_tunnel_merge_1.append(index_of_mergepoint_vehicle_1)
 
-    on_ramp_vs_opponent = []
-    for list_index in range(len(hmd_rot_interactive_area)):
-        individual_hmd_rot_list = hmd_rot_interactive_area[list_index]
-        inner_attention_list = []
-        for i in range(len(individual_hmd_rot_list)):
-            if individual_hmd_rot_list[i] > 0.94:  # this we need to know better
-                inner_attention_list.append(1)
-            else:
-                inner_attention_list.append(0)
+            inner_tunnel_merge_2.append(index_of_tunnel_vehicle_2)
+            inner_tunnel_merge_2.append(index_of_mergepoint_vehicle_2)
 
-        on_ramp_vs_opponent.append(inner_attention_list)
+        indexes_of_tunnel_and_merge_vehicle1.append(inner_tunnel_merge_1)
+        indexes_of_tunnel_and_merge_vehicle2.append(inner_tunnel_merge_2)
 
-    df_traces = pd.DataFrame(interactive_area_travelled_traces)
-    x_mean_traces = df_traces.mean()
-    df_hmd_rotations = pd.DataFrame(on_ramp_vs_opponent)
-    y_mean = df_hmd_rotations.mean()
+    # interactive data for each vehicle
+    interactive_area_travelled_trace_vehicle1 = []
+    hmd_rot_interactive_area_vehicle1 = []
 
-    # ----------------------option1
-    fig, (ax1) = plt.subplots(1)
-    #
-    # ax1.title('Area of interest over travelled distance')
-    ax1.set_xlabel('average travelled distance [m]')
-    ax1.set_ylabel('% fixated on AOI')
-    # ax1.plot(x_mean_traces[0:500], y_mean_traces[0:500])
-    # print(len(x_mean_traces))
-    # print(len(y_mean_traces))
+    interactive_area_travelled_trace_vehicle2 = []
+    hmd_rot_interactive_area_vehicle2 = []
 
-    # ysmoothed = gaussian_filter1d(y_mean[0:1100], sigma=4)
-    # x = np.linspace(120, 275, len(y_mean[0:1100]))
-    # ax1.plot(x, ysmoothed)  # see x below
+    for i in range(len(indexes_of_tunnel_and_merge_vehicle1)):
+        hmd_rot_1 = list(all_pds_list[i]['HMD_rotation_vehicle1'][
+                         indexes_of_tunnel_and_merge_vehicle1[i][0]:indexes_of_tunnel_and_merge_vehicle1[i][1]])
 
-    # # ----------------------option2
-    # d = {'Average travelled distance': [], '% fixation on opponent': []}
-    #
-    # for i in range(len(x)):
-    #     d['Average travelled distance'].append(x[i])
-    #     d['% fixation on opponent'].append(y_mean[i])
-    #
-    # data = pd.DataFrame(d)
+        hmd_rot_2 = list(all_pds_list[i]['HMD_rotation_vehicle2'][
+                         indexes_of_tunnel_and_merge_vehicle2[i][0]:indexes_of_tunnel_and_merge_vehicle2[i][1]])
 
-    # sns.lineplot(
-    #     data=data,
-    #     x="Average travelled distance",
-    #     y='% fixation on opponent',
-    #     palette="tab10", linewidth=1
-    # )
+        interactive_trace_1 = travelled_distance_vehicle1[i][
+                              indexes_of_tunnel_and_merge_vehicle1[i][0]:indexes_of_tunnel_and_merge_vehicle1[i][1]]
+        interactive_trace_2 = travelled_distance_vehicle1[i][
+                              indexes_of_tunnel_and_merge_vehicle2[i][0]:indexes_of_tunnel_and_merge_vehicle2[i][1]]
 
-    # pd.set_option('display.max_rows', None)
-    # find longest column and put in gaussian
-    # print(df_traces.iloc[:, 0:1000])
-    #
-    # print(y_mean.mean())
-    # print(y_mean[0:1175])
+        hmd_rot_interactive_area_vehicle1.append(hmd_rot_1)
+        hmd_rot_interactive_area_vehicle2.append(hmd_rot_2)
+
+        interactive_area_travelled_trace_vehicle1.append(interactive_trace_1)
+        interactive_area_travelled_trace_vehicle2.append(interactive_trace_2)
+
+        on_ramp_vs_opponent_vehicle1 = []
+        on_ramp_vs_opponent_vehicle2 = []
+
+        for list_index in range(len(hmd_rot_interactive_area_vehicle1)):
+            individual_hmd_rot_list_1 = hmd_rot_interactive_area_vehicle1[list_index]
+            individual_hmd_rot_list_2 = hmd_rot_interactive_area_vehicle2[list_index]
+
+            inner_attention_list_1 = []
+            inner_attention_list_2 = []
+
+            for i in range(len(individual_hmd_rot_list_1)):
+                if individual_hmd_rot_list_1[i] > 0.96:  # this we need to know better
+                    inner_attention_list_1.append(1)
+                else:
+                    inner_attention_list_1.append(0)
+
+            for i in range(len(individual_hmd_rot_list_2)):
+                if individual_hmd_rot_list_2[i] > 0.96:  # this we need to know better
+                    inner_attention_list_2.append(1)
+                else:
+                    inner_attention_list_2.append(0)
+
+            on_ramp_vs_opponent_vehicle1.append(inner_attention_list_1)
+            on_ramp_vs_opponent_vehicle2.append(inner_attention_list_2)
+
+    average_hmd_vehicle1 = list(average_nested(on_ramp_vs_opponent_vehicle1))
+    average_hmd_vehicle2 = list(average_nested(on_ramp_vs_opponent_vehicle2))
+
+    average_hmd_combined = [(x + y)/2 for x, y in zip(average_hmd_vehicle1, average_hmd_vehicle2)]
+
+    average_trace_vehicle = sum(average_hmd_combined) / len(average_hmd_combined)
+
+    ysmoothed = list(gaussian_filter1d(average_hmd_combined[0:1150], sigma=4))
+    x = list(np.linspace(120, 275, len(average_hmd_combined[0:1150])))
 
     ##get median lines
     path_to_data_csv = os.path.join('..', 'data_folder', 'medians_crt_index.csv')
@@ -150,91 +184,109 @@ def plot_varjo(path_to_csv_folder, condition):
 
     if condition == '50-50':
         travelled_distances_on_crt_index = []
-        for i in range(len(travelled_distance)):
-            value_on_crt_index = travelled_distance[i][global_crt_index.iloc[0][0]]
+        for i in range(len(travelled_distance_vehicle1)):
+            value_on_crt_index = travelled_distance_vehicle1[i][global_crt_index.iloc[0][0]]
             travelled_distances_on_crt_index.append(value_on_crt_index)
         average_travelled_distance_on_index_crt = sum(travelled_distances_on_crt_index) / len(
             travelled_distances_on_crt_index)
-        plt.axvline(average_travelled_distance_on_index_crt, 0, 1, color='r', label='Average crt')
-        plt.title("Condition 50-50")
-        ysmoothed = gaussian_filter1d(y_mean[0:1150], sigma=4)
-        x = np.linspace(120, 275, len(y_mean[0:1150]))
-        ax1.plot(x, ysmoothed)  # see x below
-
         index_of_average_crt = min(range(len(x)), key=lambda i: abs(
             x[i] - average_travelled_distance_on_index_crt))
-
-        # before_crt_average = y_mean[0:index_of_average_crt].mean()
-        # after_crt_average = y_mean[index_of_average_crt:len(y_mean)].mean()
 
 
     elif condition == '55-45':
         travelled_distances_on_crt_index = []
-        for i in range(len(travelled_distance)):
-            value_on_crt_index = travelled_distance[i][global_crt_index.iloc[0][1]]
+        for i in range(len(travelled_distance_vehicle1)):
+            value_on_crt_index = travelled_distance_vehicle1[i][global_crt_index.iloc[0][1]]
             travelled_distances_on_crt_index.append(value_on_crt_index)
         average_travelled_distance_on_index_crt = sum(travelled_distances_on_crt_index) / len(
             travelled_distances_on_crt_index)
-        plt.axvline(average_travelled_distance_on_index_crt, 0, 1, color='r', label='Average crt')
-        plt.title("Condition 55-45")
-        ysmoothed = gaussian_filter1d(y_mean[0:1175], sigma=4)
-        x = np.linspace(120, 275, len(y_mean[0:1175]))
-        ax1.plot(x, ysmoothed)  # see x below
-
         index_of_average_crt = min(range(len(x)), key=lambda i: abs(
             x[i] - average_travelled_distance_on_index_crt))
 
-        # before_crt_average = y_mean[0:index_of_average_crt].mean()
-        # after_crt_average = y_mean[index_of_average_crt:len(y_mean)].mean()
 
     elif condition == '60-40':
         travelled_distances_on_crt_index = []
-        for i in range(len(travelled_distance)):
-            value_on_crt_index = travelled_distance[i][global_crt_index.iloc[0][2]]
+        for i in range(len(travelled_distance_vehicle1)):
+            value_on_crt_index = travelled_distance_vehicle1[i][global_crt_index.iloc[0][2]]
             travelled_distances_on_crt_index.append(value_on_crt_index)
         average_travelled_distance_on_index_crt = sum(travelled_distances_on_crt_index) / len(
             travelled_distances_on_crt_index)
-        plt.axvline(average_travelled_distance_on_index_crt, 0, 1, color='r', label='Average crt')
-        plt.title("Condition 60-40")
-        ysmoothed = gaussian_filter1d(y_mean[0:1175], sigma=4)
-        x = np.linspace(120, 275, len(y_mean[0:1175]))
-        ax1.plot(x, ysmoothed)  # see x below
-
         index_of_average_crt = min(range(len(x)), key=lambda i: abs(
             x[i] - average_travelled_distance_on_index_crt))
 
-    average = y_mean.mean()
-    before_crt_average = y_mean[0:index_of_average_crt].mean()
-    after_crt_average = y_mean[index_of_average_crt:len(y_mean)].mean()
+    before_crt_average = sum(average_hmd_combined[0:index_of_average_crt]) / len(average_hmd_combined[0:index_of_average_crt])
+    after_crt_average = sum(average_hmd_combined[index_of_average_crt:len(average_hmd_combined)]) / len(average_hmd_combined[index_of_average_crt:len(average_hmd_combined)])
 
 
-
-    # plt.plot(y, c='red')
-    ax1.fill_between(x, ysmoothed, color='blue', alpha=0.1, label='Fixation on road')
-    ax1.fill_between(x, ysmoothed, 1, color='red', alpha=0.1, label='Fixation on opponent')
-
-    ax1.plot([], [], ' ', label='Average: ' + str(round(average, 2)))
-    ax1.plot([], [], ' ', label='Average before crt: ' + str(round(before_crt_average, 2)))
-    ax1.plot([], [], ' ', label='Average after crt: ' + str(round(after_crt_average, 2)))
-
-    ax1.set_xlim([120, 275])
-    ax1.set_ylim([0, 1])
-    ax1.legend(loc='lower left')
-
-    plt.show()
+    return x, ysmoothed, average_trace_vehicle, before_crt_average, after_crt_average, average_travelled_distance_on_index_crt
 
 
 if __name__ == '__main__':
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+    fig.suptitle('Comparison gaze behavior')
 
-    plot_varjo(
-        r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40',
-        '60-40')
-    plot_varjo(
-        r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45',
-        '55-45')
-    plot_varjo(
-        r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50',
-        '50-50')
+    #condition 60-40
+    path_60_40 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40'
+    condition = '60-40'
+    Varjo_data = plot_varjo(path_60_40, condition)
 
-    # #test
-    # plot_varjo(r'C:\Users\loran\Desktop\ExperimentOlgerArkady\Joan.Varjo.combined', '60-40')
+    ax1.plot(Varjo_data[0], Varjo_data[1])  # see x below
+    ax1.fill_between(Varjo_data[0], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
+    ax1.fill_between(Varjo_data[0], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
+
+    ax1.axvline(Varjo_data[5], 0, 1, color='r', label='Average conflict resolved at travelled distance')
+    ax1.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
+    ax1.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
+    ax1.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
+
+    ax1.set_title("Condition 60-40")
+    ax1.set_xlim([120, 275])
+    ax1.set_ylim([0, 1])
+    ax1.set(ylabel='% fixated on AOI')
+    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    ax1.legend(loc='lower left')
+
+
+    #condition 55-45
+    path_55_45 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45'
+    condition = '55-45'
+    Varjo_data = plot_varjo(path_55_45, condition)
+
+    ax2.plot(Varjo_data[0], Varjo_data[1])  # see x below
+    ax2.fill_between(Varjo_data[0], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
+    ax2.fill_between(Varjo_data[0], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
+
+    ax2.axvline(Varjo_data[5], 0, 1, color='r', label='Average conflict resolved at travelled distance')
+    ax2.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
+    ax2.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
+    ax2.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
+
+    ax2.set_title("Condition 55-45")
+    ax2.set_xlim([120, 275])
+    ax2.set_ylim([0, 1])
+    ax2.set(ylabel='% fixated on AOI')
+    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    ax2.legend(loc='lower left')
+
+    #condition 50-50
+    path_50_50 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50'
+    condition = '50-50'
+    Varjo_data = plot_varjo(path_50_50, condition)
+
+    ax3.plot(Varjo_data[0], Varjo_data[1])  # see x below
+    ax3.fill_between(Varjo_data[0], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
+    ax3.fill_between(Varjo_data[0], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
+
+    ax3.axvline(Varjo_data[5], 0, 1, color='r', label='Average conflict resolved at travelled distance')
+    ax3.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
+    ax3.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
+    ax3.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
+
+    ax3.set_title("Condition 50-50")
+    ax3.set_xlim([120, 275])
+    ax3.set_ylim([0, 1])
+    ax3.set(ylabel='% fixated on AOI')
+    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    ax3.legend(loc='lower left')
+
+    plt.show()
