@@ -229,7 +229,7 @@ class SymmetricMergingTrack:
         # top_left = R @ np.array([-w, l]) + 235
         # top_right = R @ np.array([w, l]) + 235
 
-        start_point_right = self.traveled_distance_to_coordinates(0.0, vehicle='right')
+        start_point_right = self.traveled_distance_to_coordinates(0, vehicle='right')
 
         bottom_left = R @ np.array([-w, -l]) + start_point_right
         bottom_right = R @ np.array([w, -l]) + start_point_right
@@ -280,7 +280,6 @@ class SymmetricMergingTrack:
 
             upper_bounds = [b for b in upper_bounds if not np.isnan(b)]
             lower_bounds = [b for b in lower_bounds if not np.isnan(b)]
-
             return min(lower_bounds), max(upper_bounds)
 
     def _get_straight_bounds_for_point(self, point, l):

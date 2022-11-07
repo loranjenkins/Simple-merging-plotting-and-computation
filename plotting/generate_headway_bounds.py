@@ -28,14 +28,14 @@ from trackobjects.symmetricmerge import SymmetricMergingTrack
 
 
 def generate_data_dict():
-    simulation_constants = SimulationConstants(vehicle_width=2,
+    simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
                                                tunnel_length=110,  # original = 118 -> check in unreal
                                                track_width=8,
                                                track_height=215,
                                                track_start_point_distance=430,
-                                               track_section_length_before=301,
-                                               track_section_length_after=140)  # goes until 400
+                                               track_section_length_before=300, #original 303.056
+                                               track_section_length_after=112.5)  # goes until 400
 
     track = SymmetricMergingTrack(simulation_constants)
     end_point = track.total_distance
@@ -43,13 +43,20 @@ def generate_data_dict():
     data_dict = {'positive_headway_bound': [],
                  'negative_headway_bound': [],
                  'average_travelled_distance': []}
+    data_dict['positive_headway_bound'].append(0)
+    data_dict['negative_headway_bound'].append(0)
+    data_dict['average_travelled_distance'].append(0)
 
-    for average_y_position_in_mm in tqdm.trange(int(end_point * 1000)):
-        average_y_position = average_y_position_in_mm / 1000.
+    for average_y_position_in_mm in tqdm.trange(int(end_point * 10)):
+        average_y_position = average_y_position_in_mm / 10.
 
         lb, ub = track.get_headway_bounds(average_y_position,
                                           vehicle_length=simulation_constants.vehicle_length,
                                           vehicle_width=simulation_constants.vehicle_width) #if we switch length with width it plots
+        if lb == -0.0:
+            lb = np.nan
+        if ub == -0.0:
+            ub = np.nan
 
         data_dict['positive_headway_bound'].append(ub)
         data_dict['negative_headway_bound'].append(lb)

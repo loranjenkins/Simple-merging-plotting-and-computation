@@ -6,6 +6,7 @@ from pathlib import Path
 import os
 import pickle
 from natsort import natsorted
+from scipy.ndimage import gaussian_filter1d
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
@@ -141,7 +142,16 @@ def plot_trail(path_to_data_csv, headway_bounds):
                                                track_height=215,
                                                track_start_point_distance=430,
                                                track_section_length_before=304.056,
-                                               track_section_length_after=200)  # goes until 400
+                                               track_section_length_after=150)  # goes until 400
+
+    # simulation_constants = SimulationConstants(vehicle_width=1.5,
+    #                                            vehicle_length=4.7,
+    #                                            tunnel_length=110,  # original = 118 -> check in unreal
+    #                                            track_width=8,
+    #                                            track_height=215,
+    #                                            track_start_point_distance=430,
+    #                                            track_section_length_before=300, #original 303.056
+    #                                            track_section_length_after=150)  # goes until 400
 
     track = SymmetricMergingTrack(simulation_constants)
 
@@ -193,7 +203,7 @@ def plot_trail(path_to_data_csv, headway_bounds):
     # plt.title('positions over time')
     ax1.set_xlabel('y position [m]')
     ax1.set_ylabel('x position [m]')
-    ax1.set_yticks([175, -15, 15, -175])
+    ax1.set_yticks([175, -20, 20, -175])
     ax1.set_yticklabels([175, 0, 0, -175])
     ax1.set_xlim(60, 450)
     ax1.set_ylim(-200, 200)
@@ -244,6 +254,9 @@ def plot_trail(path_to_data_csv, headway_bounds):
         data_dict['distance_traveled_vehicle1'].append(traveled_distance1)
         data_dict['distance_traveled_vehicle2'].append(traveled_distance2)
 
+    data_dict['distance_traveled_vehicle1'] = gaussian_filter1d(data_dict['distance_traveled_vehicle1'], sigma=15)
+    data_dict['distance_traveled_vehicle2'] = gaussian_filter1d(data_dict['distance_traveled_vehicle2'], sigma=15)
+
     average_travelled_distance_trace = list((np.array(data_dict['distance_traveled_vehicle1']) + np.array(
         data_dict['distance_traveled_vehicle2'])) / 2.)
 
@@ -263,9 +276,9 @@ def plot_trail(path_to_data_csv, headway_bounds):
 
     # plot merge point
     index_of_mergepoint_vehicle1 = min(range(len(data_dict['y1_straight'])),
-                                       key=lambda i: abs(data_dict['y1_straight'][i] - 230))
+                                       key=lambda i: abs(data_dict['y1_straight'][i] - track.merge_point[1]))
     index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
-                                       key=lambda i: abs(data_dict['y2_straight'][i] - 230))
+                                       key=lambda i: abs(data_dict['y2_straight'][i] - track.merge_point[1]))
 
     if xy_coordinates_vehicle1[0][0] > 0:
         ax1.scatter(track.merge_point[1], track.merge_point[0] + 15, c='purple', marker='s', s=30, zorder=2,
@@ -310,7 +323,7 @@ def plot_trail(path_to_data_csv, headway_bounds):
 
     ##compute/plot crt
     crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants)
-    # crt = crt_object[1][1]
+    crt = crt_object[1][1]
 
     if not crt_object[1].size:
         crt = 0
@@ -351,11 +364,22 @@ def plot_trail(path_to_data_csv, headway_bounds):
                      headway_bounds['positive_headway_bound'],
                      color='lightgrey')
 
+    ax3.text(350, 0., 'Collision area', verticalalignment='center', clip_on=True)
+
     # final plotting
+    ax1.text(-0.08, 0.42, 'A)', transform=ax1.transAxes,
+                fontsize=12, va='bottom', ha='right')
+    ax2.text(-0.08, 0.42, 'B)', transform=ax2.transAxes,
+                fontsize=12, va='bottom', ha='right')
+    ax3.text(-0.08, 0.42, 'C)', transform=ax3.transAxes,
+                fontsize=12,  va='bottom', ha='right')
+
     ax1.legend(loc='upper right', prop={'size': 8})
     leg = ax1.get_legend()
     for i in range(2, 5):
         leg.legendHandles[i].set_color('black')
+
+    fig.set_size_inches(10, 6)
 
     plt.show()
 
@@ -377,12 +401,12 @@ if __name__ == '__main__':
         # trail_condition = plot_trail(file)
         trails.append(file)
     trails = natsorted(trails, key=str)
-
-    index = 1
+    #
+    index = 7
     plot_trail(trails[index], headway_bounds)
     # #
     # for i in range(len(trails)):
-    #     plot_trail(trails[5+i])
+    #     plot_trail(trails[5+i], headway_bounds)
 
     # figure_amount = 0
     # for i in range(len(trails)):
