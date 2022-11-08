@@ -119,7 +119,10 @@ def plot_varjo(path_to_csv_folder, condition):
         indexes_of_tunnel_and_merge_vehicle2.append(inner_tunnel_merge_2)
 
     # interactive data for each vehicle
+    interactive_area_travelled_trace_vehicle1 = []
     hmd_rot_interactive_area_vehicle1 = []
+
+    interactive_area_travelled_trace_vehicle2 = []
     hmd_rot_interactive_area_vehicle2 = []
 
     for i in range(len(indexes_of_tunnel_and_merge_vehicle1)):
@@ -129,8 +132,16 @@ def plot_varjo(path_to_csv_folder, condition):
         hmd_rot_2 = list(all_pds_list[i]['HMD_rotation_vehicle2'][
                          indexes_of_tunnel_and_merge_vehicle2[i][0]:indexes_of_tunnel_and_merge_vehicle2[i][1]])
 
+        interactive_trace_1 = travelled_distance_vehicle1[i][
+                              indexes_of_tunnel_and_merge_vehicle1[i][0]:indexes_of_tunnel_and_merge_vehicle1[i][1]]
+        interactive_trace_2 = travelled_distance_vehicle1[i][
+                              indexes_of_tunnel_and_merge_vehicle2[i][0]:indexes_of_tunnel_and_merge_vehicle2[i][1]]
+
         hmd_rot_interactive_area_vehicle1.append(hmd_rot_1)
         hmd_rot_interactive_area_vehicle2.append(hmd_rot_2)
+
+        interactive_area_travelled_trace_vehicle1.append(interactive_trace_1)
+        interactive_area_travelled_trace_vehicle2.append(interactive_trace_2)
 
         on_ramp_vs_opponent_vehicle1 = []
         on_ramp_vs_opponent_vehicle2 = []
@@ -164,8 +175,8 @@ def plot_varjo(path_to_csv_folder, condition):
 
     average_trace_vehicle = sum(average_hmd_combined) / len(average_hmd_combined)
 
-    ysmoothed = list(gaussian_filter1d(average_hmd_combined, sigma=4))
-    x = list(np.linspace(120, 275, len(average_hmd_combined)))
+    ysmoothed = list(gaussian_filter1d(average_hmd_combined[0:1150], sigma=4))
+    x = list(np.linspace(120, 275, len(average_hmd_combined[0:1150])))
 
     ##get median lines
     path_to_data_csv = os.path.join('..', 'data_folder', 'medians_crt_index.csv')
@@ -225,8 +236,8 @@ if __name__ == '__main__':
 
     ax1.axvline(Varjo_data[5], 0, 1, color='r', label='Average conflict resolved at travelled distance')
     ax1.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
-    # ax1.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
-    # ax1.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
+    ax1.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
+    ax1.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
 
     ax1.set_title("Condition 60-40")
     ax1.set_xlim([120, 275])
@@ -247,8 +258,8 @@ if __name__ == '__main__':
 
     ax2.axvline(Varjo_data[5], 0, 1, color='r', label='Average conflict resolved at travelled distance')
     ax2.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
-    # ax2.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
-    # ax2.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
+    ax2.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
+    ax2.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
 
     ax2.set_title("Condition 55-45")
     ax2.set_xlim([120, 275])
@@ -268,8 +279,8 @@ if __name__ == '__main__':
 
     ax3.axvline(Varjo_data[5], 0, 1, color='r', label='Average conflict resolved at travelled distance')
     ax3.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
-    # ax3.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
-    # ax3.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
+    ax3.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
+    ax3.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
 
     ax3.set_title("Condition 50-50")
     ax3.set_xlim([120, 275])

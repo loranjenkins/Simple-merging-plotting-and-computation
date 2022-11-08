@@ -28,14 +28,24 @@ from trackobjects.symmetricmerge import SymmetricMergingTrack
 
 
 def generate_data_dict():
+    # simulation_constants = SimulationConstants(vehicle_width=1.5,
+    #                                            vehicle_length=4.7,
+    #                                            tunnel_length=110,  # original = 118 -> check in unreal
+    #                                            track_width=8,
+    #                                            track_height=215,
+    #                                            track_start_point_distance=430,
+    #                                            track_section_length_before=300, #original 304.056
+    #                                            track_section_length_after=112.5)  # goes until 400
+
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=110,  # original = 118 -> check in unreal
+                                               tunnel_length=118,  # original = 118 -> check in unreal
                                                track_width=8,
-                                               track_height=215,
-                                               track_start_point_distance=430,
-                                               track_section_length_before=300, #original 303.056
-                                               track_section_length_after=112.5)  # goes until 400
+                                               track_height=230,
+                                               track_start_point_distance=460,
+                                               track_section_length_before=321,
+                                               track_section_length_after=100)
+
 
     track = SymmetricMergingTrack(simulation_constants)
     end_point = track.total_distance

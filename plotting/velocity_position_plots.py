@@ -65,13 +65,13 @@ def check_if_on_collision_course_for_point(travelled_distance_collision_point, d
     lb, ub = track.get_collision_bounds(travelled_distance_collision_point, simulation_constants.vehicle_width,
                                         simulation_constants.vehicle_length)
 
-    on_collision_course = ((lb < point_predictions['vehicle2']) & (point_predictions['vehicle2'] < ub)) | \
-                          ((lb < point_predictions['vehicle1']) & (point_predictions['vehicle1'] < ub))
+    on_collision_course = ((lb < point_predictions['vehicle1']) & (point_predictions['vehicle1'] < ub)) | \
+                          ((lb < point_predictions['vehicle2']) & (point_predictions['vehicle2'] < ub))
 
     return on_collision_course[0]
 
 
-def calculate_conflict_resolved_time(data_dict, simulation_constants):
+def calculate_conflict_resolved_time(data_dict, simulation_constants, condition):
     time = data_dict['time']
     track = SymmetricMergingTrack(simulation_constants)
 
@@ -89,12 +89,26 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
                           | threshold_collision_course \
                           | end_point_collision_course
 
-    approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
-                     (np.array(data_dict['distance_traveled_vehicle1']) < track.section_length_before)) | \
-                    ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
-                     (np.array(data_dict['distance_traveled_vehicle2']) < track.section_length_before))
-    indices_of_conflict_resolved = (on_collision_course & approach_mask)
+    if condition == '50-50':
+        approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
+                         (np.array(data_dict['distance_traveled_vehicle1']) < 305)) | \
+                        ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
+                         (np.array(data_dict['distance_traveled_vehicle2']) < 305))
+        indices_of_conflict_resolved = (on_collision_course & approach_mask)
 
+    if condition == '55-45':
+        approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
+                         (np.array(data_dict['distance_traveled_vehicle1']) < 300)) | \
+                        ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
+                         (np.array(data_dict['distance_traveled_vehicle2']) < 300))
+        indices_of_conflict_resolved = (on_collision_course & approach_mask)
+
+    if condition == '60-40':
+        approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
+                         (np.array(data_dict['distance_traveled_vehicle1']) < 290)) | \
+                        ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
+                         (np.array(data_dict['distance_traveled_vehicle2']) < 290))
+        indices_of_conflict_resolved = (on_collision_course & approach_mask)
     # if condition == '50-50':
     #     approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
     #                      (np.array(data_dict['distance_traveled_vehicle1']) < 245)) | \
@@ -125,7 +139,7 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants):
 
 
 # if __name__ == '__main__':
-def plot_trail(path_to_data_csv, headway_bounds):
+def plot_trail(path_to_data_csv, headway_bounds, condition):
     # data = pd.read_csv(
     #     'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
     #     sep=';')
@@ -135,23 +149,24 @@ def plot_trail(path_to_data_csv, headway_bounds):
     data = data.iloc[10:, :]
     data.drop_duplicates(subset=['Carla Interface.time'], keep=False)
 
-    simulation_constants = SimulationConstants(vehicle_width=2,
-                                               vehicle_length=4.7,
-                                               tunnel_length=110,  # original = 118 -> check in unreal
-                                               track_width=8,
-                                               track_height=215,
-                                               track_start_point_distance=430,
-                                               track_section_length_before=304.056,
-                                               track_section_length_after=150)  # goes until 400
 
     # simulation_constants = SimulationConstants(vehicle_width=1.5,
     #                                            vehicle_length=4.7,
-    #                                            tunnel_length=110,  # original = 118 -> check in unreal
+    #                                            tunnel_length=118,  # original = 118 -> check in unreal
     #                                            track_width=8,
     #                                            track_height=215,
     #                                            track_start_point_distance=430,
-    #                                            track_section_length_before=300, #original 303.056
-    #                                            track_section_length_after=150)  # goes until 400
+    #                                            track_section_length_before=304.056,
+    #                                            track_section_length_after=150)
+
+    simulation_constants = SimulationConstants(vehicle_width=1.5,
+                                               vehicle_length=4.7,
+                                               tunnel_length=118,  # original = 118 -> check in unreal
+                                               track_width=8,
+                                               track_height=230,
+                                               track_start_point_distance=460,
+                                               track_section_length_before=325.27,
+                                               track_section_length_after=150)
 
     track = SymmetricMergingTrack(simulation_constants)
 
@@ -276,9 +291,9 @@ def plot_trail(path_to_data_csv, headway_bounds):
 
     # plot merge point
     index_of_mergepoint_vehicle1 = min(range(len(data_dict['y1_straight'])),
-                                       key=lambda i: abs(data_dict['y1_straight'][i] - track.merge_point[1]))
+                                       key=lambda i: abs(data_dict['y1_straight'][i] - 230))
     index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
-                                       key=lambda i: abs(data_dict['y2_straight'][i] - track.merge_point[1]))
+                                       key=lambda i: abs(data_dict['y2_straight'][i] - 230)) #instead of track.mergepoint
 
     if xy_coordinates_vehicle1[0][0] > 0:
         ax1.scatter(track.merge_point[1], track.merge_point[0] + 15, c='purple', marker='s', s=30, zorder=2,
@@ -322,8 +337,9 @@ def plot_trail(path_to_data_csv, headway_bounds):
                 data_dict['headway'][index_of_tunnel_vehicle2], c='orange', marker='>', s=30, zorder=2)
 
     ##compute/plot crt
-    crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants)
-    crt = crt_object[1][1]
+    crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
+    # print(crt_object[1])
+    # crt = crt_object[1][1]
 
     if not crt_object[1].size:
         crt = 0
@@ -341,7 +357,15 @@ def plot_trail(path_to_data_csv, headway_bounds):
     #     index_crt = min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2)-10
     #     crt = data_dict['time'][index_crt]
 
-
+    # if data_dict['y1_straight'][index_crt] > 215:
+    #     distance = abs(data_dict['y1_straight'][index_crt] - data_dict['y2_straight'][index_crt])
+    #
+    #     ax1.scatter(215, 15, c='black', marker='x',
+    #                 s=50,
+    #                 zorder=2, label='crt: ' + str(round(crt, 2)) + ' sec')
+    #     ax1.scatter(215, -15, c='black', marker='x',
+    #                 s=50, zorder=2)
+    # else:
     ax1.scatter(data_dict['y1_straight'][index_crt], data_dict['x1_straight'][index_crt], c='black', marker='x', s=50,
                 zorder=2, label='crt: ' + str(round(crt, 2)) + ' sec')
     ax1.scatter(data_dict['y2_straight'][index_crt], data_dict['x2_straight'][index_crt], c='black', marker='x',
@@ -395,18 +419,26 @@ if __name__ == '__main__':
         headway_bounds = pickle.load(f)
 
     # 55-45
-    files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45'
+    files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50'
+    condition = '50-50'
     trails = []
     for file in Path(files_directory).glob('*.csv'):
         # trail_condition = plot_trail(file)
         trails.append(file)
     trails = natsorted(trails, key=str)
-    #
-    index = 7
-    plot_trail(trails[index], headway_bounds)
-    # #
-    # for i in range(len(trails)):
-    #     plot_trail(trails[5+i], headway_bounds)
+
+    index = 80
+    plot_trail(trails[index], headway_bounds, condition)
+
+    #72
+    # for i in [16,17,18,28,34,38,47,48,53,54,55,58,60,67,68,69,71,72,83,85,87,91]:
+    #     plot_trail(trails[i], headway_bounds)
+
+    # for i in [14,16,19,45,69,99]:
+    #     plot_trail(trails[i], headway_bounds)
+    # for i in [18,23,24,26,30,33,36,37,42,46,54,56,65,66,69,74,75,76,78,84,86,87,91,92,97,101,104]:
+    # for i in [78,84,86,87,91,92,97,101,104]:
+    #     plot_trail(trails[i], headway_bounds, condition)
 
     # figure_amount = 0
     # for i in range(len(trails)):

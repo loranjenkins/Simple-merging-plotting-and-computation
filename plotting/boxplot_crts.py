@@ -14,13 +14,13 @@ global_crt_index = pd.read_csv(path_to_data_csv_index, sep=',')
 medians_crt = global_crt.median()
 medians_index = global_crt_index.median()
 
-path_to_saved_dict = os.path.join('..', 'data_folder', 'medians_crt.csv')
+path_to_saved_dict1 = os.path.join('..', 'data_folder', 'medians_crt.csv')
 path_to_saved_dict = os.path.join('..', 'data_folder', 'medians_crt_index.csv')
 
 df1 = pd.DataFrame({'median_50_50': [medians_crt[0]]})
 df2 = pd.DataFrame({'median_55_45': [medians_crt[1]]})
 df3 = pd.DataFrame({'median_60_40': [medians_crt[2]]})
-pd.concat([df1, df2, df3], axis=1).to_csv(path_to_saved_dict, index=False)
+pd.concat([df1, df2, df3], axis=1).to_csv(path_to_saved_dict1, index=False)
 
 df3 = pd.DataFrame({'median_50_50': [round(medians_index[0])]})
 df4 = pd.DataFrame({'median_55_45': [round(medians_index[1])]})

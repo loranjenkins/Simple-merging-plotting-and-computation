@@ -96,31 +96,31 @@ def plot_varjo(path_to_csv_folder):
     #compute the indexes
     indexes_of_tunnel_and_merge_vehicle1 = []
     indexes_of_tunnel_and_merge_vehicle2 = []
-    for list_index in range(len(xy_coordinates_for_vehicle1)):
-        individual_xy_vehicle1 = xy_coordinates_for_vehicle1[list_index]
-        individual_xy_vehicle2 = xy_coordinates_for_vehicle2[list_index]
-        inner_index_list_1 = []
-        inner_index_list_2 = []
+
+    for list_index in range(len(travelled_distance_vehicle1)):
+        individual_travelled_distance_vehicle1 = travelled_distance_vehicle1[list_index]
+        individual_travelled_distance_vehicle2 = travelled_distance_vehicle2[list_index]
+        inner_tunnel_merge_1 = []
+        inner_tunnel_merge_2 = []
         for i in range(0, 1):
-            index_of_tunnel_vehicle_1 = min(range(len(individual_xy_vehicle1)), key=lambda i: abs(
-                individual_xy_vehicle1[i][1] - track.tunnel_length))
+            index_of_tunnel_vehicle_1 = min(range(len(individual_travelled_distance_vehicle1)), key=lambda i: abs(
+                individual_travelled_distance_vehicle1[i] - track.tunnel_length))
+            index_of_mergepoint_vehicle_1 = min(range(len(individual_travelled_distance_vehicle1)), key=lambda i: abs(
+                individual_travelled_distance_vehicle1[i] - simulation_constants.track_section_length_before))
 
-            index_of_tunnel_vehicle_2 = min(range(len(individual_xy_vehicle2)), key=lambda i: abs(
-                individual_xy_vehicle2[i][1] - track.tunnel_length))
+            index_of_tunnel_vehicle_2 = min(range(len(individual_travelled_distance_vehicle2)), key=lambda i: abs(
+                individual_travelled_distance_vehicle2[i] - track.tunnel_length))
+            index_of_mergepoint_vehicle_2 = min(range(len(individual_travelled_distance_vehicle2)), key=lambda i: abs(
+                individual_travelled_distance_vehicle2[i] - simulation_constants.track_section_length_before))
 
-            index_of_mergepoint_vehicle1 = min(range(len(individual_xy_vehicle1)),
-                                               key=lambda i: abs(individual_xy_vehicle1[i][1] - track.merge_point[1]))
-            index_of_mergepoint_vehicle2 = min(range(len(individual_xy_vehicle2)),
-                                               key=lambda i: abs(individual_xy_vehicle2[i][1] - track.merge_point[1]))
+            inner_tunnel_merge_1.append(index_of_tunnel_vehicle_1)
+            inner_tunnel_merge_1.append(index_of_mergepoint_vehicle_1)
 
-            inner_index_list_1.append(index_of_tunnel_vehicle_1)
-            inner_index_list_1.append(index_of_mergepoint_vehicle1)
+            inner_tunnel_merge_2.append(index_of_tunnel_vehicle_2)
+            inner_tunnel_merge_2.append(index_of_mergepoint_vehicle_2)
 
-            inner_index_list_2.append(index_of_tunnel_vehicle_2)
-            inner_index_list_2.append(index_of_mergepoint_vehicle2)
-
-        indexes_of_tunnel_and_merge_vehicle1.append(inner_index_list_1)
-        indexes_of_tunnel_and_merge_vehicle2.append(inner_index_list_2)
+        indexes_of_tunnel_and_merge_vehicle1.append(inner_tunnel_merge_1)
+        indexes_of_tunnel_and_merge_vehicle2.append(inner_tunnel_merge_2)
 
 
     #interactive data for each vehicle
@@ -218,115 +218,116 @@ if __name__ == '__main__':
     ax2.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[5], 2)))
     ax1.legend(loc='lower left')
     ax2.legend(loc='lower left')
-
-    #right ahead 55-45
-    path_to_csv_55_45 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\right'
-    Varjo_data = plot_varjo(path_to_csv_55_45)
-
-    fig, (ax3, ax4) = plt.subplots(1, 2)
-    fig.suptitle('Comparison gaze behavior condition 55_45')
-    ax3.plot(Varjo_data[2], Varjo_data[0])  # see x below
-    ax3.fill_between(Varjo_data[2], Varjo_data[0], color='blue', alpha=0.1, label='Fixation on road')
-    ax3.fill_between(Varjo_data[2], Varjo_data[0], 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax3.set_title('Right vehicle positive headway')
-    ax3.set_xlim([120, 275])
-    ax3.set_ylim([0, 1])
-
-    ax4.plot(Varjo_data[3], Varjo_data[1])  # see x below
-    ax4.fill_between(Varjo_data[3], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
-    ax4.fill_between(Varjo_data[3], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax4.set_title('Left vehicle negative headway')
-    ax4.set_xlim([120, 275])
-    ax4.set_ylim([0, 1])
-
-    ax3.set(ylabel='% fixated on AOI')
-    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
-    ax3.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[4], 2)))
-    ax4.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[5], 2)))
-    ax3.legend(loc='lower left')
-    ax4.legend(loc='lower left')
-
-
-    #left ahead 60-40
-    path_to_csv_40_60 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\left'
-    Varjo_data = plot_varjo(path_to_csv_40_60)
-
-    fig, (ax5, ax6) = plt.subplots(1, 2)
-    fig.suptitle('Comparison gaze behavior condition 60_40')
-    ax5.plot(Varjo_data[2], Varjo_data[0])  # see x below
-    ax5.fill_between(Varjo_data[2], Varjo_data[0], color='blue', alpha=0.1, label='Fixation on road')
-    ax5.fill_between(Varjo_data[2], Varjo_data[0], 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax5.set_title('Right vehicle negative headway')
-    ax5.set_xlim([120, 275])
-    ax5.set_ylim([0, 1])
-
-    ax6.plot(Varjo_data[3], Varjo_data[1])  # see x below
-    ax6.fill_between(Varjo_data[3], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
-    ax6.fill_between(Varjo_data[3], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax6.set_title('Left vehicle positive headway')
-    ax6.set_xlim([120, 275])
-    ax6.set_ylim([0, 1])
-
-    ax5.set(ylabel='% fixated on AOI')
-    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
-    ax5.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[4], 2)))
-    ax6.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[5], 2)))
-    ax5.legend(loc='lower left')
-    ax6.legend(loc='lower left')
-
-
-    # right ahead 60-40
-    path_to_csv_60_40 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\right'
-    Varjo_data = plot_varjo(path_to_csv_60_40)
-
-    fig, (ax7, ax8) = plt.subplots(1, 2)
-    fig.suptitle('Comparison gaze behavior condition 60_40')
-    ax7.plot(Varjo_data[2], Varjo_data[0])  # see x below
-    ax7.fill_between(Varjo_data[2], Varjo_data[0], color='blue', alpha=0.1, label='Fixation on road')
-    ax7.fill_between(Varjo_data[2], Varjo_data[0], 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax7.set_title('Right vehicle positive headway')
-    ax7.set_xlim([120, 275])
-    ax7.set_ylim([0, 1])
-
-    ax8.plot(Varjo_data[3], Varjo_data[1])  # see x below
-    ax8.fill_between(Varjo_data[3], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
-    ax8.fill_between(Varjo_data[3], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax8.set_title('Left vehicle negative headway')
-    ax8.set_xlim([120, 275])
-    ax8.set_ylim([0, 1])
-
-    ax7.set(ylabel='% fixated on AOI')
-    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
-    ax7.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[4], 2)))
-    ax8.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[5], 2)))
-    ax7.legend(loc='lower left')
-    ax8.legend(loc='lower left')
-
-    # 50-50
-    path_to_csv_50_50 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_50_50'
-    Varjo_data = plot_varjo(path_to_csv_50_50)
-
-    fig, (ax9, ax10) = plt.subplots(1, 2)
-    fig.suptitle('Comparison gaze behavior condition 50_50')
-    ax9.plot(Varjo_data[2], Varjo_data[0])  # see x below
-    ax9.fill_between(Varjo_data[2], Varjo_data[0], color='blue', alpha=0.1, label='Fixation on road')
-    ax9.fill_between(Varjo_data[2], Varjo_data[0], 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax9.set_title('Right vehicle equal headway')
-    ax9.set_xlim([120, 275])
-    ax9.set_ylim([0, 1])
-
-    ax10.plot(Varjo_data[3], Varjo_data[1])  # see x below
-    ax10.fill_between(Varjo_data[3], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
-    ax10.fill_between(Varjo_data[3], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax10.set_title('Left vehicle equal headway')
-    ax10.set_xlim([120, 275])
-    ax10.set_ylim([0, 1])
-
-    ax9.set(ylabel='% fixated on AOI')
-    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
-    ax9.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[4], 2)))
-    ax10.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[5], 2)))
-    ax9.legend(loc='lower left')
-    ax10.legend(loc='lower left')
-
     plt.show()
+    #
+    # #right ahead 55-45
+    # path_to_csv_55_45 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\right'
+    # Varjo_data = plot_varjo(path_to_csv_55_45)
+    #
+    # fig, (ax3, ax4) = plt.subplots(1, 2)
+    # fig.suptitle('Comparison gaze behavior condition 55_45')
+    # ax3.plot(Varjo_data[2], Varjo_data[0])  # see x below
+    # ax3.fill_between(Varjo_data[2], Varjo_data[0], color='blue', alpha=0.1, label='Fixation on road')
+    # ax3.fill_between(Varjo_data[2], Varjo_data[0], 1, color='red', alpha=0.1, label='Fixation on opponent')
+    # ax3.set_title('Right vehicle positive headway')
+    # ax3.set_xlim([120, 275])
+    # ax3.set_ylim([0, 1])
+    #
+    # ax4.plot(Varjo_data[3], Varjo_data[1])  # see x below
+    # ax4.fill_between(Varjo_data[3], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
+    # ax4.fill_between(Varjo_data[3], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
+    # ax4.set_title('Left vehicle negative headway')
+    # ax4.set_xlim([120, 275])
+    # ax4.set_ylim([0, 1])
+    #
+    # ax3.set(ylabel='% fixated on AOI')
+    # fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    # ax3.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[4], 2)))
+    # ax4.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[5], 2)))
+    # ax3.legend(loc='lower left')
+    # ax4.legend(loc='lower left')
+    #
+    #
+    # #left ahead 60-40
+    # path_to_csv_40_60 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\left'
+    # Varjo_data = plot_varjo(path_to_csv_40_60)
+    #
+    # fig, (ax5, ax6) = plt.subplots(1, 2)
+    # fig.suptitle('Comparison gaze behavior condition 60_40')
+    # ax5.plot(Varjo_data[2], Varjo_data[0])  # see x below
+    # ax5.fill_between(Varjo_data[2], Varjo_data[0], color='blue', alpha=0.1, label='Fixation on road')
+    # ax5.fill_between(Varjo_data[2], Varjo_data[0], 1, color='red', alpha=0.1, label='Fixation on opponent')
+    # ax5.set_title('Right vehicle negative headway')
+    # ax5.set_xlim([120, 275])
+    # ax5.set_ylim([0, 1])
+    #
+    # ax6.plot(Varjo_data[3], Varjo_data[1])  # see x below
+    # ax6.fill_between(Varjo_data[3], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
+    # ax6.fill_between(Varjo_data[3], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
+    # ax6.set_title('Left vehicle positive headway')
+    # ax6.set_xlim([120, 275])
+    # ax6.set_ylim([0, 1])
+    #
+    # ax5.set(ylabel='% fixated on AOI')
+    # fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    # ax5.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[4], 2)))
+    # ax6.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[5], 2)))
+    # ax5.legend(loc='lower left')
+    # ax6.legend(loc='lower left')
+    #
+    #
+    # # right ahead 60-40
+    # path_to_csv_60_40 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\right'
+    # Varjo_data = plot_varjo(path_to_csv_60_40)
+    #
+    # fig, (ax7, ax8) = plt.subplots(1, 2)
+    # fig.suptitle('Comparison gaze behavior condition 60_40')
+    # ax7.plot(Varjo_data[2], Varjo_data[0])  # see x below
+    # ax7.fill_between(Varjo_data[2], Varjo_data[0], color='blue', alpha=0.1, label='Fixation on road')
+    # ax7.fill_between(Varjo_data[2], Varjo_data[0], 1, color='red', alpha=0.1, label='Fixation on opponent')
+    # ax7.set_title('Right vehicle positive headway')
+    # ax7.set_xlim([120, 275])
+    # ax7.set_ylim([0, 1])
+    #
+    # ax8.plot(Varjo_data[3], Varjo_data[1])  # see x below
+    # ax8.fill_between(Varjo_data[3], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
+    # ax8.fill_between(Varjo_data[3], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
+    # ax8.set_title('Left vehicle negative headway')
+    # ax8.set_xlim([120, 275])
+    # ax8.set_ylim([0, 1])
+    #
+    # ax7.set(ylabel='% fixated on AOI')
+    # fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    # ax7.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[4], 2)))
+    # ax8.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[5], 2)))
+    # ax7.legend(loc='lower left')
+    # ax8.legend(loc='lower left')
+    #
+    # # 50-50
+    # path_to_csv_50_50 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_50_50'
+    # Varjo_data = plot_varjo(path_to_csv_50_50)
+    #
+    # fig, (ax9, ax10) = plt.subplots(1, 2)
+    # fig.suptitle('Comparison gaze behavior condition 50_50')
+    # ax9.plot(Varjo_data[2], Varjo_data[0])  # see x below
+    # ax9.fill_between(Varjo_data[2], Varjo_data[0], color='blue', alpha=0.1, label='Fixation on road')
+    # ax9.fill_between(Varjo_data[2], Varjo_data[0], 1, color='red', alpha=0.1, label='Fixation on opponent')
+    # ax9.set_title('Right vehicle equal headway')
+    # ax9.set_xlim([120, 275])
+    # ax9.set_ylim([0, 1])
+    #
+    # ax10.plot(Varjo_data[3], Varjo_data[1])  # see x below
+    # ax10.fill_between(Varjo_data[3], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
+    # ax10.fill_between(Varjo_data[3], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
+    # ax10.set_title('Left vehicle equal headway')
+    # ax10.set_xlim([120, 275])
+    # ax10.set_ylim([0, 1])
+    #
+    # ax9.set(ylabel='% fixated on AOI')
+    # fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    # ax9.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[4], 2)))
+    # ax10.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[5], 2)))
+    # ax9.legend(loc='lower left')
+    # ax10.legend(loc='lower left')
+    #
+    # plt.show()

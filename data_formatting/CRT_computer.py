@@ -4,6 +4,7 @@ import datetime
 from pathlib import Path
 import os
 from natsort import natsorted
+from scipy.ndimage import gaussian_filter1d
 
 
 from trackobjects.simulationconstants import SimulationConstants
@@ -111,12 +112,12 @@ def compute_crt(path_to_data_csv):
 
     simulation_constants = SimulationConstants(vehicle_width=2,
                                                vehicle_length=4.7,
-                                               tunnel_length=118,
+                                               tunnel_length=110,  # original = 118 -> check in unreal
                                                track_width=8,
-                                               track_height=195,
-                                               track_start_point_distance=390,
-                                               track_section_length_before=275.77164466275354,
-                                               track_section_length_after=200)  # goes until 400
+                                               track_height=215,
+                                               track_start_point_distance=430,
+                                               track_section_length_before=304.056,
+                                               track_section_length_after=150)  # goes until 400
 
     track = SymmetricMergingTrack(simulation_constants)
 
@@ -181,6 +182,9 @@ def compute_crt(path_to_data_csv):
         data_dict['distance_traveled_vehicle1'].append(traveled_distance1)
         data_dict['distance_traveled_vehicle2'].append(traveled_distance2)
 
+    data_dict['distance_traveled_vehicle1'] = gaussian_filter1d(data_dict['distance_traveled_vehicle1'], sigma=15)
+    data_dict['distance_traveled_vehicle2'] = gaussian_filter1d(data_dict['distance_traveled_vehicle2'], sigma=15)
+
     ##compute crt
     crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants)
 
@@ -195,14 +199,14 @@ def compute_crt(path_to_data_csv):
         crt_index = min(range(len(data_dict['time'])),
                                    key=lambda i: abs(data_dict['time'][i] - crt))
 
-    index_of_mergepoint_vehicle1 = min(range(len(data_dict['y1_straight'])),
-                                       key=lambda i: abs(data_dict['y1_straight'][i] - 200)) #change track 200 merge point!
-    index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
-                                       key=lambda i: abs(data_dict['y2_straight'][i] - 200)) #change track merge point!
+    # index_of_mergepoint_vehicle1 = min(range(len(data_dict['y1_straight'])),
+    #                                    key=lambda i: abs(data_dict['y1_straight'][i] - 215)) #change track 200 merge point!
+    # index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
+    #                                    key=lambda i: abs(data_dict['y2_straight'][i] - 215)) #change track merge point!
 
-    if crt_index > min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2):
-        crt_index = min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2)-10
-        crt = data_dict['time'][crt_index]
+    # if crt_index > min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2):
+    #     crt_index = min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2)-10
+    #     crt = data_dict['time'][crt_index]
 
 
     return crt, crt_index
