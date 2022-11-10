@@ -7,6 +7,7 @@ import os
 import pickle
 from natsort import natsorted
 from scipy.ndimage import gaussian_filter1d
+from matplotlib import pyplot
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
@@ -98,9 +99,9 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
 
     if condition == '55-45':
         approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
-                         (np.array(data_dict['distance_traveled_vehicle1']) < 300)) | \
+                         (np.array(data_dict['distance_traveled_vehicle1']) < 305)) | \
                         ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
-                         (np.array(data_dict['distance_traveled_vehicle2']) < 300))
+                         (np.array(data_dict['distance_traveled_vehicle2']) < 305))
         indices_of_conflict_resolved = (on_collision_course & approach_mask)
 
     if condition == '60-40':
@@ -109,6 +110,7 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
                         ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
                          (np.array(data_dict['distance_traveled_vehicle2']) < 290))
         indices_of_conflict_resolved = (on_collision_course & approach_mask)
+
     # if condition == '50-50':
     #     approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
     #                      (np.array(data_dict['distance_traveled_vehicle1']) < 245)) | \
@@ -161,14 +163,16 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=118,  # original = 118 -> check in unreal
+                                               tunnel_length=120,  # original = 118 -> check in unreal
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
                                                track_section_length_before=325.27,
                                                track_section_length_after=150)
 
+
     track = SymmetricMergingTrack(simulation_constants)
+
 
     xy_coordinates_vehicle1 = vehicle_xy_coordinates(2, data)
     xy_coordinates_vehicle2 = vehicle_xy_coordinates(5, data)
@@ -407,6 +411,7 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
 
     plt.show()
 
+    #
     # a_file = open("global_data_dict.pkl", "wb")
     # pickle.dump(data_dict, a_file)
     # a_file.close()
@@ -419,16 +424,19 @@ if __name__ == '__main__':
         headway_bounds = pickle.load(f)
 
     # 55-45
-    files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50'
-    condition = '50-50'
+    files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45'
+    condition = '55-45'
     trails = []
     for file in Path(files_directory).glob('*.csv'):
         # trail_condition = plot_trail(file)
         trails.append(file)
     trails = natsorted(trails, key=str)
 
-    index = 80
+    index = 3
     plot_trail(trails[index], headway_bounds, condition)
+
+    # for i in range(len(trails)):
+    #     plot_trail(trails[i], headway_bounds, condition)
 
     #72
     # for i in [16,17,18,28,34,38,47,48,53,54,55,58,60,67,68,69,71,72,83,85,87,91]:
@@ -439,15 +447,17 @@ if __name__ == '__main__':
     # for i in [18,23,24,26,30,33,36,37,42,46,54,56,65,66,69,74,75,76,78,84,86,87,91,92,97,101,104]:
     # for i in [78,84,86,87,91,92,97,101,104]:
     #     plot_trail(trails[i], headway_bounds, condition)
-
+    #
     # figure_amount = 0
     # for i in range(len(trails)):
-    #     plot_trail(trails[i], headway_bounds)
-    #     plt.savefig(r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45\figures\condition_55_45_trail_{}'.format(str(figure_amount)))
+    #     plot_trail(trails[i], headway_bounds, condition)
+    #     fig = plt.savefig(r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45\figures\condition_55_45_trail_{}'.format(str(figure_amount)))
+    #     plt.close(fig)
     #     figure_amount += 1
     #
     # ## 50-50
     # files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50'
+    # condition = '50-50'
     # trails = []
     # for file in Path(files_directory).glob('*.csv'):
     #     # trail_condition = plot_trail(file)
@@ -455,12 +465,14 @@ if __name__ == '__main__':
     # trails = natsorted(trails, key=str)
     # figure_amount = 0
     # for i in range(len(trails)):
-    #     plot_trail(trails[i], headway_bounds)
-    #     plt.savefig(r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50\figures\condition_50_50_trail_{}'.format(str(figure_amount)))
+    #     plot_trail(trails[i], headway_bounds, condition)
+    #     fig = plt.savefig(r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50\figures\condition_50_50_trail_{}'.format(str(figure_amount)))
+    #     plt.close(fig)
     #     figure_amount += 1
     #
     # ##60-40
     # files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40'
+    # condition = '60-40'
     # trails = []
     # for file in Path(files_directory).glob('*.csv'):
     #     # trail_condition = plot_trail(file)
@@ -468,6 +480,7 @@ if __name__ == '__main__':
     # trails = natsorted(trails, key=str)
     # figure_amount = 0
     # for i in range(len(trails)):
-    #     plot_trail(trails[i], headway_bounds)
-    #     plt.savefig(r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40\figures\condition_60_40_trail_{}'.format(str(figure_amount)))
+    #     plot_trail(trails[i], headway_bounds, condition)
+    #     fig = plt.savefig(r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40\figures\condition_60_40_trail_{}'.format(str(figure_amount)))
+    #     plt.close(fig)
     #     figure_amount += 1

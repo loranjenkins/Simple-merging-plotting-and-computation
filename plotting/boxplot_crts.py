@@ -36,6 +36,7 @@ PROPS = {
 
 sns.boxplot(data=global_crt, **PROPS)
 
+plt.title('Comparison CRT all conditions')
 plt.ylabel('CRT [s]')
 plt.xlabel('Condition')
 plt.show()

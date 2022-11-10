@@ -224,16 +224,26 @@ def plot_varjo(path_to_csv_folder, condition):
 
     if condition == '50-50':
         crt = global_crt['median_50_50'][0]
-
+        index_crt = min(range(len(x)),
+                                   key=lambda i: abs(x[i] - crt))
+        average_before = sum(ysmoothed[0:index_crt]) / len(ysmoothed[0:index_crt])
+        average_after = sum(ysmoothed[index_crt:len(ysmoothed)]) / len(ysmoothed[index_crt:len(ysmoothed)])
 
     elif condition == '55-45':
         crt = global_crt['median_55_45'][0]
-
+        index_crt = min(range(len(x)),
+                                   key=lambda i: abs(x[i] - crt))
+        average_before = sum(ysmoothed[0:index_crt]) / len(ysmoothed[0:index_crt])
+        average_after = sum(ysmoothed[index_crt:len(ysmoothed)]) / len(ysmoothed[index_crt:len(ysmoothed)])
 
     elif condition == '60-40':
         crt = global_crt['median_60_40'][0]
+        index_crt = min(range(len(x)),
+                                   key=lambda i: abs(x[i] - crt))
+        average_before = sum(ysmoothed[0:index_crt]) / len(ysmoothed[0:index_crt])
+        average_after = sum(ysmoothed[index_crt:len(ysmoothed)]) / len(ysmoothed[index_crt:len(ysmoothed)])
 
-    return x, ysmoothed, average_trace_vehicle, crt, norm_at_exit_combined, norm_at_merge_combined
+    return x, ysmoothed, average_trace_vehicle, crt, norm_at_exit_combined, norm_at_merge_combined, average_before, average_after
 
 
 if __name__ == '__main__':
@@ -251,16 +261,17 @@ if __name__ == '__main__':
 
     ax1.axvline(Varjo_data[3], 0, 1, color='r', label='Average CRT')
     ax1.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
-    # ax1.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
-    # ax1.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
+    ax1.plot([], [], ' ', label='Average % fixated before average CRT: ' + str(round(Varjo_data[6], 2)))
+    ax1.plot([], [], ' ', label='Average % fixated after average CRT: ' + str(round(Varjo_data[7], 2)))
     ax1.plot([], [], ' ', label='Average CRT: ' + str(round(Varjo_data[3], 2)))
 
 
     ax1.set_title("Condition 60-40")
     ax1.set_xlim([Varjo_data[4], Varjo_data[5]])
     ax1.set_ylim([0, 1])
-    ax1.set(ylabel='% fixated on AOI')
-    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    # ax1.set(ylabel='% fixated on AOI')
+    fig.text(0.06, 0.5, "% fixated on AOI", va='center', rotation='vertical')
+    fig.text(0.5, 0.06, "Time [s]", ha="center", va="center")
     ax1.legend(loc='lower left')
 
 
@@ -275,15 +286,14 @@ if __name__ == '__main__':
 
     ax2.axvline(Varjo_data[3], 0, 1, color='r', label='Average CRT')
     ax2.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
-    # ax2.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
-    # ax2.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
+    ax2.plot([], [], ' ', label='Average % fixated before average CRT: ' + str(round(Varjo_data[6], 2)))
+    ax2.plot([], [], ' ', label='Average % fixated after average CRT: ' + str(round(Varjo_data[7], 2)))
     ax2.plot([], [], ' ', label='Average CRT: ' + str(round(Varjo_data[3], 2)))
 
     ax2.set_title("Condition 55-45")
     ax2.set_xlim(Varjo_data[4], Varjo_data[5])
     ax2.set_ylim([0, 1])
-    ax2.set(ylabel='% fixated on AOI')
-    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    # ax2.set(ylabel='% fixated on AOI')
     ax2.legend(loc='lower left')
 
     #condition 50-50
@@ -297,15 +307,14 @@ if __name__ == '__main__':
 
     ax3.axvline(Varjo_data[3], 0, 1, color='r', label='Average CRT')
     ax3.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
-    # ax3.plot([], [], ' ', label='Average % fixated before average conflict resolved: ' + str(round(Varjo_data[3], 2)))
-    # ax3.plot([], [], ' ', label='Average % fixated after average conflict resolved: ' + str(round(Varjo_data[4], 2)))
+    ax3.plot([], [], ' ', label='Average % fixated before average CRT: ' + str(round(Varjo_data[6], 2)))
+    ax3.plot([], [], ' ', label='Average % fixated after average CRT: ' + str(round(Varjo_data[7], 2)))
     ax3.plot([], [], ' ', label='Average CRT: ' + str(round(Varjo_data[3], 2)))
 
     ax3.set_title("Condition 50-50")
     ax3.set_xlim(Varjo_data[4], Varjo_data[5])
     ax3.set_ylim([0, 1])
-    ax3.set(ylabel='% fixated on AOI')
-    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    # ax3.set(ylabel='% fixated on AOI')
     ax3.legend(loc='lower left')
 
     plt.show()

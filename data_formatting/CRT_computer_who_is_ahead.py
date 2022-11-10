@@ -125,15 +125,6 @@ def compute_crt(path_to_data_csv, condition):
     data = data.iloc[10:, :]
     data.drop_duplicates(subset=['Carla Interface.time'], keep=False)
 
-    # simulation_constants = SimulationConstants(vehicle_width=2,
-    #                                            vehicle_length=4.7,
-    #                                            tunnel_length=110,  # original = 118 -> check in unreal
-    #                                            track_width=8,
-    #                                            track_height=215,
-    #                                            track_start_point_distance=430,
-    #                                            track_section_length_before=304.056,
-    #                                            track_section_length_after=150)  # goes until 400
-
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
                                                tunnel_length=120,  # original = 118 -> check in unreal
@@ -223,12 +214,14 @@ def compute_crt(path_to_data_csv, condition):
         crt_index = min(range(len(data_dict['time'])),
                                    key=lambda i: abs(data_dict['time'][i] - crt))
 
+
     return crt, crt_index
 
 if __name__ == '__main__':
     #condition50-50
     files_directory1 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50'
     condition = '50-50'
+
     trails_condition_50_50 = []
     for file in Path(files_directory1).glob('*.csv'):
         trails_condition_50_50.append(file)
@@ -242,11 +235,27 @@ if __name__ == '__main__':
         crts_50_50.append(crt)
         crt_indexes_50_50.append(crt_index)
 
-    #condition55-45
-    files_directory2 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45'
+    #condition55-45 - right ahead
+    files_directory2 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\right'
+    condition = '55-45'
+    trails_condition_45_55 = []
+    for file in Path(files_directory2).glob('*.csv'):
+        trails_condition_45_55.append(file)
+    trails_condition_45_55 = natsorted(trails_condition_45_55, key=str)
+
+    crts_45_55 = []
+    crt_indexes_45_55 = []
+    for i in range(len(trails_condition_45_55)):
+        crt = compute_crt(trails_condition_45_55[i], condition)[0]
+        crt_index = compute_crt(trails_condition_45_55[i], condition)[1]
+        crts_45_55.append(crt)
+        crt_indexes_45_55.append(crt_index)
+
+    #condition55-45 - left ahead
+    files_directory3 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\left'
     condition = '55-45'
     trails_condition_55_45 = []
-    for file in Path(files_directory2).glob('*.csv'):
+    for file in Path(files_directory3).glob('*.csv'):
         trails_condition_55_45.append(file)
     trails_condition_55_45 = natsorted(trails_condition_55_45, key=str)
 
@@ -258,11 +267,27 @@ if __name__ == '__main__':
         crts_55_45.append(crt)
         crt_indexes_55_45.append(crt_index)
 
-    # condition60-40
-    files_directory3 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40'
+    # condition right ahead
+    files_directory4 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\right'
+    trails_condition_40_60 = []
     condition = '60-40'
+    for file in Path(files_directory4).glob('*.csv'):
+        trails_condition_40_60.append(file)
+    trails_condition_40_60 = natsorted(trails_condition_40_60, key=str)
+
+    crts_40_60 = []
+    crt_indexes_40_60 = []
+    for i in range(len(trails_condition_40_60)):
+        crt = compute_crt(trails_condition_40_60[i], condition)[0]
+        crt_index = compute_crt(trails_condition_40_60[i], condition)[1]
+        crts_40_60.append(crt)
+        crt_indexes_40_60.append(crt_index)
+
+    # condition left ahead
+    files_directory5 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\left'
     trails_condition_60_40 = []
-    for file in Path(files_directory3).glob('*.csv'):
+    condition = '60-40'
+    for file in Path(files_directory5).glob('*.csv'):
         trails_condition_60_40.append(file)
     trails_condition_60_40 = natsorted(trails_condition_60_40, key=str)
 
@@ -274,16 +299,20 @@ if __name__ == '__main__':
         crts_60_40.append(crt)
         crt_indexes_60_40.append(crt_index)
 
-    path_to_saved_dict_crt = os.path.join('..', 'data_folder', 'crt_all_conditions.csv')
-    path_to_saved_dict_index = os.path.join('..', 'data_folder', 'crt_index_all_conditions.csv')
-
+    path_to_saved_dict_crt = os.path.join('..', 'data_folder', 'crt_who_is_ahead.csv')
+    path_to_saved_dict_index = os.path.join('..', 'data_folder', 'crt_index_who_is_ahead.csv')
 
     df1 = pd.DataFrame({'crt_50_50': crts_50_50})
-    df2 = pd.DataFrame({'crt_55_45': crts_55_45})
-    df3 = pd.DataFrame({'crt_60_40': crts_60_40})
-    pd.concat([df1, df2, df3], axis=1).to_csv(path_to_saved_dict_crt, index=False)
+    df2 = pd.DataFrame({'crt_45_55_right': crts_45_55})
+    df3 = pd.DataFrame({'crt_55_45_left': crts_55_45})
+    df4 = pd.DataFrame({'crt_40_60_right': crts_40_60})
+    df5 = pd.DataFrame({'crt_60_40_left': crts_60_40})
+    pd.concat([df1, df2, df3, df4, df5], axis=1).to_csv(path_to_saved_dict_crt, index=False)
 
-    df3 = pd.DataFrame({'crt_index_50_50': crt_indexes_50_50})
-    df4 = pd.DataFrame({'crt_index_55_45': crt_indexes_55_45})
-    df5 = pd.DataFrame({'crt_index_60_40': crt_indexes_60_40})
-    pd.concat([df3, df4, df5], axis=1).to_csv(path_to_saved_dict_index, index=False)
+    df6 = pd.DataFrame({'crt_index_50_50': crt_indexes_50_50})
+    df7 = pd.DataFrame({'crt_index_45_55_right': crt_indexes_45_55})
+    df8 = pd.DataFrame({'crt_index_55_45_left': crt_indexes_55_45})
+    df9 = pd.DataFrame({'crt_index_40_60_right': crt_indexes_40_60})
+    df10 = pd.DataFrame({'crt_index_60_40_left': crt_indexes_60_40})
+
+    pd.concat([df6, df7, df8, df9, df10], axis=1).to_csv(path_to_saved_dict_index, index=False)

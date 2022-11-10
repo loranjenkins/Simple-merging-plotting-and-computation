@@ -44,14 +44,23 @@ def probability_calc(path_to_data_csv, left_or_right):
     # data = data.iloc[10:, :]
     data.drop_duplicates(subset=['Carla Interface.time'], keep=False)
 
-    simulation_constants = SimulationConstants(vehicle_width=2,
+    # simulation_constants = SimulationConstants(vehicle_width=2,
+    #                                            vehicle_length=4.7,
+    #                                            tunnel_length=110,  # original = 118 -> check in unreal
+    #                                            track_width=8,
+    #                                            track_height=215,
+    #                                            track_start_point_distance=430,
+    #                                            track_section_length_before=304.056,
+    #                                            track_section_length_after=200)  # goes until 400
+
+    simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=110,  # original = 118 -> check in unreal
+                                               tunnel_length=120,  # original = 118 -> check in unreal
                                                track_width=8,
-                                               track_height=215,
-                                               track_start_point_distance=430,
-                                               track_section_length_before=304.056,
-                                               track_section_length_after=200)  # goes until 400
+                                               track_height=230,
+                                               track_start_point_distance=460,
+                                               track_section_length_before=325.27,
+                                               track_section_length_after=150)
 
     track = SymmetricMergingTrack(simulation_constants)
 
@@ -294,7 +303,7 @@ if __name__ == '__main__':
     nested_probability = list(average_nested(probability_40_60))
     df4 = pd.DataFrame({'probability_40_60': nested_probability})
 
-    # 45_ 55 right ahead
+    # 45_55 right ahead
     files_directory = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\right'
     left_or_right = 'right'
     trails = []
@@ -393,9 +402,6 @@ if __name__ == '__main__':
     df6 = pd.DataFrame({'probability_50_50': nested_probability})
 
     right_probability = pd.concat([df4, df5, df6], axis=1)
-
-    print(left_probability)
-    print(right_probability)
 
     PROPS = {
         'boxprops': {'facecolor': 'none', 'edgecolor': 'black'},

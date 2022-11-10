@@ -8,9 +8,9 @@ if __name__ == '__main__':
 
     #geometry axis: upwards y = negative upwards x = positive
     initial_start_point_y = 5
-    offset_width = 20 * 100
-    width = 195
-    height = 200-initial_start_point_y
+    offset_width = 0
+    width = 215
+    height = 215
     length_tunnel = 120
     y_merge_point = (height+initial_start_point_y)*100
     angle_from_merge_point = math.atan(width/height) #radians

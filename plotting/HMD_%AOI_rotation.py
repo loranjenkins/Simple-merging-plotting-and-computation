@@ -231,8 +231,9 @@ if __name__ == '__main__':
     ax1.set_title("Condition 60-40")
     ax1.set_xlim([120, 275])
     ax1.set_ylim([0, 1])
-    ax1.set(ylabel='% fixated on AOI')
-    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    # ax1.set(ylabel='% fixated on AOI')
+    fig.text(0.06, 0.5, "% fixated on AOI", va='center', rotation='vertical')
+    fig.text(0.5, 0.06, "Average travelled distance", ha="center", va="center")
     ax1.legend(loc='lower left')
 
 
@@ -253,8 +254,8 @@ if __name__ == '__main__':
     ax2.set_title("Condition 55-45")
     ax2.set_xlim([120, 275])
     ax2.set_ylim([0, 1])
-    ax2.set(ylabel='% fixated on AOI')
-    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    # ax2.set(ylabel='% fixated on AOI')
+    # fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
     ax2.legend(loc='lower left')
 
     #condition 50-50
@@ -274,8 +275,8 @@ if __name__ == '__main__':
     ax3.set_title("Condition 50-50")
     ax3.set_xlim([120, 275])
     ax3.set_ylim([0, 1])
-    ax3.set(ylabel='% fixated on AOI')
-    fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
+    # ax3.set(ylabel='% fixated on AOI')
+    # fig.text(0.5, 0.04, "Average travelled distance", ha="center", va="center")
     ax3.legend(loc='lower left')
 
     plt.show()

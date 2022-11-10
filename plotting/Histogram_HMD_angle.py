@@ -41,9 +41,9 @@ d = len(hmd_rots_v2)
 print(a/b)
 print(c/d)
 
-data = pd.read_csv(trails[80], sep=',')
+data = pd.read_csv(trails[50], sep=',')
 sns.histplot(list(data['HMD_rotation_vehicle1']))
-sns.histplot(list(data['HMD_rotation_vehicle2']))
+# sns.histplot(list(data['HMD_rotation_vehicle2']))
 
 # plt.hist(list(data['HMD_rotation_vehicle1']), 30)
 a = sum(list(data['HMD_rotation_vehicle1']))
@@ -51,7 +51,7 @@ b = len(list(data['HMD_rotation_vehicle1']))
 c = sum(list(data['HMD_rotation_vehicle2']))
 d = len(list(data['HMD_rotation_vehicle2']))
 
-plt.axvline(a/b, 0, 2300, color='r')
-plt.axvline(c/d, 0, 2300, color='b')
+# plt.axvline(a/b, 0, 2300, color='r')
+# plt.axvline(c/d, 0, 2300, color='b')
 
 plt.show()
