@@ -53,7 +53,7 @@ class SymmetricMergingTrack:
 
             if average_travelled_distance > self.section_length_before + vehicle_length / 2.:
                 # both vehicles are on the straight section
-                return -vehicle_length, vehicle_length
+                return -vehicle_length/2, vehicle_length/2
             elif average_travelled_distance < self.upper_bound_threshold:
                 # at least one of the vehicles is on the approach on a position where it cannot collide
                 return None, None
@@ -69,7 +69,7 @@ class SymmetricMergingTrack:
                                                                                              'fun': lambda x: x}])
                 headway = solution.x[0]
                 # the headway bounds are completely symmetrical
-                return -headway, headway
+                return -headway/2, headway/2
 
     def _collision_constraint(self, head_way, average_travelled_distance, vehicle_width, vehicle_length):
         left = average_travelled_distance + head_way / 2.
