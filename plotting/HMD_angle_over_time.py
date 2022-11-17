@@ -27,7 +27,17 @@ def vehicle_xy_coordinates(intcolumn, data_csv):
         # list_y = list(dict.fromkeys(list_y))
 
     return list_x, list_y
-def compute_hmd_rots(path_to_data_csv):
+
+def get_timestamps(intcolumnname, data_csv):
+    time = []
+    for i in range(len(data_csv.iloc[:, intcolumnname])):
+        epoch_in_nanoseconds = data_csv.iloc[i, intcolumnname]
+        epoch_in_seconds = epoch_in_nanoseconds / 1000000000
+        datetimes = datetime.datetime.fromtimestamp(epoch_in_seconds)
+        time.append(datetimes)
+    return time
+
+def hmd_over_time(path_to_data_csv):
 
     data = pd.read_csv(path_to_data_csv, sep=',')
 
@@ -83,6 +93,13 @@ def compute_hmd_rots(path_to_data_csv):
             data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
 
     # ------------------------------------------------------------------------#
+    # time
+    time_in_datetime = get_timestamps(0, data)
+    time_in_seconds_trail = [(a - time_in_datetime[0]).total_seconds() for a in time_in_datetime]
+    time_in_seconds_trail = np.array(time_in_seconds_trail)
+    data_dict['time'] = time_in_seconds_trail
+
+    # ------------------------------------------------------------------------#
     # average travelled
     for i in range(len(xy_coordinates_vehicle1)):
         traveled_distance1 = track.coordinates_to_traveled_distance(xy_coordinates_vehicle1[i])
@@ -110,30 +127,22 @@ def compute_hmd_rots(path_to_data_csv):
 
     v1 = list(data['HMD_rotation_vehicle1'][who_is_first_tunnel:who_is_first_merge])
     v2 = list(data['HMD_rotation_vehicle2'][who_is_first_tunnel:who_is_first_merge])
-    hmd_rots_total = v1 + v2
+    x = data_dict['time'][who_is_first_tunnel:who_is_first_merge]
 
-    # hmd_rots = []
-    # for i in trails:
-    #     data = pd.read_csv(i, sep=',')
-    #     v1 = []
-    #     v2 = []
-    #     for i in data['HMD_rotation_vehicle1']:
-    #         if i > 0.6:
-    #             v1.append(i)
-    #     for i in data['HMD_rotation_vehicle2']:
-    #         if i > 0.6:
-    #             v2.append(i)
-    #     new_list = v1+v2
-    #     hmd_rots.append(new_list)
+    plt.plot(x, v1, label = 'vehicle 1')
+    plt.plot(x, v2, label = 'vehicle 2')
+    plt.xlabel('Time [s]')
+    plt.ylabel('HMD rotation')
+    plt.legend()
+    # plt.show()
 
-    return hmd_rots_total
 
 if __name__ == '__main__':
     files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50'
     files_directory1 = r'D:\Thesis_data_all_experiments\Conditions\condition_55_45'
     files_directory2 = r'D:\Thesis_data_all_experiments\Conditions\condition_60_40'
 
-    # files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50\experiment3'
+    # files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50\experiment4'
 
     trails = []
     for file in Path(files_directory).glob('*.csv'):
@@ -148,23 +157,13 @@ if __name__ == '__main__':
         # trail_condition = plot_trail(file)
         trails.append(file)
 
-    nested_list = []
+    # for i in range(len(trails)):
+    #     x = hmd_over_time(trails[i])
+
+    figure_amount = 0
     for i in range(len(trails)):
-        innerlist = compute_hmd_rots(trails[i])
-        nested_list.append(innerlist)
+        hmd_over_time(trails[i])
+        fig = plt.savefig(r'D:\Thesis_data_all_experiments\Figures_hmd_rots\random_trail_{}'.format(str(figure_amount)))
+        plt.close(fig)
+        figure_amount += 1
 
-
-    resultList = []
-
-    # Traversing in till the length of the input list of lists
-    for m in range(len(nested_list)):
-
-       # using nested for loop, traversing the inner lists
-       for n in range(len(nested_list[m])):
-
-          # Add each element to the result list
-          resultList.append(nested_list[m][n])
-
-    sns.histplot(resultList)
-
-    plt.show()

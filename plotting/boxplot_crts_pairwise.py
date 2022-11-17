@@ -12,7 +12,7 @@ path_to_data_csv_crt4 = os.path.join('..', 'data_folder', 'experiment_data', 'cr
 path_to_data_csv_crt5 = os.path.join('..', 'data_folder', 'experiment_data', 'crt_experiment5.csv')
 path_to_data_csv_crt6 = os.path.join('..', 'data_folder', 'experiment_data', 'crt_experiment6.csv')
 path_to_data_csv_crt7 = os.path.join('..', 'data_folder', 'experiment_data', 'crt_experiment7.csv')
-
+path_to_data_csv_crt8 = os.path.join('..', 'data_folder', 'experiment_data', 'crt_vehicle1_combined.csv')
 
 def average(pandas):
     median = pandas.median()
@@ -47,6 +47,9 @@ crt_experiment7 = pd.read_csv(path_to_data_csv_crt7, sep=',')
 crt_experiment7.replace(0, np.nan, inplace=True)
 average7 = average(crt_experiment7)
 
+crt_vehicle1 = pd.read_csv(path_to_data_csv_crt8, sep=',')
+crt_vehicle1.replace(0, np.nan, inplace=True)
+average8 = average(crt_vehicle1)
 
 PROPS = {
     'boxprops':{'facecolor':'none', 'edgecolor':'black'},
@@ -66,6 +69,8 @@ axes[3][0].set_title('Experiment 4 with Average crt: ' + str(round(average4, 2))
 axes[0][1].set_title('Experiment 5 with Average crt: ' + str(round(average5, 2)))
 axes[1][1].set_title('Experiment 6 with Average crt: ' + str(round(average6, 2)))
 axes[2][1].set_title('Experiment 7 with Average crt: ' + str(round(average7, 2)))
+axes[3][1].set_title('Experiments combined with Average crt: ' + str(round(average8, 2)))
+
 
 sns.boxplot(data=crt_experiment1, ax=axes[0][0], **PROPS)
 sns.boxplot(data=crt_experiment2, ax=axes[1][0], **PROPS)
@@ -74,11 +79,13 @@ sns.boxplot(data=crt_experiment4, ax=axes[3][0], **PROPS)
 sns.boxplot(data=crt_experiment5, ax=axes[0][1], **PROPS)
 sns.boxplot(data=crt_experiment6, ax=axes[1][1], **PROPS)
 sns.boxplot(data=crt_experiment7, ax=axes[2][1], **PROPS)
+sns.boxplot(data=crt_vehicle1, ax=axes[3][1], **PROPS)
+
 
 plt.subplots_adjust(hspace = 0.5)
 fig.text(0.06, 0.5, "CRT [s]", va='center', rotation='vertical')
 fig.text(0.5, 0.06, "Velocity vehicle 1 [km/h]", ha="center", va="center")
-fig.delaxes(axes[3][1])
+# fig.delaxes(axes[3][1])
 # plt.xlabel('Velocity vehicle 1 [km/h]')
 plt.show()
 

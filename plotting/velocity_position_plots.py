@@ -55,13 +55,12 @@ def check_if_on_collision_course_for_point(travelled_distance_collision_point, d
 
     point_predictions['vehicle1'] = np.array(data_dict['distance_traveled_vehicle1']) + np.array(
         data_dict['velocity_vehicle1']) * (travelled_distance_collision_point - np.array(
-                                        data_dict['distance_traveled_vehicle2'])) / np.array(
+        data_dict['distance_traveled_vehicle2'])) / np.array(
         data_dict['velocity_vehicle2'])
     point_predictions['vehicle2'] = np.array(data_dict['distance_traveled_vehicle2']) + np.array(
         data_dict['velocity_vehicle2']) * (travelled_distance_collision_point - np.array(
-                                        data_dict['distance_traveled_vehicle1'])) / np.array(
+        data_dict['distance_traveled_vehicle1'])) / np.array(
         data_dict['velocity_vehicle1'])
-
 
     lb, ub = track.get_collision_bounds(travelled_distance_collision_point, simulation_constants.vehicle_width,
                                         simulation_constants.vehicle_length)
@@ -114,7 +113,6 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
                          (np.array(data_dict['distance_traveled_vehicle2']) < 290))
         indices_of_conflict_resolved = (on_collision_course & approach_mask)
 
-
     # if condition == '60-40':
     #     approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
     #                      (np.array(data_dict['distance_traveled_vehicle1']) < 290)) | \
@@ -136,7 +134,6 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
     #                      (np.array(data_dict['distance_traveled_vehicle2']) < 305))
     #     indices_of_conflict_resolved = (on_collision_course & approach_mask)
 
-
     try:
         time_of_conflict_resolved = np.array(time)[indices_of_conflict_resolved]
     except IndexError:
@@ -151,11 +148,11 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
     #     'C:\\Users\localadmin\Desktop\Joan_testdata_CRT\joan_data_20220901_14h00m40s.csv',
     #     sep=';')
     data = pd.read_csv(path_to_data_csv, sep=',')
-
+    # print(data.iloc[:,1])
+    # print(data.iloc[:,1][data.iloc[:,1]].index.values)
     data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
     data = data.iloc[10:, :]
     data.drop_duplicates(subset=['Carla Interface.time'], keep=False)
-
 
     # simulation_constants = SimulationConstants(vehicle_width=1.5,
     #                                            vehicle_length=4.7,
@@ -168,16 +165,14 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=120,  # original = 118 -> check in unreal
+                                               tunnel_length=135,  # original = 118 -> check in unreal
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
                                                track_section_length_before=325.27,
                                                track_section_length_after=120)
 
-
     track = SymmetricMergingTrack(simulation_constants)
-
 
     xy_coordinates_vehicle1 = vehicle_xy_coordinates(2, data)
     xy_coordinates_vehicle2 = vehicle_xy_coordinates(5, data)
@@ -189,6 +184,7 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
     xy_coordinates_vehicle2 = np.array(xy_coordinates_vehicle2)
 
     data_dict = {'time': [],
+                 'interactive_time': [],
                  'x1_straight': [],
                  'y1_straight': [],
                  'x2_straight': [],
@@ -239,10 +235,8 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
         ax1.plot([left_point[1], right_point[1]], [left_point[0], right_point[0]], c='lightgrey', linestyle='dashed')
         ax1.scatter([left_point[1], right_point[1]], [left_point[0], right_point[0]], c='lightgrey')
 
-
     ax1.plot(data_dict['y1_straight'], data_dict['x1_straight'], label='right vehicle')
     ax1.plot(data_dict['y2_straight'], data_dict['x2_straight'], label='left vehicle')
-
 
     # ------------------------------------------------------------------------#
     # velocity_time plot
@@ -258,7 +252,6 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
     time_in_seconds_trail = [(a - time_in_datetime[0]).total_seconds() for a in time_in_datetime]
     time_in_seconds_trail = np.array(time_in_seconds_trail)
     data_dict['time'] = time_in_seconds_trail
-
 
     ax2.set_xlabel('Time [s]')
     ax2.set_ylabel('Velocity [m/s]')
@@ -303,7 +296,8 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
     index_of_mergepoint_vehicle1 = min(range(len(data_dict['y1_straight'])),
                                        key=lambda i: abs(data_dict['y1_straight'][i] - 230))
     index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
-                                       key=lambda i: abs(data_dict['y2_straight'][i] - 230)) #instead of track.mergepoint
+                                       key=lambda i: abs(
+                                           data_dict['y2_straight'][i] - 230))  # instead of track.mergepoint
 
     if xy_coordinates_vehicle1[0][0] > 0:
         ax1.scatter(track.merge_point[1], track.merge_point[0] + 15, c='purple', marker='s', s=30, zorder=2,
@@ -346,25 +340,40 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
     ax3.scatter(data_dict['average_travelled_distance_trace'][index_of_tunnel_vehicle2],
                 data_dict['headway'][index_of_tunnel_vehicle2], c='orange', marker='>', s=30, zorder=2)
 
+
+    who_is_first_tunnel = min(index_of_tunnel_vehicle1, index_of_tunnel_vehicle2)
+    who_is_first_merge = min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle1)
+    who_is_first_tunnel_time = time_in_seconds_trail[who_is_first_tunnel:who_is_first_merge][0]
+
+
     ##compute/plot crt
     crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
+
     # print(crt_object[1])
     # crt = crt_object[1][1]
 
     # crt_index_by_true = [i for i, x in enumerate(crt_object[0]) if x]
-    idxs = np.where(np.diff(crt_object[0]) > 0.1)[0]
 
-    for i in range(len(idxs)):
-        ax1.scatter(data_dict['y1_straight'][idxs[i]], data_dict['x1_straight'][idxs[i]], c='black', marker='x',
-                    s=50,
-                    zorder=2)
-        ax1.scatter(data_dict['y2_straight'][idxs[i]], data_dict['x2_straight'][idxs[i]], c='black', marker='x',
-                    s=50, zorder=2)
-        ax3.scatter(average_travelled_distance_trace[idxs[i]], headway[idxs[i]], c='black', marker='x', s=50,
-                    zorder=2)
-        ax2.scatter(data_dict['time'][idxs[i]], velocity_vehicle1[idxs[i]], c='black', marker='x', s=50, zorder=2)
-        ax2.scatter(data_dict['time'][idxs[i]], velocity_vehicle2[idxs[i]], c='black', marker='x', s=50, zorder=2)
-
+    # idxs = np.where(np.diff(crt_object[1]) > 0.5)[0]
+    # crt_times = list(crt_object[1][idxs])
+    #
+    # indexes = []
+    # for i in range(len(crt_times)):
+    #     crt_individual = crt_times[i]
+    #     index_crt = min(range(len(data_dict['time'])),
+    #                     key=lambda i: abs(data_dict['time'][i] - crt_individual))
+    #     indexes.append(index_crt)
+    #
+    # for i in range(len(indexes)):
+    #     ax1.scatter(data_dict['y1_straight'][indexes[i]], data_dict['x1_straight'][indexes[i]], c='black', marker='x',
+    #                 s=50,
+    #                 zorder=2)
+    #     ax1.scatter(data_dict['y2_straight'][indexes[i]], data_dict['x2_straight'][indexes[i]], c='black', marker='x',
+    #                 s=50, zorder=2)
+    #     ax3.scatter(average_travelled_distance_trace[indexes[i]], headway[indexes[i]], c='black', marker='x', s=50,
+    #                 zorder=2)
+    #     ax2.scatter(data_dict['time'][indexes[i]], velocity_vehicle1[indexes[i]], c='black', marker='x', s=50, zorder=2)
+    #     ax2.scatter(data_dict['time'][indexes[i]], velocity_vehicle2[indexes[i]], c='black', marker='x', s=50, zorder=2)
 
     if not crt_object[1].size:
         crt = 0
@@ -375,7 +384,7 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
         index_crt = 0
     else:
         index_crt = min(range(len(data_dict['time'])),
-                                   key=lambda i: abs(data_dict['time'][i] - crt))
+                        key=lambda i: abs(data_dict['time'][i] - crt))
 
     # # limit CRT
     # if index_crt > min(index_of_mergepoint_vehicle1, index_of_mergepoint_vehicle2):
@@ -392,13 +401,12 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
     #                 s=50, zorder=2)
     # else:
 
-
     ax1.scatter(data_dict['y1_straight'][index_crt], data_dict['x1_straight'][index_crt], c='black', marker='x', s=50,
-                zorder=2, label='crt: ' + str(round(crt, 2)) + ' sec')
+                zorder=2, label='crt: ' + str(round(crt-who_is_first_tunnel_time, 2)) + ' sec')
     ax1.scatter(data_dict['y2_straight'][index_crt], data_dict['x2_straight'][index_crt], c='black', marker='x',
                 s=50, zorder=2)
 
-    ax2.scatter(data_dict['time'][index_crt], velocity_vehicle1[index_crt], c='black', marker='x',  s=50, zorder=2)
+    ax2.scatter(data_dict['time'][index_crt], velocity_vehicle1[index_crt], c='black', marker='x', s=50, zorder=2)
     ax2.scatter(data_dict['time'][index_crt], velocity_vehicle2[index_crt], c='black', marker='x', s=50, zorder=2)
 
     ax3.scatter(average_travelled_distance_trace[index_crt], headway[index_crt], c='black', marker='x', s=50, zorder=2)
@@ -419,11 +427,11 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
 
     # final plotting
     ax1.text(-0.08, 0.42, 'A)', transform=ax1.transAxes,
-                fontsize=12, va='bottom', ha='right')
+             fontsize=12, va='bottom', ha='right')
     ax2.text(-0.08, 0.42, 'B)', transform=ax2.transAxes,
-                fontsize=12, va='bottom', ha='right')
+             fontsize=12, va='bottom', ha='right')
     ax3.text(-0.08, 0.42, 'C)', transform=ax3.transAxes,
-                fontsize=12,  va='bottom', ha='right')
+             fontsize=12, va='bottom', ha='right')
 
     ax1.legend(loc='upper right', prop={'size': 8})
     leg = ax1.get_legend()
@@ -432,7 +440,7 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
 
     fig.set_size_inches(10, 6)
 
-    # plt.show()
+    plt.show()
 
     #
     # a_file = open("global_data_dict.pkl", "wb")
@@ -440,51 +448,11 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
     # a_file.close()
 
 
-
-
 if __name__ == '__main__':
     with open(os.path.join('..', 'data_folder', 'headway_bounds.pkl'), 'rb') as f:
         headway_bounds = pickle.load(f)
 
     # 55-45
-    files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_55_45'
-    condition = '55-45'
-    trails = []
-    for file in Path(files_directory).glob('*.csv'):
-        # trail_condition = plot_trail(file)
-        trails.append(file)
-    trails = natsorted(trails, key=str)
-    #
-    # index = 33
-    # plot_trail(trails[index], headway_bounds, condition)
-
-    # for i in range(len(trails)):
-    #     plot_trail(trails[i], headway_bounds, condition)
-
-
-    figure_amount = 0
-    for i in range(len(trails)):
-        plot_trail(trails[i], headway_bounds, condition)
-        fig = plt.savefig(r'D:\Thesis_data_all_experiments\Conditions\condition_55_45\figures\condition_55_45_trail_{}'.format(str(figure_amount)))
-        plt.close(fig)
-        figure_amount += 1
-
-    ## 50-50
-    files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50'
-    condition = '50-50'
-    trails = []
-    for file in Path(files_directory).glob('*.csv'):
-        # trail_condition = plot_trail(file)
-        trails.append(file)
-    trails = natsorted(trails, key=str)
-    figure_amount = 0
-    for i in range(len(trails)):
-        plot_trail(trails[i], headway_bounds, condition)
-        fig = plt.savefig(r'D:\Thesis_data_all_experiments\Conditions\condition_50_50\figures\condition_50_50_trail_{}'.format(str(figure_amount)))
-        plt.close(fig)
-        figure_amount += 1
-
-    ##60-40
     files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_60_40'
     condition = '60-40'
     trails = []
@@ -492,9 +460,52 @@ if __name__ == '__main__':
         # trail_condition = plot_trail(file)
         trails.append(file)
     trails = natsorted(trails, key=str)
-    figure_amount = 0
-    for i in range(len(trails)):
-        plot_trail(trails[i], headway_bounds, condition)
-        fig = plt.savefig(r'D:\Thesis_data_all_experiments\Conditions\condition_60_40\figures\condition_60_40_trail_{}'.format(str(figure_amount)))
-        plt.close(fig)
-        figure_amount += 1
+
+    index = 16
+    plot_trail(trails[index], headway_bounds, condition)
+
+    # for i in range(len(trails)):
+    #     plot_trail(trails[i], headway_bounds, condition)
+    #
+    # figure_amount = 0
+    # for i in range(len(trails)):
+    #     plot_trail(trails[i], headway_bounds, condition)
+    #     fig = plt.savefig(
+    #         r'D:\Thesis_data_all_experiments\Conditions\condition_55_45\figures\condition_55_45_trail_{}'.format(
+    #             str(figure_amount)))
+    #     plt.close(fig)
+    #     figure_amount += 1
+    #
+    # ## 50-50
+    # files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50'
+    # condition = '50-50'
+    # trails = []
+    # for file in Path(files_directory).glob('*.csv'):
+    #     # trail_condition = plot_trail(file)
+    #     trails.append(file)
+    # trails = natsorted(trails, key=str)
+    # figure_amount = 0
+    # for i in range(len(trails)):
+    #     plot_trail(trails[i], headway_bounds, condition)
+    #     fig = plt.savefig(
+    #         r'D:\Thesis_data_all_experiments\Conditions\condition_50_50\figures\condition_50_50_trail_{}'.format(
+    #             str(figure_amount)))
+    #     plt.close(fig)
+    #     figure_amount += 1
+    #
+    # ##60-40
+    # files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_60_40'
+    # condition = '60-40'
+    # trails = []
+    # for file in Path(files_directory).glob('*.csv'):
+    #     # trail_condition = plot_trail(file)
+    #     trails.append(file)
+    # trails = natsorted(trails, key=str)
+    # figure_amount = 0
+    # for i in range(len(trails)):
+    #     plot_trail(trails[i], headway_bounds, condition)
+    #     fig = plt.savefig(
+    #         r'D:\Thesis_data_all_experiments\Conditions\condition_60_40\figures\condition_60_40_trail_{}'.format(
+    #             str(figure_amount)))
+    #     plt.close(fig)
+    #     figure_amount += 1
