@@ -89,16 +89,16 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
 
     if condition == '50-50':
         approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
-                         (np.array(data_dict['distance_traveled_vehicle1']) < 305)) | \
+                         (np.array(data_dict['distance_traveled_vehicle1']) < 304)) | \
                         ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
-                         (np.array(data_dict['distance_traveled_vehicle2']) < 305))
+                         (np.array(data_dict['distance_traveled_vehicle2']) < 304))
         indices_of_conflict_resolved = (on_collision_course & approach_mask)
 
     if condition == '55-45':
         approach_mask = ((np.array(data_dict['distance_traveled_vehicle1']) > track.tunnel_length) &
-                         (np.array(data_dict['distance_traveled_vehicle1']) < 305)) | \
+                         (np.array(data_dict['distance_traveled_vehicle1']) < 304)) | \
                         ((np.array(data_dict['distance_traveled_vehicle2']) > track.tunnel_length) &
-                         (np.array(data_dict['distance_traveled_vehicle2']) < 305))
+                         (np.array(data_dict['distance_traveled_vehicle2']) < 304))
         indices_of_conflict_resolved = (on_collision_course & approach_mask)
 
     if condition == '60-40':
@@ -211,22 +211,23 @@ def compute_crt(path_to_data_csv, condition):
 
     ##compute crt
     crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
-    index_of_tunnel_vehicle1 = min(range(len(data_dict['distance_traveled_vehicle1'])),
-                                   key=lambda i: abs(data_dict['distance_traveled_vehicle1'][i] - track.tunnel_length))
-    index_of_tunnel_vehicle2 = min(range(len(data_dict['distance_traveled_vehicle2'])),
-                                   key=lambda i: abs(data_dict['distance_traveled_vehicle2'][i] - track.tunnel_length))
-    who_is_first_tunnel = min(index_of_tunnel_vehicle1, index_of_tunnel_vehicle2)
-    who_is_last_tunnel = max(index_of_tunnel_vehicle1, index_of_tunnel_vehicle2)
-
-    who_is_first_tunnel_time = time_in_seconds_trail[who_is_first_tunnel]
-    who_is_last_tunnel_time = time_in_seconds_trail[who_is_last_tunnel]
+    # index_of_tunnel_vehicle1 = min(range(len(data_dict['distance_traveled_vehicle1'])),
+    #                                key=lambda i: abs(data_dict['distance_traveled_vehicle1'][i] - track.tunnel_length))
+    # index_of_tunnel_vehicle2 = min(range(len(data_dict['distance_traveled_vehicle2'])),
+    #                                key=lambda i: abs(data_dict['distance_traveled_vehicle2'][i] - track.tunnel_length))
+    # who_is_first_tunnel = min(index_of_tunnel_vehicle1, index_of_tunnel_vehicle2)
+    # who_is_last_tunnel = max(index_of_tunnel_vehicle1, index_of_tunnel_vehicle2)
+    #
+    # who_is_first_tunnel_time = time_in_seconds_trail[who_is_first_tunnel]
+    #
+    # who_is_last_tunnel_time = time_in_seconds_trail[who_is_last_tunnel]
 
 
     if not crt_object[1].size:
         crt = 0
     else:
-        # crt = crt_object[1][-1] - who_is_first_tunnel_time
-        crt = crt_object[1][-1] - who_is_last_tunnel_time
+        crt = crt_object[1][-1] - 4.08
+        # crt = crt_object[1][-1] - who_is_last_tunnel_time
 
 
     if not crt_object[1].size:
@@ -286,7 +287,7 @@ if __name__ == '__main__':
         crts_60_40.append(crt)
         # crt_indexes_60_40.append(crt_index)
 
-    path_to_saved_dict_crt = os.path.join('..', 'data_folder', 'crt_last_vehicle_exit.csv')
+    path_to_saved_dict_crt = os.path.join('..', 'data_folder', 'crt_at_average_exit.csv')
     # path_to_saved_dict_index = os.path.join('..', 'data_folder', 'crt_index_all_conditions_last_vehicle.csv')
 
     df1 = pd.DataFrame({'Condition 1': crts_60_40})

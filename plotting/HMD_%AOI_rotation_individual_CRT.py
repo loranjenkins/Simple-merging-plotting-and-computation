@@ -57,12 +57,12 @@ def plot_varjo(path_to_csv_folder):
 
     # simulation_constants = SimulationConstants(vehicle_width=1.5,
     #                                            vehicle_length=4.7,
-    #                                            tunnel_length=120,  # original = 118 -> check in unreal
+    #                                            tunnel_length=135,  # original = 118 -> check in unreal
     #                                            track_width=8,
     #                                            track_height=230,
     #                                            track_start_point_distance=460,
     #                                            track_section_length_before=325.27,
-    #                                            track_section_length_after=150)
+    #                                            track_section_length_after=120)
 
     track = SymmetricMergingTrack(simulation_constants)
 
@@ -136,6 +136,7 @@ def plot_varjo(path_to_csv_folder):
 
         indexes_of_tunnel_and_merge_vehicle1.append(inner_tunnel_merge_1)
         indexes_of_tunnel_and_merge_vehicle2.append(inner_tunnel_merge_2)
+
 
     # time at merging
     time_at_merge_vehicle1 = []
@@ -217,6 +218,8 @@ def plot_varjo(path_to_csv_folder):
     x_vehicle1 = list(np.linspace(norm_at_exit_vehicle1, norm_at_merge_vehicle1, len(average_hmd_vehicle1)))
     x_vehicle2 = list(np.linspace(norm_at_exit_vehicle2, norm_at_merge_vehicle2, len(average_hmd_vehicle2)))
 
+
+
     return ysmoothed_1, ysmoothed_2, x_vehicle1, x_vehicle2, average_trace_vehicle1, average_trace_vehicle2, norm_at_exit_vehicle1, norm_at_merge_vehicle1, norm_at_exit_vehicle2, norm_at_merge_vehicle2
 
 
@@ -241,6 +244,7 @@ if __name__ == '__main__':
     time_x_start_advantage = sum([Varjo_data[6], Varjo_data1[8]]) / 2
     time_x_end_advantage = sum([Varjo_data[7], Varjo_data1[9]]) / 2
 
+
     # positive headway combined -> velocity advantage
     x_data_velocity_disadvantage = [Varjo_data[3], Varjo_data1[2]]
     hmd_data_velocity_disadvantage = [Varjo_data[1], Varjo_data1[0]]
@@ -250,8 +254,9 @@ if __name__ == '__main__':
     time_x_start_disadvantage = min([Varjo_data[8], Varjo_data1[6]])
     time_x_end_disadvantage = min([Varjo_data[9], Varjo_data1[7]])
 
+
     fig, (ax1, ax2) = plt.subplots(1, 2)
-    fig.text(0.04, 0.5, "% fixated on AOI", va='center', rotation='vertical')
+    fig.text(0.01, 0.5, "% fixated on AOI", va='center', rotation='vertical')
     fig.text(0.5, 0.06, "Time [s]", ha="center", va="center")
     fig.suptitle('Comparison gaze behavior between participants condition 3')
     ax1.set_title('Participant has velocity advantage')
@@ -262,8 +267,8 @@ if __name__ == '__main__':
                      label='Fixation on opponent')
     ax1.set_xlim([time_x_start_advantage, time_x_end_advantage])
     ax1.set_ylim([0, 1])
-    ax1.plot([], [], ' ', label='Average % fixation: ' + str(round(average_trace_advantage, 2)))
     ax1.axvline(global_crt['median_55_45'][0], 0, 1, color='r', label='Average CRT')
+    ax1.plot([], [], ' ', label='Average % fixation: ' + str(round(average_trace_advantage, 2)))
     ax1.legend(loc='lower left')
 
     ax2.set_title('Participant has velocity disadvantage')
@@ -272,10 +277,10 @@ if __name__ == '__main__':
                      label='Fixation on road')
     ax2.fill_between(combined_x_data_disadvantage, combined_hmd_data_disadvantage, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
-    ax2.set_xlim([time_x_start_disadvantage, 19.08])
+    ax2.set_xlim([time_x_start_disadvantage, time_x_end_disadvantage])
     ax2.set_ylim([0, 1])
-    ax2.plot([], [], ' ', label='Average % fixation: ' + str(round(average_trace_disadvantage, 2)))
     ax2.axvline(global_crt['median_55_45'][0], 0, 1, color='r', label='Average CRT')
+    ax2.plot([], [], ' ', label='Average % fixation: ' + str(round(average_trace_disadvantage, 2)))
     ax2.legend(loc='lower left')
 
     # left ahead 60-40
@@ -305,7 +310,7 @@ if __name__ == '__main__':
     time_x_end_disadvantage = min([Varjo_data3[9], Varjo_data4[7]])
 
     fig, (ax3, ax4) = plt.subplots(1, 2)
-    fig.text(0.04, 0.5, "% fixated on AOI", va='center', rotation='vertical')
+    fig.text(0.01, 0.5, "% fixated on AOI", va='center', rotation='vertical')
     fig.text(0.5, 0.06, "Time [s]", ha="center", va="center")
     fig.suptitle('Comparison gaze behavior between participants condition 1')
     ax3.set_title('Participant has velocity advantage')
@@ -316,8 +321,8 @@ if __name__ == '__main__':
                      label='Fixation on opponent')
     ax3.set_xlim([time_x_start_advantage, time_x_end_advantage])
     ax3.set_ylim([0, 1])
-    ax3.plot([], [], ' ', label='Average % fixation: ' + str(round(average_trace_advantage, 2)))
     ax3.axvline(global_crt['median_60_40'][0], 0, 1, color='r', label='Average CRT')
+    ax3.plot([], [], ' ', label='Average % fixation: ' + str(round(average_trace_advantage, 2)))
     ax3.legend(loc='lower left')
 
     ax4.set_title('Participant has velocity disadvantage')
@@ -328,39 +333,39 @@ if __name__ == '__main__':
                      label='Fixation on opponent')
     ax4.set_xlim([time_x_start_disadvantage, time_x_end_disadvantage])
     ax4.set_ylim([0, 1])
-    ax4.plot([], [], ' ', label='Average % fixation: ' + str(round(average_trace_disadvantage, 2)))
     ax4.axvline(global_crt['median_60_40'][0], 0, 1, color='r', label='Average CRT')
+    ax4.plot([], [], ' ', label='Average % fixation: ' + str(round(average_trace_disadvantage, 2)))
     ax4.legend(loc='lower left')
 
-    # 50-50
-    path_to_csv_50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_50_50'
-    Varjo_data = plot_varjo(path_to_csv_50_50)
-
-    fig, (ax5, ax6) = plt.subplots(1, 2)
-    fig.text(0.04, 0.5, "% fixated on AOI", va='center', rotation='vertical')
-    fig.text(0.5, 0.06, "Time [s]", ha="center", va="center")
-    fig.suptitle('Comparison gaze behavior between participants condition 2')
-    ax5.plot(Varjo_data[2], Varjo_data[0])  # see x below
-    ax5.fill_between(Varjo_data[2], Varjo_data[0], color='blue', alpha=0.1, label='Fixation on road')
-    ax5.fill_between(Varjo_data[2], Varjo_data[0], 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax5.set_title('Participant has equal velocity')
-    ax5.set_xlim([Varjo_data[6], Varjo_data[7]])
-    ax5.set_ylim([0, 1])
-
-    ax6.plot(Varjo_data[3], Varjo_data[1])  # see x below
-    ax6.fill_between(Varjo_data[3], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
-    ax6.fill_between(Varjo_data[3], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax6.set_title('Participant has equal velocity')
-    ax6.set_xlim([Varjo_data[8], Varjo_data[9]])
-    ax6.set_ylim([0, 1])
-
-    ax5.axvline(global_crt['median_50_50'][0], 0, 1, color='r', label='Average CRT')
-    ax6.axvline(global_crt['median_50_50'][0], 0, 1, color='r', label='Average CRT')
-
-    ax5.plot([], [], ' ', label='Average % fixation: ' + str(round(Varjo_data[4], 2)))
-    ax6.plot([], [], ' ', label='Average % fixation: ' + str(round(Varjo_data[5], 2)))
-    ax5.legend(loc='lower left')
-    ax6.legend(loc='lower left')
+    # # 50-50
+    # path_to_csv_50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_50_50'
+    # Varjo_data = plot_varjo(path_to_csv_50_50)
+    #
+    # fig, (ax5, ax6) = plt.subplots(1, 2)
+    # fig.text(0.01, 0.5, "% fixated on AOI", va='center', rotation='vertical')
+    # fig.text(0.5, 0.06, "Time [s]", ha="center", va="center")
+    # fig.suptitle('Comparison gaze behavior between participants condition 2')
+    # ax5.plot(Varjo_data[2], Varjo_data[0])  # see x below
+    # ax5.fill_between(Varjo_data[2], Varjo_data[0], color='blue', alpha=0.1, label='Fixation on road')
+    # ax5.fill_between(Varjo_data[2], Varjo_data[0], 1, color='red', alpha=0.1, label='Fixation on opponent')
+    # ax5.set_title('Participant has equal velocity')
+    # ax5.set_xlim([Varjo_data[6], Varjo_data[7]])
+    # ax5.set_ylim([0, 1])
+    #
+    # ax6.plot(Varjo_data[3], Varjo_data[1])  # see x below
+    # ax6.fill_between(Varjo_data[3], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
+    # ax6.fill_between(Varjo_data[3], Varjo_data[1], 1, color='red', alpha=0.1, label='Fixation on opponent')
+    # ax6.set_title('Participant has equal velocity')
+    # ax6.set_xlim([Varjo_data[8], Varjo_data[9]])
+    # ax6.set_ylim([0, 1])
+    #
+    # ax5.axvline(global_crt['median_50_50'][0], 0, 1, color='r', label='Average CRT')
+    # ax6.axvline(global_crt['median_50_50'][0], 0, 1, color='r', label='Average CRT')
+    #
+    # ax5.plot([], [], ' ', label='Average % fixation: ' + str(round(Varjo_data[4], 2)))
+    # ax6.plot([], [], ' ', label='Average % fixation: ' + str(round(Varjo_data[5], 2)))
+    # ax5.legend(loc='lower left')
+    # ax6.legend(loc='lower left')
 
     plt.show()
 

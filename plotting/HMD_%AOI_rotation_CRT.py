@@ -53,6 +53,15 @@ def plot_varjo(path_to_csv_folder, condition):
                                                track_section_length_before=304.056,
                                                track_section_length_after=200)  # goes until 400
 
+    # simulation_constants = SimulationConstants(vehicle_width=1.5,
+    #                                            vehicle_length=4.7,
+    #                                            tunnel_length=135,  # original = 118 -> check in unreal
+    #                                            track_width=8,
+    #                                            track_height=230,
+    #                                            track_start_point_distance=460,
+    #                                            track_section_length_before=325.27,
+    #                                            track_section_length_after=120)
+
     track = SymmetricMergingTrack(simulation_constants)
 
     files_directory = path_to_csv_folder
@@ -248,10 +257,10 @@ def plot_varjo(path_to_csv_folder, condition):
 
 if __name__ == '__main__':
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
-    fig.suptitle('Comparison gaze behavior')
+    fig.suptitle('Comparison gaze behavior between conditions')
 
     #condition 60-40
-    path_60_40 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_60_40'
+    path_60_40 = r'D:\Thesis_data_all_experiments\Conditions\condition_60_40'
     condition = '60-40'
     Varjo_data = plot_varjo(path_60_40, condition)
 
@@ -261,12 +270,12 @@ if __name__ == '__main__':
 
     ax1.axvline(Varjo_data[3], 0, 1, color='r', label='Average CRT')
     ax1.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
-    ax1.plot([], [], ' ', label='Average % fixated before average CRT: ' + str(round(Varjo_data[6], 2)))
-    ax1.plot([], [], ' ', label='Average % fixated after average CRT: ' + str(round(Varjo_data[7], 2)))
+    # ax1.plot([], [], ' ', label='Average % fixated before average CRT: ' + str(round(Varjo_data[6], 2)))
+    # ax1.plot([], [], ' ', label='Average % fixated after average CRT: ' + str(round(Varjo_data[7], 2)))
     ax1.plot([], [], ' ', label='Average CRT: ' + str(round(Varjo_data[3], 2)))
 
 
-    ax1.set_title("Condition 60-40")
+    ax1.set_title("Condition 1")
     ax1.set_xlim([Varjo_data[4], Varjo_data[5]])
     ax1.set_ylim([0, 1])
     # ax1.set(ylabel='% fixated on AOI')
@@ -274,11 +283,10 @@ if __name__ == '__main__':
     fig.text(0.5, 0.06, "Time [s]", ha="center", va="center")
     ax1.legend(loc='lower left')
 
-
-    #condition 55-45
-    path_55_45 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_55_45'
-    condition = '55-45'
-    Varjo_data = plot_varjo(path_55_45, condition)
+    #condition 50-50
+    path_50_50 = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50'
+    condition = '50-50'
+    Varjo_data = plot_varjo(path_50_50, condition)
 
     ax2.plot(Varjo_data[0], Varjo_data[1])  # see x below
     ax2.fill_between(Varjo_data[0], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
@@ -286,20 +294,20 @@ if __name__ == '__main__':
 
     ax2.axvline(Varjo_data[3], 0, 1, color='r', label='Average CRT')
     ax2.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
-    ax2.plot([], [], ' ', label='Average % fixated before average CRT: ' + str(round(Varjo_data[6], 2)))
-    ax2.plot([], [], ' ', label='Average % fixated after average CRT: ' + str(round(Varjo_data[7], 2)))
+    # ax3.plot([], [], ' ', label='Average % fixated before average CRT: ' + str(round(Varjo_data[6], 2)))
+    # ax3.plot([], [], ' ', label='Average % fixated after average CRT: ' + str(round(Varjo_data[7], 2)))
     ax2.plot([], [], ' ', label='Average CRT: ' + str(round(Varjo_data[3], 2)))
 
-    ax2.set_title("Condition 55-45")
+    ax2.set_title("Condition 2")
     ax2.set_xlim(Varjo_data[4], Varjo_data[5])
     ax2.set_ylim([0, 1])
-    # ax2.set(ylabel='% fixated on AOI')
+    # ax3.set(ylabel='% fixated on AOI')
     ax2.legend(loc='lower left')
 
-    #condition 50-50
-    path_50_50 = r'C:\Users\loran\Desktop\Mechanical engineering - Delft\Thesis\Thesis_data_all_experiments\Conditions\condition_50_50'
-    condition = '50-50'
-    Varjo_data = plot_varjo(path_50_50, condition)
+    #condition 55-45
+    path_55_45 = r'D:\Thesis_data_all_experiments\Conditions\condition_55_45'
+    condition = '55-45'
+    Varjo_data = plot_varjo(path_55_45, condition)
 
     ax3.plot(Varjo_data[0], Varjo_data[1])  # see x below
     ax3.fill_between(Varjo_data[0], Varjo_data[1], color='blue', alpha=0.1, label='Fixation on road')
@@ -307,14 +315,14 @@ if __name__ == '__main__':
 
     ax3.axvline(Varjo_data[3], 0, 1, color='r', label='Average CRT')
     ax3.plot([], [], ' ', label='Average: ' + str(round(Varjo_data[2], 2)))
-    ax3.plot([], [], ' ', label='Average % fixated before average CRT: ' + str(round(Varjo_data[6], 2)))
-    ax3.plot([], [], ' ', label='Average % fixated after average CRT: ' + str(round(Varjo_data[7], 2)))
+    # ax2.plot([], [], ' ', label='Average % fixated before average CRT: ' + str(round(Varjo_data[6], 2)))
+    # ax2.plot([], [], ' ', label='Average % fixated after average CRT: ' + str(round(Varjo_data[7], 2)))
     ax3.plot([], [], ' ', label='Average CRT: ' + str(round(Varjo_data[3], 2)))
 
-    ax3.set_title("Condition 50-50")
+    ax3.set_title("Condition 3")
     ax3.set_xlim(Varjo_data[4], Varjo_data[5])
     ax3.set_ylim([0, 1])
-    # ax3.set(ylabel='% fixated on AOI')
+    # ax2.set(ylabel='% fixated on AOI')
     ax3.legend(loc='lower left')
 
     plt.show()

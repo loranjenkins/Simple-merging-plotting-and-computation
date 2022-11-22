@@ -199,10 +199,22 @@ def _compute_crt(path_to_data_csv, condition):
     ##compute crt
     crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
 
+    ##compute crt
+    crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
+    index_of_tunnel_vehicle1 = min(range(len(data_dict['distance_traveled_vehicle1'])),
+                                   key=lambda i: abs(data_dict['distance_traveled_vehicle1'][i] - track.tunnel_length))
+    index_of_tunnel_vehicle2 = min(range(len(data_dict['distance_traveled_vehicle2'])),
+                                   key=lambda i: abs(data_dict['distance_traveled_vehicle2'][i] - track.tunnel_length))
+    who_is_first_tunnel = min(index_of_tunnel_vehicle1, index_of_tunnel_vehicle2)
+    who_is_last_tunnel = max(index_of_tunnel_vehicle1, index_of_tunnel_vehicle2)
+
+    who_is_first_tunnel_time = time_in_seconds_trail[who_is_first_tunnel]
+    who_is_last_tunnel_time = time_in_seconds_trail[who_is_last_tunnel]
+
     if not crt_object[1].size:
         crt = 0
     else:
-        crt = crt_object[1][-1]
+        crt = crt_object[1][-1] - who_is_first_tunnel_time
 
     if not crt_object[1].size:
         crt_index = 0
