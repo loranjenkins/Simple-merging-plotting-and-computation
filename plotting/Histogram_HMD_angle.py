@@ -129,9 +129,9 @@ def compute_hmd_rots(path_to_data_csv):
     return hmd_rots_total
 
 if __name__ == '__main__':
-    files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50'
-    files_directory1 = r'D:\Thesis_data_all_experiments\Conditions\condition_55_45'
-    files_directory2 = r'D:\Thesis_data_all_experiments\Conditions\condition_60_40'
+    files_directory = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_50_50 - kopie'
+    files_directory1 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_50_50 - kopie'
+    files_directory2 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_50_50 - kopie'
 
     # files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50\experiment3'
 
