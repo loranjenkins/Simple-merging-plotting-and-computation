@@ -272,12 +272,25 @@ if __name__ == '__main__':
     path_to_csv_50_50 = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50'
     condition = '50-50'
     Varjo_data = plot_varjo(path_to_csv_50_50, condition)
-    average1 = sum(Varjo_data[0]) / len(Varjo_data[0])
-    sns.histplot(Varjo_data[0], bins=20)
-    ax1.axvline(average1, 0, 1, color='r', label='Average conflict resolved')
+    kde = sns.kdeplot(Varjo_data[0], ax=ax1, color='r')
+    plt.hist(Varjo_data[0], 30, density=True, color='dodgerblue', edgecolor='black', linewidth=1.2)
+
+    line = kde.lines[0]
+    x, y = line.get_data()
+    x_index = min(range(len(x)),
+                  key=lambda i: abs(x[i] - 135))
+    x = x[x_index:len(x)]
+    y = y[x_index:len(x)]
+    maxid = y.argmax()
+
+    average1 = x[maxid]
+
+    ax1.scatter(x[maxid], y[maxid], c='yellow', marker='x', s=100, zorder=3)
+    ax1.axvline(x[maxid], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x[maxid])))
     ax1.set_xlim([135, 325])
     ax1.set(xlabel='Average traveled distance [m]')
     ax1.legend(loc='best')
+
 
     # 55 - 45
     fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
@@ -286,19 +299,40 @@ if __name__ == '__main__':
     path_to_csv_55_45 = r'D:\Thesis_data_all_experiments\Conditions\condition_55_45'
     condition = '55-45'
     Varjo_data = plot_varjo(path_to_csv_55_45, condition)
-    average2 = sum(Varjo_data[1]) / len(Varjo_data[1])
-    average3 = sum(Varjo_data[2]) / len(Varjo_data[2])
-    sns.histplot(Varjo_data[1], bins=20, ax=axes[0])
-    sns.histplot(Varjo_data[2], bins=20, ax=axes[1])
-    axes[0].axvline(average2, 0, 1, color='r', label='Average conflict resolved')
-    axes[1].axvline(average3, 0, 1, color='r', label='Average conflict resolved')
+    axes[0].hist(Varjo_data[1], 30, density=True, color='dodgerblue', edgecolor='black', linewidth=1.2)
+    axes[1].hist(Varjo_data[2], 30, density=True, color='dodgerblue', edgecolor='black', linewidth=1.2)
+    kde1 = sns.kdeplot(Varjo_data[1], ax=axes[0], color='r')
+    kde2 = sns.kdeplot(Varjo_data[2], ax=axes[1], color='r')
+
+    line1 = kde1.lines[0]
+    x1, y1 = line1.get_data()
+    x1_index = min(range(len(x1)),
+                  key=lambda i: abs(x1[i] - 135))
+    x1 = x1[x1_index:len(x1)]
+    y1 = y1[x1_index:len(x1)]
+    maxid1 = y1.argmax()
+
+    line2 = kde2.lines[0]
+    x2, y2 = line2.get_data()
+    x2_index = min(range(len(x2)),
+                  key=lambda i: abs(x2[i] - 135))
+    x2 = x2[x2_index:len(x2)]
+    y2 = y2[x2_index:len(x2)]
+    maxid2 = y2.argmax()
+
+    average2 = x1[maxid1]
+    average3 = x2[maxid2]
+
+    axes[0].scatter(x1[maxid1], y1[maxid1], c='yellow', marker='x', s=100, zorder=3)
+    axes[0].axvline(x1[maxid1], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x1[maxid1])))
+    axes[1].scatter(x2[maxid2], y2[maxid2], c='yellow', marker='x', s=100, zorder=3)
+    axes[1].axvline(x2[maxid2], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x2[maxid2])))
     axes[0].set_xlim([135, 325])
     axes[1].set_xlim([135, 325])
     axes[0].set_title('Participant is behind')
     axes[1].set_title('Participant is ahead')
     axes[0].legend(loc='best')
     axes[1].legend(loc='best')
-
 
     # # 60-40
     fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
@@ -307,12 +341,35 @@ if __name__ == '__main__':
     path_to_csv_60_40 = r'D:\Thesis_data_all_experiments\Conditions\condition_60_40'
     condition = '60-40'
     Varjo_data = plot_varjo(path_to_csv_60_40, condition)
-    average4 = sum(Varjo_data[3]) / len(Varjo_data[3])
-    average5 = sum(Varjo_data[4]) / len(Varjo_data[4])
-    sns.histplot(Varjo_data[3], bins=20, ax=axes[0])
-    sns.histplot(Varjo_data[4], bins=20, ax=axes[1])
-    axes[0].axvline(average4, 0, 1, color='r', label='Average conflict resolved')
-    axes[1].axvline(average5, 0, 1, color='r', label='Average conflict resolved')
+
+    axes[0].hist(Varjo_data[3], 30, density=True, color='dodgerblue', edgecolor='black', linewidth=1.2)
+    axes[1].hist(Varjo_data[4], 30, density=True, color='dodgerblue', edgecolor='black', linewidth=1.2)
+    kde1 = sns.kdeplot(Varjo_data[3], ax=axes[0], color='r')
+    kde2 = sns.kdeplot(Varjo_data[4], ax=axes[1], color='r')
+
+    line1 = kde1.lines[0]
+    x1, y1 = line1.get_data()
+    x1_index = min(range(len(x1)),
+                  key=lambda i: abs(x1[i] - 135))
+    x1 = x1[x1_index:len(x1)]
+    y1 = y1[x1_index:len(x1)]
+    maxid1 = y1.argmax()
+
+    line2 = kde2.lines[0]
+    x2, y2 = line2.get_data()
+    x2_index = min(range(len(x2)),
+                  key=lambda i: abs(x2[i] - 135))
+    x2 = x2[x2_index:len(x2)]
+    y2 = y2[x2_index:len(x2)]
+    maxid2 = y2.argmax()
+
+    average4 = x1[maxid1]
+    average5 = x2[maxid2]
+
+    axes[0].scatter(x1[maxid1], y1[maxid1], c='yellow', marker='x', s=100, zorder=3)
+    axes[0].axvline(x1[maxid1], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x1[maxid1])))
+    axes[1].scatter(x2[maxid2], y2[maxid2], c='yellow', marker='x', s=100, zorder=3)
+    axes[1].axvline(x2[maxid2], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x2[maxid2])))
     axes[0].set_xlim([135, 325])
     axes[1].set_xlim([135, 325])
     axes[0].set_title('Participant is behind')

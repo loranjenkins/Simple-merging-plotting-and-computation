@@ -234,7 +234,7 @@ if __name__ == '__main__':
     print(mean)
     print(mean_per_experiment)
 
-    fig, (ax1, ax2, ax3, ax4, ax5, ax6, ax7) = plt.subplots(1, 7, sharey=True)
+    fig, (ax1, ax2, ax3, ax4, ax5, ax6, ax7) = plt.subplots(1, 7, figsize=(10, 5), sharey=True)
 
     x = np.array([0, 1, 2, 3, 4])
     for i in range(len(average_experiment1)):
@@ -263,46 +263,46 @@ if __name__ == '__main__':
     ax1.set_yticks(np.arange(0, 1.2, step=0.2))
     ax1.set_yticklabels(['0', '0.2', '0.4', '0.6', '0.8', '1'])
     # ax1.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[0], 3)))
-    ax1.set_title('Experiment 1\naverage:\n' + str(round(mean_per_experiment[0], 3)))
+    ax1.set_title('Experiment 1')
 
     ax2.set_xticks(range(5))
     ax2.set_xticklabels(['40', '45', '50', '55', '60'])
     # ax2.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[1], 3)))
-    ax2.set_title('Experiment 2\naverage:\n' + str(round(mean_per_experiment[1], 3)))
+    ax2.set_title('Experiment 2')
 
     ax3.set_xticks(range(5))
     ax3.set_xticklabels(['40', '45', '50', '55', '60'])
     ax3.set_yticks(np.arange(0, 1.2, step=0.2))
     # ax3.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[2], 3)))
-    ax3.set_title('Experiment 3\naverage:\n' + str(round(mean_per_experiment[2], 3)))
+    ax3.set_title('Experiment 3')
 
     ax4.set_xticks(range(5))
     ax4.set_xticklabels(['40', '45', '50', '55', '60'])
     ax4.set_yticks(np.arange(0, 1.2, step=0.2))
     # ax4.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[3], 3)))
-    ax4.set_title('Experiment 4\naverage:\n' + str(round(mean_per_experiment[3], 3)))
+    ax4.set_title('Experiment 4')
 
     ax5.set_xticks(range(5))
     ax5.set_xticklabels(['40', '45', '50', '55', '60'])
     ax5.set_yticks(np.arange(0, 1.2, step=0.2))
     # ax5.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[4], 3)))
-    ax5.set_title('Experiment 5\naverage:\n' + str(round(mean_per_experiment[4], 3)))
+    ax5.set_title('Experiment 5')
 
     ax6.set_xticks(range(5))
     ax6.set_xticklabels(['40', '45', '50', '55', '60'])
     ax6.set_yticks(np.arange(0, 1.2, step=0.2))
     # ax6.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[5], 3)))
-    ax6.set_title('Experiment 6\naverage:\n' + str(round(mean_per_experiment[5], 3)))
+    ax6.set_title('Experiment 6')
 
     ax7.set_xticks(range(5))
     ax7.set_xticklabels(['40', '45', '50', '55', '60'])
     ax7.set_yticks(np.arange(0, 1.2, step=0.2))
     # ax7.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[6], 3)))
-    ax7.set_title('Experiment 7\naverage:\n' + str(round(mean_per_experiment[6], 3)))
+    ax7.set_title('Experiment 7')
 
     fig.suptitle('Probibility vehicle 1 merging first for each experiment')
     fig.text(0.06, 0.5, "Probability [-]", va='center', rotation='vertical')
-    fig.text(0.5, 0.06, "Velocity vehicle 1 [km/h]", ha="center", va="center")
+    fig.text(0.5, 0.04, "Velocity vehicle 1 [km/h]", ha="center", va="center")
     # ax1.legend(loc='lower left')
     # ax2.legend(loc='lower left')
     # ax3.legend(loc='lower left')
@@ -311,7 +311,7 @@ if __name__ == '__main__':
     # ax6.legend(loc='lower left')
     # ax7.legend(loc='lower left')
 
-    fig.set_size_inches(12, 8)
+    # fig.set_size_inches(12, 8)
     plt.savefig(r'D:\Thesis_data_all_experiments\Conditions\figures_all_conditions\boxplot_per_experiment\boxplot_per_experiment')
 
     plt.show()

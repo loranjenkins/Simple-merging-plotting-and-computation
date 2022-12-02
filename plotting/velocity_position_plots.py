@@ -409,7 +409,7 @@ if __name__ == '__main__':
         headway_bounds = pickle.load(f)
 
     # 55-45
-    files_directory = r'D:\Thesis_data_all_experiments\Conditions\test'
+    files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_55_45'
     condition = '55-45'
     trails = []
     for file in Path(files_directory).glob('*.csv'):
@@ -417,7 +417,7 @@ if __name__ == '__main__':
         trails.append(file)
     trails = natsorted(trails, key=str)
 
-    index = 0
+    index = 15
     plot_trail(trails[index], headway_bounds, condition)
 
     # for i in range(len(trails)):
