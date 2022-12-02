@@ -137,10 +137,7 @@ def plot_varjo(path_to_csv_folder):
         indexes_of_tunnel_and_merge_vehicle2.append(inner_index_list_2)
 
     # interactive data for each vehicle
-    interactive_area_travelled_trace_vehicle1 = []
     hmd_rot_interactive_area_vehicle1 = []
-
-    interactive_area_travelled_trace_vehicle2 = []
     hmd_rot_interactive_area_vehicle2 = []
 
     for i in range(len(indexes_of_tunnel_and_merge_vehicle1)):
@@ -150,16 +147,8 @@ def plot_varjo(path_to_csv_folder):
         hmd_rot_2 = list(all_pds_list[i]['HMD_rotation_vehicle2'][
                          indexes_of_tunnel_and_merge_vehicle2[i][0]:indexes_of_tunnel_and_merge_vehicle2[i][1]])
 
-        interactive_trace_1 = travelled_distance_vehicle1[i][
-                              indexes_of_tunnel_and_merge_vehicle1[i][0]:indexes_of_tunnel_and_merge_vehicle1[i][1]]
-        interactive_trace_2 = travelled_distance_vehicle2[i][
-                              indexes_of_tunnel_and_merge_vehicle2[i][0]:indexes_of_tunnel_and_merge_vehicle2[i][1]]
-
         hmd_rot_interactive_area_vehicle1.append(hmd_rot_1)
         hmd_rot_interactive_area_vehicle2.append(hmd_rot_2)
-
-        interactive_area_travelled_trace_vehicle1.append(interactive_trace_1)
-        interactive_area_travelled_trace_vehicle2.append(interactive_trace_2)
 
         on_ramp_vs_opponent_vehicle1 = []
         on_ramp_vs_opponent_vehicle2 = []
@@ -189,12 +178,12 @@ def plot_varjo(path_to_csv_folder):
     # interpolation to get equal lengths list HMD rots
     max_len_v1 = []
     max_len_v2 = []
-    for i in range(len(interactive_area_travelled_trace_vehicle1)):
-        a = len(interactive_area_travelled_trace_vehicle1[i])
+    for i in range(len(hmd_rot_interactive_area_vehicle1)):
+        a = len(hmd_rot_interactive_area_vehicle1[i])
         max_len_v1.append(a)
 
-    for i in range(len(interactive_area_travelled_trace_vehicle2)):
-        a = len(interactive_area_travelled_trace_vehicle2[i])
+    for i in range(len(hmd_rot_interactive_area_vehicle2)):
+        a = len(hmd_rot_interactive_area_vehicle2[i])
         max_len_v2.append(a)
 
     max_len_v1 = max(max_len_v1)

@@ -458,8 +458,6 @@ def plot_varjo(path_to_csv_folder, condition):
     average_hmd_vehicle1 = _average_hmd_vehicle1[np.logical_not(np.isnan(_average_hmd_vehicle1))]
     average_hmd_vehicle2 = _average_hmd_vehicle2[np.logical_not(np.isnan(_average_hmd_vehicle2))]
 
-    # average_trace_vehicle1 = sum(average_hmd_vehicle1) / len(average_hmd_vehicle1)
-    # average_trace_vehicle2 = sum(average_hmd_vehicle2) / len(average_hmd_vehicle2)
 
     ysmoothed_1 = gaussian_filter1d(average_hmd_vehicle1, sigma=4)
     ysmoothed_2 = gaussian_filter1d(average_hmd_vehicle2, sigma=4)
@@ -469,6 +467,7 @@ def plot_varjo(path_to_csv_folder, condition):
     # compute average trace before and after
     index_crt_1 = min(range(len(x_vehicle1)),
                       key=lambda i: abs(x_vehicle1[i] - 0))
+    print(x_vehicle1[0:index_crt_1])
     average_trace_vehicle1_before = sum(ysmoothed_1[0:index_crt_1]) / len(ysmoothed_1[0:index_crt_1])
     average_trace_vehicle1_after = sum(ysmoothed_1[index_crt_1:len(ysmoothed_1)]) / len(
         ysmoothed_1[index_crt_1:len(ysmoothed_1)])
@@ -550,7 +549,7 @@ if __name__ == '__main__':
     ax1.set_title('Participant is behind')
     ax1.set_xlim([time_x_start_behind, time_x_end_behind])
     ax1.set_ylim([0, 1])
-    ax1.axvline(0, 0, 1, color='r', label='Median CRT normalized at zero')
+    ax1.axvline(0, 0, 1, color='r', label='Median CRT')
     ax1.plot([], [], ' ', label='Average % before: ' + str(round(1 - average_trace_behind_before, 2)))
     ax1.plot([], [], ' ', label='Average % after: ' + str(round(1 - average_trace_behind_after, 2)))
 
@@ -563,7 +562,7 @@ if __name__ == '__main__':
     ax2.set_title('Participant is ahead')
     ax2.set_xlim([time_x_start_ahead, time_x_end_ahead])
     ax2.set_ylim([0, 1])
-    ax2.axvline(0, 0, 1, color='r', label='Median CRT normalized at zero')
+    ax2.axvline(0, 0, 1, color='r', label='Median CRT')
     ax2.plot([], [], ' ', label='Average % before: ' + str(round(1 - average_trace_ahead_before, 2)))
     ax2.plot([], [], ' ', label='Average % after: ' + str(round(1 - average_trace_ahead_after, 2)))
     ax2.legend(loc='lower left')
@@ -629,7 +628,7 @@ if __name__ == '__main__':
     ax3.set_title('Participant is behind')
     ax3.set_xlim([time_x_start_behind, time_x_end_behind])
     ax3.set_ylim([0, 1])
-    ax3.axvline(0, 0, 1, color='r', label='Median CRT normalized at zero')
+    ax3.axvline(0, 0, 1, color='r', label='Median CRT')
     ax3.plot([], [], ' ', label='Average % before: ' + str(round(1 - average_trace_behind_before, 2)))
     ax3.plot([], [], ' ', label='Average % after: ' + str(round(1 - average_trace_behind_after, 2)))
     ax3.legend(loc='lower left')
@@ -641,7 +640,7 @@ if __name__ == '__main__':
     ax4.set_title('Participant is ahead')
     ax4.set_xlim([time_x_start_ahead, time_x_end_ahead])
     ax4.set_ylim([0, 1])
-    ax4.axvline(0, 0, 1, color='r', label='Median CRT normalized at zero')
+    ax4.axvline(0, 0, 1, color='r', label='Median CRT')
     ax4.plot([], [], ' ', label='Average % before: ' + str(round(1 - average_trace_ahead_before, 2)))
     ax4.plot([], [], ' ', label='Average % after: ' + str(round(1 - average_trace_ahead_after, 2)))
     ax4.legend(loc='lower left')
@@ -675,11 +674,10 @@ if __name__ == '__main__':
     ax5.plot(combined_x_data, combined_hmd_data)  # see x below
     ax5.fill_between(combined_x_data, combined_hmd_data, color='blue', alpha=0.1, label='Fixation on road')
     ax5.fill_between(combined_x_data, combined_hmd_data, 1, color='red', alpha=0.1, label='Fixation on opponent')
-    # ax5.set_title('Participants have advantage nor disadvantage')
     ax5.set_xlim([time_x_start, time_x_end])
     ax5.set_ylim([0, 1])
 
-    ax5.axvline(0, 0, 1, color='r', label='Median CRT normalized at zero')
+    ax5.axvline(0, 0, 1, color='r', label='Median CRT')
     ax5.plot([], [], ' ', label='Average % before: ' + str(round(1 - average_trace_before, 2)))
     ax5.plot([], [], ' ', label='Average % after: ' + str(round(1 - average_trace_after, 2)))
 
