@@ -9,7 +9,7 @@ import numpy as np
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
 
-path_to_data_csv = os.path.join('..', 'data_folder', 'crt_who_is_first_exit.csv')
+path_to_data_csv = os.path.join('..', 'data_folder', 'crt_who_is_first_exit_old.csv')
 global_crt_index = pd.read_csv(path_to_data_csv, sep=',')
 
 fig, ax1 = plt.subplots()

@@ -4,7 +4,7 @@ import os
 import numpy as np
 import seaborn as sns
 
-path_to_data_csv_crt = os.path.join('..', 'data_folder', 'crt_who_is_first_exit.csv')
+path_to_data_csv_crt = os.path.join('..', 'data_folder', 'crt_who_is_first_exit_interactive.csv')
 # path_to_data_csv_crt = os.path.join('..', 'data_folder', 'crt_at_average_exit.csv')
 
 

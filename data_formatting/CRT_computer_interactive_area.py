@@ -125,23 +125,23 @@ def compute_crt(path_to_data_csv, condition):
     data = data.iloc[10:, :]
     data.drop_duplicates(subset=['Carla Interface.time'], keep=False)
 
-    # simulation_constants = SimulationConstants(vehicle_width=2,
-    #                                            vehicle_length=4.7,
-    #                                            tunnel_length=110,  # original = 118 -> check in unreal
-    #                                            track_width=8,
-    #                                            track_height=215,
-    #                                            track_start_point_distance=430,
-    #                                            track_section_length_before=304.056,
-    #                                            track_section_length_after=150)  # goes until 400
-
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=135,  # original = 118 -> check in unreal
+                                               tunnel_length=120,  # original = 118 -> check in unreal
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
                                                track_section_length_before=325.27,
-                                               track_section_length_after=150)
+                                               track_section_length_after=120)
+
+    # simulation_constants = SimulationConstants(vehicle_width=1.5,
+    #                                            vehicle_length=4.7,
+    #                                            tunnel_length=135,  # original = 118 -> check in unreal
+    #                                            track_width=8,
+    #                                            track_height=230,
+    #                                            track_start_point_distance=460,
+    #                                            track_section_length_before=325.27,
+    #                                            track_section_length_after=150)
 
     track = SymmetricMergingTrack(simulation_constants)
 
@@ -289,8 +289,8 @@ if __name__ == '__main__':
         crts_60_40.append(crt)
         crt_indexes_60_40.append(crt_index)
 
-    path_to_saved_dict_crt = os.path.join('..', 'data_folder', 'crt_who_is_first_exit.csv')
-    path_to_saved_dict_index = os.path.join('..', 'data_folder', 'crt_index_first_exit.csv')
+    path_to_saved_dict_crt = os.path.join('..', 'data_folder', 'crt_who_is_first_exit_interactive.csv')
+    path_to_saved_dict_index = os.path.join('..', 'data_folder', 'crt_index_first_exit_interactive.csv')
 
     df1 = pd.DataFrame({'Condition 1': crts_50_50})
     df2 = pd.DataFrame({'Condition 2': crts_55_45})

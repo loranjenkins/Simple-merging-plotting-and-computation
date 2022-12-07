@@ -165,7 +165,7 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=135,  # original = 118 -> check in unreal
+                                               tunnel_length=120,  # original = 118 -> check in unreal
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -235,8 +235,8 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
         ax1.plot([left_point[1], right_point[1]], [left_point[0], right_point[0]], c='lightgrey', linestyle='dashed')
         ax1.scatter([left_point[1], right_point[1]], [left_point[0], right_point[0]], c='lightgrey')
 
-    ax1.plot(data_dict['y1_straight'], data_dict['x1_straight'], label='right vehicle')
-    ax1.plot(data_dict['y2_straight'], data_dict['x2_straight'], label='left vehicle')
+    ax1.plot(data_dict['y1_straight'], data_dict['x1_straight'], label='Vehicle 1')
+    ax1.plot(data_dict['y2_straight'], data_dict['x2_straight'], label='Vehicle 2')
 
     # ------------------------------------------------------------------------#
     # velocity_time plot
@@ -294,10 +294,10 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
 
     # plot merge point
     index_of_mergepoint_vehicle1 = min(range(len(data_dict['y1_straight'])),
-                                       key=lambda i: abs(data_dict['y1_straight'][i] - 230))
+                                       key=lambda i: abs(data_dict['y1_straight'][i] - track.merge_point))
     index_of_mergepoint_vehicle2 = min(range(len(data_dict['y2_straight'])),
                                        key=lambda i: abs(
-                                           data_dict['y2_straight'][i] - 230))  # instead of track.mergepoint
+                                           data_dict['y2_straight'][i] - track.merge_point))
 
     if xy_coordinates_vehicle1[0][0] > 0:
         ax1.scatter(track.merge_point[1], track.merge_point[0] + 15, c='purple', marker='s', s=30, zorder=2,
@@ -396,7 +396,7 @@ def plot_trail(path_to_data_csv, headway_bounds, condition):
 
     fig.set_size_inches(10, 6)
 
-    # plt.show()
+    plt.show()
 
     #
     # a_file = open("global_data_dict.pkl", "wb")
@@ -416,9 +416,9 @@ if __name__ == '__main__':
         # trail_condition = plot_trail(file)
         trails.append(file)
     trails = natsorted(trails, key=str)
-
-    index = 15
-    plot_trail(trails[index], headway_bounds, condition)
+    #
+    # index = 60
+    # plot_trail(trails[index], headway_bounds, condition)
 
     # for i in range(len(trails)):
     #     plot_trail(trails[i], headway_bounds, condition)

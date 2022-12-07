@@ -231,8 +231,7 @@ def plot_varjo(path_to_csv_folder, condition):
         interactive_area_travelled_trace_vehicle2.append(interactive_trace_2)
         combined_trace.append(average_travelled_distance_trace)
 
-    # path_to_data_csv = os.path.join('..', 'data_folder', 'crt_index_first_exit_full.csv')
-    path_to_data_csv = os.path.join('..', 'data_folder', 'crt_index_first_exit.csv')
+    path_to_data_csv = os.path.join('..', 'data_folder', 'crt_index_first_exit_interactive.csv')
 
     global_crt_index = pd.read_csv(path_to_data_csv, sep=',')
 
@@ -287,7 +286,7 @@ if __name__ == '__main__':
 
     ax1.scatter(x[maxid], y[maxid], c='yellow', marker='x', s=100, zorder=3)
     ax1.axvline(x[maxid], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x[maxid])))
-    ax1.set_xlim([135, 325])
+    ax1.set_xlim([120, 325])
     ax1.set(xlabel='Average traveled distance [m]')
     ax1.legend(loc='best')
 
@@ -307,7 +306,7 @@ if __name__ == '__main__':
     line1 = kde1.lines[0]
     x1, y1 = line1.get_data()
     x1_index = min(range(len(x1)),
-                  key=lambda i: abs(x1[i] - 135))
+                  key=lambda i: abs(x1[i] - 120))
     x1 = x1[x1_index:len(x1)]
     y1 = y1[x1_index:len(x1)]
     maxid1 = y1.argmax()
@@ -315,7 +314,7 @@ if __name__ == '__main__':
     line2 = kde2.lines[0]
     x2, y2 = line2.get_data()
     x2_index = min(range(len(x2)),
-                  key=lambda i: abs(x2[i] - 135))
+                  key=lambda i: abs(x2[i] - 120))
     x2 = x2[x2_index:len(x2)]
     y2 = y2[x2_index:len(x2)]
     maxid2 = y2.argmax()
@@ -327,8 +326,8 @@ if __name__ == '__main__':
     axes[0].axvline(x1[maxid1], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x1[maxid1])))
     axes[1].scatter(x2[maxid2], y2[maxid2], c='yellow', marker='x', s=100, zorder=3)
     axes[1].axvline(x2[maxid2], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x2[maxid2])))
-    axes[0].set_xlim([135, 325])
-    axes[1].set_xlim([135, 325])
+    axes[0].set_xlim([120, 325])
+    axes[1].set_xlim([120, 325])
     axes[0].set_title('Participant is behind')
     axes[1].set_title('Participant is ahead')
     axes[0].legend(loc='best')
@@ -350,7 +349,7 @@ if __name__ == '__main__':
     line1 = kde1.lines[0]
     x1, y1 = line1.get_data()
     x1_index = min(range(len(x1)),
-                  key=lambda i: abs(x1[i] - 135))
+                  key=lambda i: abs(x1[i] - 120))
     x1 = x1[x1_index:len(x1)]
     y1 = y1[x1_index:len(x1)]
     maxid1 = y1.argmax()
@@ -358,7 +357,7 @@ if __name__ == '__main__':
     line2 = kde2.lines[0]
     x2, y2 = line2.get_data()
     x2_index = min(range(len(x2)),
-                  key=lambda i: abs(x2[i] - 135))
+                  key=lambda i: abs(x2[i] - 120))
     x2 = x2[x2_index:len(x2)]
     y2 = y2[x2_index:len(x2)]
     maxid2 = y2.argmax()
@@ -370,8 +369,8 @@ if __name__ == '__main__':
     axes[0].axvline(x1[maxid1], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x1[maxid1])))
     axes[1].scatter(x2[maxid2], y2[maxid2], c='yellow', marker='x', s=100, zorder=3)
     axes[1].axvline(x2[maxid2], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x2[maxid2])))
-    axes[0].set_xlim([135, 325])
-    axes[1].set_xlim([135, 325])
+    axes[0].set_xlim([120, 325])
+    axes[1].set_xlim([120, 325])
     axes[0].set_title('Participant is behind')
     axes[1].set_title('Participant is ahead')
     axes[0].legend(loc='best')

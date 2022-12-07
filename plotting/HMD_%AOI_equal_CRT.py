@@ -70,7 +70,7 @@ def plot_varjo(path_to_csv_folder, condition):
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=135,  # original = 118 -> check in unreal
+                                               tunnel_length=120,
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -150,6 +150,9 @@ def plot_varjo(path_to_csv_folder, condition):
         indexes_of_tunnel_and_merge_vehicle1.append(inner_tunnel_merge_1)
         indexes_of_tunnel_and_merge_vehicle2.append(inner_tunnel_merge_2)
 
+    path_to_data_csv = os.path.join('..', 'data_folder', 'medians_crt.csv')
+    global_crt_median = pd.read_csv(path_to_data_csv, sep=',')
+
     # time at merging
     time_at_merge_vehicle1 = []
     time_at_merge_vehicle2 = []
@@ -164,24 +167,8 @@ def plot_varjo(path_to_csv_folder, condition):
         time_at_merge_vehicle2.append(at_merge_vehicle2)
         time_in_seconds_trails_.append(time_in_seconds_trail)
 
-    path_to_data_csv = os.path.join('..', 'data_folder', 'medians_crt.csv')
-    global_crt_median = pd.read_csv(path_to_data_csv, sep=',')
-
-    if condition == '50-50':
-        norm_at_merge_vehicle1 = sum(time_at_merge_vehicle1) / len(time_at_merge_vehicle1) - \
-                                 global_crt_median['median_50_50'][0]
-        norm_at_merge_vehicle2 = sum(time_at_merge_vehicle2) / len(time_at_merge_vehicle2) - \
-                                 global_crt_median['median_50_50'][0]
-    if condition == '55-45':
-        norm_at_merge_vehicle1 = sum(time_at_merge_vehicle1) / len(time_at_merge_vehicle1) - \
-                                 global_crt_median['median_55_45'][0]
-        norm_at_merge_vehicle2 = sum(time_at_merge_vehicle2) / len(time_at_merge_vehicle2) - \
-                                 global_crt_median['median_55_45'][0]
-    if condition == '60-40':
-        norm_at_merge_vehicle1 = sum(time_at_merge_vehicle1) / len(time_at_merge_vehicle1) - \
-                                 global_crt_median['median_60_40'][0]
-        norm_at_merge_vehicle2 = sum(time_at_merge_vehicle2) / len(time_at_merge_vehicle2) - \
-                                 global_crt_median['median_60_40'][0]
+    norm_at_merge_vehicle1 = sum(time_at_merge_vehicle1) / len(time_at_merge_vehicle1)
+    norm_at_merge_vehicle2 = sum(time_at_merge_vehicle2) / len(time_at_merge_vehicle2)
 
     # time at leaving tunnel.
     time_at_exit_vehicle1 = []
@@ -192,21 +179,25 @@ def plot_varjo(path_to_csv_folder, condition):
         time_at_exit_vehicle1.append(at_exit_vehicle1)
         time_at_exit_vehicle2.append(at_exit_vehicle2)
 
+    norm_at_exit_vehicle1 = sum(time_at_exit_vehicle1) / len(time_at_exit_vehicle1)
+    norm_at_exit_vehicle2 = sum(time_at_exit_vehicle2) / len(time_at_exit_vehicle2)
+
     if condition == '50-50':
-        norm_at_exit_vehicle1 = sum(time_at_exit_vehicle1) / len(time_at_exit_vehicle1) - \
-                                global_crt_median['median_50_50'][0]
-        norm_at_exit_vehicle2 = sum(time_at_exit_vehicle2) / len(time_at_exit_vehicle2) - \
-                                global_crt_median['median_50_50'][0]
+        norm_at_merge_vehicle1 = sum(time_at_merge_vehicle1) / len(time_at_merge_vehicle1) - \
+                                 global_crt_median['median_50_50'][0]
+        norm_at_merge_vehicle2 = sum(time_at_merge_vehicle2) / len(time_at_merge_vehicle2) - \
+                                 global_crt_median['median_50_50'][0]
     if condition == '55-45':
-        norm_at_exit_vehicle1 = sum(time_at_exit_vehicle1) / len(time_at_exit_vehicle1) - \
-                                global_crt_median['median_55_45'][0]
-        norm_at_exit_vehicle2 = sum(time_at_exit_vehicle2) / len(time_at_exit_vehicle2) - \
-                                global_crt_median['median_55_45'][0]
+        norm_at_merge_vehicle1 = sum(time_at_merge_vehicle1) / len(time_at_merge_vehicle1) - \
+                                 global_crt_median['median_55_45'][0]
+        norm_at_merge_vehicle2 = sum(time_at_merge_vehicle2) / len(time_at_merge_vehicle2) - \
+                                 global_crt_median['median_55_45'][0]
     if condition == '60-40':
-        norm_at_exit_vehicle1 = sum(time_at_exit_vehicle1) / len(time_at_exit_vehicle1) - \
-                                global_crt_median['median_60_40'][0]
-        norm_at_exit_vehicle2 = sum(time_at_exit_vehicle2) / len(time_at_exit_vehicle2) - \
-                                global_crt_median['median_60_40'][0]
+        norm_at_merge_vehicle1 = sum(time_at_merge_vehicle1) / len(time_at_merge_vehicle1) - \
+                                 global_crt_median['median_60_40'][0]
+        norm_at_merge_vehicle2 = sum(time_at_merge_vehicle2) / len(time_at_merge_vehicle2) - \
+                                 global_crt_median['median_60_40'][0]
+
 
     # total time in interactive area for each vehicle
     time_in_seconds_trails_v1 = []
@@ -227,12 +218,13 @@ def plot_varjo(path_to_csv_folder, condition):
     for i in range(len(indexes_of_tunnel_and_merge_vehicle1)):
         hmd_rot_1 = list(all_pds_list[i]['HMD_rotation_vehicle1'][
                          indexes_of_tunnel_and_merge_vehicle1[i][0]:indexes_of_tunnel_and_merge_vehicle1[i][1]])
+
         hmd_rot_2 = list(all_pds_list[i]['HMD_rotation_vehicle2'][
                          indexes_of_tunnel_and_merge_vehicle1[i][0]:indexes_of_tunnel_and_merge_vehicle1[i][1]])
         hmd_rot_interactive_area_vehicle1.append(hmd_rot_1)
         hmd_rot_interactive_area_vehicle2.append(hmd_rot_2)
 
-    # interpolation to get equal lengths list HMD rots
+    # interpolation to get equal lengths list
     max_len_v1 = []
     max_len_v2 = []
     for i in range(len(hmd_rot_interactive_area_vehicle1)):
@@ -285,7 +277,7 @@ def plot_varjo(path_to_csv_folder, condition):
         on_ramp_vs_opponent_vehicle2.append(inner_attention_list_2)
 
     # distance to median crt to shift traces
-    path_to_data_csv = os.path.join('..', 'data_folder', 'crt_index_first_exit.csv')
+    path_to_data_csv = os.path.join('..', 'data_folder', 'crt_index_first_exit_interactive.csv')
     global_crt_index = pd.read_csv(path_to_data_csv, sep=',')
 
     if condition == '50-50':
@@ -330,7 +322,7 @@ def plot_varjo(path_to_csv_folder, condition):
                 hmd_rot_1 = hmd_rot_1[0:(len(hmd_rot_1) - length_CRT_norm_v1[i])]
                 new_rot_traces_v1.append(hmd_rot_1)
 
-        for i in range(len(on_ramp_vs_opponent_vehicle1)):
+        for i in range(len(on_ramp_vs_opponent_vehicle2)):
             if round(global_crt_index['crt_index_50_50'][i]) > index_median_crt_v2[i]:
                 hmd_rot_2 = np.append(on_ramp_vs_opponent_vehicle2[i], np.zeros(index_median_crt_v2[i]) + np.nan)
                 hmd_rot_2 = hmd_rot_2[index_median_crt_v2[i]:]

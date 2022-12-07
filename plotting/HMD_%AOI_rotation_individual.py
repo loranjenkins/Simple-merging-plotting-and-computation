@@ -46,7 +46,7 @@ def average(l):
 def plot_varjo(path_to_csv_folder):
     # simulation_constants = SimulationConstants(vehicle_width=2,
     #                                            vehicle_length=4.7,
-    #                                            tunnel_length=118,  # original = 118 -> check in unreal
+    #                                            tunnel_length=100,  # original = 118 -> check in unreal
     #                                            track_width=8,
     #                                            track_height=215,
     #                                            track_start_point_distance=430,
@@ -55,7 +55,7 @@ def plot_varjo(path_to_csv_folder):
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=135,  # original = 118 -> check in unreal
+                                               tunnel_length=120,
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -153,27 +153,27 @@ def plot_varjo(path_to_csv_folder):
         on_ramp_vs_opponent_vehicle1 = []
         on_ramp_vs_opponent_vehicle2 = []
 
-        for list_index in range(len(hmd_rot_interactive_area_vehicle1)):
-            individual_hmd_rot_list_1 = hmd_rot_interactive_area_vehicle1[list_index]
-            individual_hmd_rot_list_2 = hmd_rot_interactive_area_vehicle2[list_index]
+    for list_index in range(len(hmd_rot_interactive_area_vehicle1)):
+        individual_hmd_rot_list_1 = hmd_rot_interactive_area_vehicle1[list_index]
+        individual_hmd_rot_list_2 = hmd_rot_interactive_area_vehicle2[list_index]
 
-            inner_attention_list_1 = []
-            inner_attention_list_2 = []
+        inner_attention_list_1 = []
+        inner_attention_list_2 = []
 
-            for i in range(len(individual_hmd_rot_list_1)):
-                if individual_hmd_rot_list_1[i] > 0.95:  # this we need to know better
-                    inner_attention_list_1.append(1)
-                else:
-                    inner_attention_list_1.append(0)
+        for i in range(len(individual_hmd_rot_list_1)):
+            if individual_hmd_rot_list_1[i] > 0.95:  # this we need to know better
+                inner_attention_list_1.append(1)
+            else:
+                inner_attention_list_1.append(0)
 
-            for i in range(len(individual_hmd_rot_list_2)):
-                if individual_hmd_rot_list_2[i] > 0.95:  # this we need to know better
-                    inner_attention_list_2.append(1)
-                else:
-                    inner_attention_list_2.append(0)
+        for i in range(len(individual_hmd_rot_list_2)):
+            if individual_hmd_rot_list_2[i] > 0.95:  # this we need to know better
+                inner_attention_list_2.append(1)
+            else:
+                inner_attention_list_2.append(0)
 
-            on_ramp_vs_opponent_vehicle1.append(inner_attention_list_1)
-            on_ramp_vs_opponent_vehicle2.append(inner_attention_list_2)
+        on_ramp_vs_opponent_vehicle1.append(inner_attention_list_1)
+        on_ramp_vs_opponent_vehicle2.append(inner_attention_list_2)
 
     # interpolation to get equal lengths list HMD rots
     max_len_v1 = []
@@ -224,8 +224,8 @@ if __name__ == '__main__':
 
     # --------------------------------------------------
     # #left ahead 45-55
-    path_to_csv_45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\left'
-    Varjo_data = plot_varjo(path_to_csv_45_55)
+    path_to_csv_55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\left'
+    Varjo_data = plot_varjo(path_to_csv_55_45)
     # right ahead 45-55
     path_to_csv_45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\right'
     Varjo_data1 = plot_varjo(path_to_csv_45_55)
@@ -269,7 +269,7 @@ if __name__ == '__main__':
     ax1.fill_between(combined_x_data_behind, combined_hmd_data_behind, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
     ax1.set_title('Participant is behind')
-    ax1.set_xlim([135, 325])
+    ax1.set_xlim([120, 325])
     ax1.set_ylim([0, 1])
 
     ax2.plot(combined_x_data_ahead, combined_hmd_data_ahead)  # see x below
@@ -277,7 +277,7 @@ if __name__ == '__main__':
     ax2.fill_between(combined_x_data_ahead, combined_hmd_data_ahead, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
     ax2.set_title('Participant is ahead')
-    ax2.set_xlim([135, 325])
+    ax2.set_xlim([120, 325])
     ax2.set_ylim([0, 1])
 
     ax1.axvline(global_crt_index['median_55_45_v1'][0], 0, 1, color='r', label='Average conflict resolved')
@@ -335,7 +335,7 @@ if __name__ == '__main__':
     ax3.fill_between(combined_x_data_behind, combined_hmd_data_behind, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
     ax3.set_title('Participant is behind')
-    ax3.set_xlim([135, 325])
+    ax3.set_xlim([120, 325])
     ax3.set_ylim([0, 1])
 
     ax4.plot(combined_x_data_ahead, combined_hmd_data_ahead)  # see x below
@@ -343,7 +343,7 @@ if __name__ == '__main__':
     ax4.fill_between(combined_x_data_ahead, combined_hmd_data_ahead, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
     ax4.set_title('Participant is ahead')
-    ax4.set_xlim([135, 325])
+    ax4.set_xlim([120, 325])
     ax4.set_ylim([0, 1])
 
     ax3.axvline(global_crt_index['median_60_40_v1'][0], 0, 1, color='r', label='Average conflict resolved')
@@ -382,7 +382,7 @@ if __name__ == '__main__':
     ax5.plot(combined_x_data, combined_hmd_data)  # see x below
     ax5.fill_between(combined_x_data, combined_hmd_data, color='blue', alpha=0.1, label='Fixation on road')
     ax5.fill_between(combined_x_data, combined_hmd_data, 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax5.set_xlim([135, 325])
+    ax5.set_xlim([120, 325])
     ax5.set_ylim([0, 1])
     ax5.set(xlabel='Average traveled distance [m]', ylabel='% fixated on AOI')
     ax5.axvline(global_crt_index['median_50_50'][0], 0, 1, color='r', label='Average conflict resolved')

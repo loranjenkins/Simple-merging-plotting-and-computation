@@ -230,7 +230,7 @@ def plot_varjo(path_to_csv_folder):
 
 
 if __name__ == '__main__':
-    path_to_data_csv = os.path.join('..', 'data_folder', 'crt_index_first_exit.csv')
+    path_to_data_csv = os.path.join('..', 'data_folder', 'crt_index_first_exit_interactive.csv')
     global_crt_index = pd.read_csv(path_to_data_csv, sep=',')
 
     # --------------------------------------------------
