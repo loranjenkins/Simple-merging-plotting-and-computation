@@ -66,11 +66,11 @@ def plot_varjo(path_to_csv_folder, condition):
     #                                            track_height=215,
     #                                            track_start_point_distance=430,
     #                                            track_section_length_before=304.056,
-    #                                            track_section_length_after=150)  # goes until 400
+    #                                            track_section_length_after=135)  # goes until 400
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=120,
+                                               tunnel_length=125,
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -170,18 +170,6 @@ def plot_varjo(path_to_csv_folder, condition):
     norm_at_merge_vehicle1 = sum(time_at_merge_vehicle1) / len(time_at_merge_vehicle1)
     norm_at_merge_vehicle2 = sum(time_at_merge_vehicle2) / len(time_at_merge_vehicle2)
 
-    # time at leaving tunnel.
-    time_at_exit_vehicle1 = []
-    time_at_exit_vehicle2 = []
-    for i in range(len(all_pds_list)):
-        at_exit_vehicle1 = time_in_seconds_trails_[i][indexes_of_tunnel_and_merge_vehicle1[i][0]]
-        at_exit_vehicle2 = time_in_seconds_trails_[i][indexes_of_tunnel_and_merge_vehicle2[i][0]]
-        time_at_exit_vehicle1.append(at_exit_vehicle1)
-        time_at_exit_vehicle2.append(at_exit_vehicle2)
-
-    norm_at_exit_vehicle1 = sum(time_at_exit_vehicle1) / len(time_at_exit_vehicle1)
-    norm_at_exit_vehicle2 = sum(time_at_exit_vehicle2) / len(time_at_exit_vehicle2)
-
     if condition == '50-50':
         norm_at_merge_vehicle1 = sum(time_at_merge_vehicle1) / len(time_at_merge_vehicle1) - \
                                  global_crt_median['median_50_50'][0]
@@ -198,6 +186,33 @@ def plot_varjo(path_to_csv_folder, condition):
         norm_at_merge_vehicle2 = sum(time_at_merge_vehicle2) / len(time_at_merge_vehicle2) - \
                                  global_crt_median['median_60_40'][0]
 
+    # time at leaving tunnel.
+    time_at_exit_vehicle1 = []
+    time_at_exit_vehicle2 = []
+    for i in range(len(all_pds_list)):
+        at_exit_vehicle1 = time_in_seconds_trails_[i][indexes_of_tunnel_and_merge_vehicle1[i][0]]
+        at_exit_vehicle2 = time_in_seconds_trails_[i][indexes_of_tunnel_and_merge_vehicle2[i][0]]
+        time_at_exit_vehicle1.append(at_exit_vehicle1)
+        time_at_exit_vehicle2.append(at_exit_vehicle2)
+
+    norm_at_exit_vehicle1 = sum(time_at_exit_vehicle1) / len(time_at_exit_vehicle1)
+    norm_at_exit_vehicle2 = sum(time_at_exit_vehicle2) / len(time_at_exit_vehicle2)
+
+    if condition == '50-50':
+        norm_at_exit_vehicle1 = sum(time_at_exit_vehicle1) / len(time_at_exit_vehicle1) - \
+                                 global_crt_median['median_50_50'][0]
+        norm_at_exit_vehicle2 = sum(time_at_exit_vehicle2) / len(time_at_exit_vehicle2) - \
+                                 global_crt_median['median_50_50'][0]
+    if condition == '55-45':
+        norm_at_exit_vehicle1 = sum(time_at_exit_vehicle1) / len(time_at_exit_vehicle1) - \
+                                 global_crt_median['median_55_45'][0]
+        norm_at_exit_vehicle2 = sum(time_at_exit_vehicle2) / len(time_at_exit_vehicle2) - \
+                                 global_crt_median['median_55_45'][0]
+    if condition == '60-40':
+        norm_at_exit_vehicle1 = sum(time_at_exit_vehicle1) / len(time_at_exit_vehicle1) - \
+                                 global_crt_median['median_60_40'][0]
+        norm_at_exit_vehicle2 = sum(time_at_exit_vehicle2) / len(time_at_exit_vehicle2) - \
+                                 global_crt_median['median_60_40'][0]
 
     # total time in interactive area for each vehicle
     time_in_seconds_trails_v1 = []
@@ -220,7 +235,7 @@ def plot_varjo(path_to_csv_folder, condition):
                          indexes_of_tunnel_and_merge_vehicle1[i][0]:indexes_of_tunnel_and_merge_vehicle1[i][1]])
 
         hmd_rot_2 = list(all_pds_list[i]['HMD_rotation_vehicle2'][
-                         indexes_of_tunnel_and_merge_vehicle1[i][0]:indexes_of_tunnel_and_merge_vehicle1[i][1]])
+                         indexes_of_tunnel_and_merge_vehicle2[i][0]:indexes_of_tunnel_and_merge_vehicle2[i][1]])
         hmd_rot_interactive_area_vehicle1.append(hmd_rot_1)
         hmd_rot_interactive_area_vehicle2.append(hmd_rot_2)
 
@@ -459,7 +474,6 @@ def plot_varjo(path_to_csv_folder, condition):
     # compute average trace before and after
     index_crt_1 = min(range(len(x_vehicle1)),
                       key=lambda i: abs(x_vehicle1[i] - 0))
-    print(x_vehicle1[0:index_crt_1])
     average_trace_vehicle1_before = sum(ysmoothed_1[0:index_crt_1]) / len(ysmoothed_1[0:index_crt_1])
     average_trace_vehicle1_after = sum(ysmoothed_1[index_crt_1:len(ysmoothed_1)]) / len(
         ysmoothed_1[index_crt_1:len(ysmoothed_1)])

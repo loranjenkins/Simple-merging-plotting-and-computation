@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import numpy as np
 import seaborn as sns
+from scipy.stats import ttest_ind, ttest_ind_from_stats
+
 
 path_to_data_csv_crt = os.path.join('..', 'data_folder', 'crt_who_is_first_exit_interactive.csv')
 # path_to_data_csv_crt = os.path.join('..', 'data_folder', 'crt_at_average_exit.csv')
@@ -10,8 +12,10 @@ path_to_data_csv_crt = os.path.join('..', 'data_folder', 'crt_who_is_first_exit_
 
 global_crt = pd.read_csv(path_to_data_csv_crt, sep=',')
 global_crt.replace(0, np.nan, inplace=True)
-columns_titles = ["Condition 1", "Condition 2", "Condition 3"]
-global_crt = global_crt.reindex(columns=columns_titles)
+
+
+t1, p1 = ttest_ind(list(global_crt.iloc[:, 2].dropna()), list(global_crt.iloc[:, 1].dropna()))
+print(t1, p1)
 
 medians_crt = global_crt.median()
 

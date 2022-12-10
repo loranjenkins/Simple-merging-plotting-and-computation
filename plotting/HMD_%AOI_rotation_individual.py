@@ -55,7 +55,7 @@ def plot_varjo(path_to_csv_folder):
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=120,
+                                               tunnel_length=125,
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -224,10 +224,10 @@ if __name__ == '__main__':
 
     # --------------------------------------------------
     # #left ahead 45-55
-    path_to_csv_55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\left'
+    path_to_csv_55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 2'
     Varjo_data = plot_varjo(path_to_csv_55_45)
     # right ahead 45-55
-    path_to_csv_45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\right'
+    path_to_csv_45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 1'
     Varjo_data1 = plot_varjo(path_to_csv_45_55)
 
     #interpolation
@@ -269,7 +269,7 @@ if __name__ == '__main__':
     ax1.fill_between(combined_x_data_behind, combined_hmd_data_behind, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
     ax1.set_title('Participant is behind')
-    ax1.set_xlim([120, 325])
+    ax1.set_xlim([125, 325])
     ax1.set_ylim([0, 1])
 
     ax2.plot(combined_x_data_ahead, combined_hmd_data_ahead)  # see x below
@@ -277,23 +277,25 @@ if __name__ == '__main__':
     ax2.fill_between(combined_x_data_ahead, combined_hmd_data_ahead, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
     ax2.set_title('Participant is ahead')
-    ax2.set_xlim([120, 325])
+    ax2.set_xlim([125, 325])
     ax2.set_ylim([0, 1])
 
-    ax1.axvline(global_crt_index['median_55_45_v1'][0], 0, 1, color='r', label='Average conflict resolved')
-    ax2.axvline(global_crt_index['median_55_45_v2'][0], 0, 1, color='r', label='Average conflict resolved')
+    # ax1.axvline(global_crt_index['median_55_45_v1'][0], 0, 1, color='r', label='Average conflict resolved')
+    # ax2.axvline(global_crt_index['median_55_45_v2'][0], 0, 1, color='r', label='Average conflict resolved')
+    ax1.axvline(global_crt_index['median_55_45_v1'][0], 0, 1, color='r', label='Kernel density maximum')
+    ax2.axvline(global_crt_index['median_55_45_v2'][0], 0, 1, color='r', label='Kernel density maximum')
 
-    fig.text(0.05, 0.5, "% fixated on AOI", va='center', rotation='vertical')
-    fig.text(0.5, 0.05, "Average traveled distance [m]", ha="center", va="center")
+    fig.text(0.05, 0.5, "Fixation on AOI [%]", va='center', rotation='vertical')
+    fig.text(0.5, 0.05, "Traveled distance [m]", ha="center", va="center")
     ax1.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_behind, 2)))
     ax2.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_ahead, 2)))
     ax1.legend(loc='lower left')
     ax2.legend(loc='lower left')
 
     # left ahead 60-40
-    path_to_csv_40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\left'
+    path_to_csv_40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle2'
     Varjo_data3 = plot_varjo(path_to_csv_40_60)
-    path_to_csv_60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\right'
+    path_to_csv_60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle1'
     Varjo_data4 = plot_varjo(path_to_csv_60_40)
 
     #interpolation
@@ -335,7 +337,7 @@ if __name__ == '__main__':
     ax3.fill_between(combined_x_data_behind, combined_hmd_data_behind, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
     ax3.set_title('Participant is behind')
-    ax3.set_xlim([120, 325])
+    ax3.set_xlim([125, 325])
     ax3.set_ylim([0, 1])
 
     ax4.plot(combined_x_data_ahead, combined_hmd_data_ahead)  # see x below
@@ -343,21 +345,23 @@ if __name__ == '__main__':
     ax4.fill_between(combined_x_data_ahead, combined_hmd_data_ahead, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
     ax4.set_title('Participant is ahead')
-    ax4.set_xlim([120, 325])
+    ax4.set_xlim([125, 325])
     ax4.set_ylim([0, 1])
 
-    ax3.axvline(global_crt_index['median_60_40_v1'][0], 0, 1, color='r', label='Average conflict resolved')
-    ax4.axvline(global_crt_index['median_60_40_v2'][0], 0, 1, color='r', label='Average conflict resolved')
+    # ax3.axvline(global_crt_index['median_60_40_v1'][0], 0, 1, color='r', label='Average conflict resolved')
+    # ax4.axvline(global_crt_index['median_60_40_v2'][0], 0, 1, color='r', label='Average conflict resolved')
+    ax3.axvline(global_crt_index['median_60_40_v1'][0], 0, 1, color='r', label='Kernel density maximum')
+    ax4.axvline(global_crt_index['median_60_40_v2'][0], 0, 1, color='r', label='Kernel density maximum')
 
-    fig.text(0.05, 0.5, "% fixated on AOI", va='center', rotation='vertical')
-    fig.text(0.5, 0.05, "Average travelled distance [m]", ha="center", va="center")
+    fig.text(0.05, 0.5, "Fixation on AOI [%]", va='center', rotation='vertical')
+    fig.text(0.5, 0.05, "Travelled distance [m]", ha="center", va="center")
     ax3.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_behind, 2)))
     ax4.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_ahead, 2)))
     ax3.legend(loc='lower left')
     ax4.legend(loc='lower left')
 
     # 50-50
-    path_to_csv_50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_50_50'
+    path_to_csv_50_50 = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50'
     Varjo_data5 = plot_varjo(path_to_csv_50_50)
 
     # interpolation
@@ -382,10 +386,12 @@ if __name__ == '__main__':
     ax5.plot(combined_x_data, combined_hmd_data)  # see x below
     ax5.fill_between(combined_x_data, combined_hmd_data, color='blue', alpha=0.1, label='Fixation on road')
     ax5.fill_between(combined_x_data, combined_hmd_data, 1, color='red', alpha=0.1, label='Fixation on opponent')
-    ax5.set_xlim([120, 325])
+    ax5.set_xlim([125, 325])
     ax5.set_ylim([0, 1])
-    ax5.set(xlabel='Average traveled distance [m]', ylabel='% fixated on AOI')
-    ax5.axvline(global_crt_index['median_50_50'][0], 0, 1, color='r', label='Average conflict resolved')
+    ax5.set(xlabel='Traveled distance [m]', ylabel='Fixation on AOI [%]')
+    # ax5.axvline(global_crt_index['median_50_50'][0], 0, 1, color='r', label='Average conflict resolved')
+    ax5.axvline(global_crt_index['median_50_50'][0], 0, 1, color='r', label='Kernel density maximum')
+
     ax5.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace, 2)))
     ax5.legend(loc='lower left')
 

@@ -285,16 +285,16 @@ if __name__ == '__main__':
     average1 = x[maxid]
 
     ax1.scatter(x[maxid], y[maxid], c='yellow', marker='x', s=100, zorder=3)
-    ax1.axvline(x[maxid], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x[maxid])))
+    ax1.axvline(x[maxid], 0, 1, color='r', label='Kernel density maximum: ' + str(round(x[maxid])))
     ax1.set_xlim([120, 325])
-    ax1.set(xlabel='Average traveled distance [m]')
+    ax1.set(xlabel='Travelled distance [m]')
     ax1.legend(loc='best')
 
 
     # 55 - 45
     fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
     fig.suptitle('CRT distribution on average traveled distance condition 2 (55-45 km/h)')
-    fig.text(0.5, 0.05, "Average travelled distance [m]", ha="center", va="center")
+    fig.text(0.5, 0.05, "Travelled distance [m]", ha="center", va="center")
     path_to_csv_55_45 = r'D:\Thesis_data_all_experiments\Conditions\condition_55_45'
     condition = '55-45'
     Varjo_data = plot_varjo(path_to_csv_55_45, condition)
@@ -306,7 +306,7 @@ if __name__ == '__main__':
     line1 = kde1.lines[0]
     x1, y1 = line1.get_data()
     x1_index = min(range(len(x1)),
-                  key=lambda i: abs(x1[i] - 120))
+                  key=lambda i: abs(x1[i] - 125))
     x1 = x1[x1_index:len(x1)]
     y1 = y1[x1_index:len(x1)]
     maxid1 = y1.argmax()
@@ -314,7 +314,7 @@ if __name__ == '__main__':
     line2 = kde2.lines[0]
     x2, y2 = line2.get_data()
     x2_index = min(range(len(x2)),
-                  key=lambda i: abs(x2[i] - 120))
+                  key=lambda i: abs(x2[i] - 125))
     x2 = x2[x2_index:len(x2)]
     y2 = y2[x2_index:len(x2)]
     maxid2 = y2.argmax()
@@ -323,9 +323,9 @@ if __name__ == '__main__':
     average3 = x2[maxid2]
 
     axes[0].scatter(x1[maxid1], y1[maxid1], c='yellow', marker='x', s=100, zorder=3)
-    axes[0].axvline(x1[maxid1], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x1[maxid1])))
+    axes[0].axvline(x1[maxid1], 0, 1, color='r', label='Kernel density maximum: ' + str(round(x1[maxid1])))
     axes[1].scatter(x2[maxid2], y2[maxid2], c='yellow', marker='x', s=100, zorder=3)
-    axes[1].axvline(x2[maxid2], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x2[maxid2])))
+    axes[1].axvline(x2[maxid2], 0, 1, color='r', label='Kernel density maximum: ' + str(round(x2[maxid2])))
     axes[0].set_xlim([120, 325])
     axes[1].set_xlim([120, 325])
     axes[0].set_title('Participant is behind')
@@ -336,7 +336,7 @@ if __name__ == '__main__':
     # # 60-40
     fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
     fig.suptitle('CRT distribution on average traveled distance condition 3 (60-40 km/h)')
-    fig.text(0.5, 0.05, "Average travelled distance [m]", ha="center", va="center")
+    fig.text(0.5, 0.05, "Travelled distance [m]", ha="center", va="center")
     path_to_csv_60_40 = r'D:\Thesis_data_all_experiments\Conditions\condition_60_40'
     condition = '60-40'
     Varjo_data = plot_varjo(path_to_csv_60_40, condition)
@@ -349,7 +349,7 @@ if __name__ == '__main__':
     line1 = kde1.lines[0]
     x1, y1 = line1.get_data()
     x1_index = min(range(len(x1)),
-                  key=lambda i: abs(x1[i] - 120))
+                  key=lambda i: abs(x1[i] - 125))
     x1 = x1[x1_index:len(x1)]
     y1 = y1[x1_index:len(x1)]
     maxid1 = y1.argmax()
@@ -357,7 +357,7 @@ if __name__ == '__main__':
     line2 = kde2.lines[0]
     x2, y2 = line2.get_data()
     x2_index = min(range(len(x2)),
-                  key=lambda i: abs(x2[i] - 120))
+                  key=lambda i: abs(x2[i] - 125))
     x2 = x2[x2_index:len(x2)]
     y2 = y2[x2_index:len(x2)]
     maxid2 = y2.argmax()
@@ -366,9 +366,9 @@ if __name__ == '__main__':
     average5 = x2[maxid2]
 
     axes[0].scatter(x1[maxid1], y1[maxid1], c='yellow', marker='x', s=100, zorder=3)
-    axes[0].axvline(x1[maxid1], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x1[maxid1])))
+    axes[0].axvline(x1[maxid1], 0, 1, color='r', label='Kernel density maximum: ' + str(round(x1[maxid1])))
     axes[1].scatter(x2[maxid2], y2[maxid2], c='yellow', marker='x', s=100, zorder=3)
-    axes[1].axvline(x2[maxid2], 0, 1, color='r', label='Average conflict resolved: ' + str(round(x2[maxid2])))
+    axes[1].axvline(x2[maxid2], 0, 1, color='r', label='Kernel density maximum: ' + str(round(x2[maxid2])))
     axes[0].set_xlim([120, 325])
     axes[1].set_xlim([120, 325])
     axes[0].set_title('Participant is behind')
