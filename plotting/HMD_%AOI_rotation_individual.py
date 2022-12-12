@@ -286,7 +286,7 @@ if __name__ == '__main__':
     ax2.axvline(global_crt_index['median_55_45_v2'][0], 0, 1, color='r', label='Kernel density maximum')
 
     fig.text(0.05, 0.5, "Fixation on AOI [%]", va='center', rotation='vertical')
-    fig.text(0.5, 0.05, "Traveled distance [m]", ha="center", va="center")
+    fig.text(0.5, 0.03, "Traveled distance [m]", ha="center", va="center")
     ax1.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_behind, 2)))
     ax2.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_ahead, 2)))
     ax1.legend(loc='lower left')
@@ -354,7 +354,7 @@ if __name__ == '__main__':
     ax4.axvline(global_crt_index['median_60_40_v2'][0], 0, 1, color='r', label='Kernel density maximum')
 
     fig.text(0.05, 0.5, "Fixation on AOI [%]", va='center', rotation='vertical')
-    fig.text(0.5, 0.05, "Travelled distance [m]", ha="center", va="center")
+    fig.text(0.5, 0.03, "Travelled distance [m]", ha="center", va="center")
     ax3.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_behind, 2)))
     ax4.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_ahead, 2)))
     ax3.legend(loc='lower left')

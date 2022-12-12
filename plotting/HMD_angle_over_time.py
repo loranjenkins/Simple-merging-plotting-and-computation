@@ -4,10 +4,6 @@ import numpy as np
 import datetime
 from pathlib import Path
 from scipy.ndimage import gaussian_filter1d
-from scipy.stats import norm
-import seaborn as sns
-import os
-import pickle
 from natsort import natsorted
 
 from trackobjects.simulationconstants import SimulationConstants
@@ -37,7 +33,7 @@ def get_timestamps(intcolumnname, data_csv):
         time.append(datetimes)
     return time
 
-def hmd_over_time(path_to_data_csv):
+def hmd_over_time(path_to_data_csv, condition):
 
     data = pd.read_csv(path_to_data_csv, sep=',')
 
@@ -132,7 +128,15 @@ def hmd_over_time(path_to_data_csv):
     plt.plot(x, v1, label = 'vehicle 1')
     plt.plot(x, v2, label = 'vehicle 2')
     plt.xlabel('Time [s]')
-    plt.ylabel('HMD rotation')
+    plt.ylabel('HMD rotation [-]')
+
+    if condition == '50-50':
+        plt.title('Head mount rotation over time during the interactive approach\n Condition 1 (50-50 km/h)')
+    if condition == '55-45':
+        plt.title('Head mount rotation over time during the interactive approach\n Condition 2 (55-45 km/h)')
+    if condition == '60-40':
+        plt.title('Head mount rotation over time during the interactive approach\n Condition 3 (60-40 km/h)')
+
     plt.legend()
     # plt.show()
 
@@ -142,28 +146,51 @@ if __name__ == '__main__':
     files_directory1 = r'D:\Thesis_data_all_experiments\Conditions\condition_55_45'
     files_directory2 = r'D:\Thesis_data_all_experiments\Conditions\condition_60_40'
 
-    # files_directory = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50\experiment4'
+    # trails = []
+    # for file in Path(files_directory).glob('*.csv'):
+    #     # trail_condition = plot_trail(file)
+    #     trails.append(file)
+    # trails = natsorted(trails, key=str)
+    #
+    # figure_amount = 0
+    # condition1 = '50-50'
+    # for i in range(len(trails)):
+    #     hmd_over_time(trails[i], condition1)
+    #     fig = plt.savefig(
+    #         r'D:\Thesis_data_all_experiments\Figures_hmd_rots\Condition 1 - 50_50\condition1_trail_{}'.format(
+    #             str(figure_amount)))
+    #     plt.close(fig)
+    #     figure_amount += 1
+    #
+    # trails1 = []
+    # for file in Path(files_directory1).glob('*.csv'):
+    #     # trail_condition = plot_trail(file)
+    #     trails1.append(file)
+    # trails1 = natsorted(trails1, key=str)
+    #
+    # figure_amount = 0
+    # condition2 = '55-45'
+    # for i in range(len(trails1)):
+    #     hmd_over_time(trails1[i], condition2)
+    #     fig = plt.savefig(
+    #         r'D:\Thesis_data_all_experiments\Figures_hmd_rots\Condition 2 - 55_45\condition2_trail_{}'.format(
+    #             str(figure_amount)))
+    #     plt.close(fig)
+    #     figure_amount += 1
 
-    trails = []
-    for file in Path(files_directory).glob('*.csv'):
-        # trail_condition = plot_trail(file)
-        trails.append(file)
-
-    for file in Path(files_directory1).glob('*.csv'):
-        # trail_condition = plot_trail(file)
-        trails.append(file)
-
+    trails2 = []
     for file in Path(files_directory2).glob('*.csv'):
         # trail_condition = plot_trail(file)
-        trails.append(file)
-
-    # for i in range(len(trails)):
-    #     x = hmd_over_time(trails[i])
+        trails2.append(file)
+    trails2 = natsorted(trails2, key=str)
 
     figure_amount = 0
-    for i in range(len(trails)):
-        hmd_over_time(trails[i])
-        fig = plt.savefig(r'D:\Thesis_data_all_experiments\Figures_hmd_rots\random_trail_{}'.format(str(figure_amount)))
+    condition3 = '60-40'
+    for i in range(len(trails2)):
+        hmd_over_time(trails2[i], condition3)
+        fig = plt.savefig(
+            r'D:\Thesis_data_all_experiments\Figures_hmd_rots\Condition 3 - 60_40\condition3_trail_{}'.format(
+                str(figure_amount)))
         plt.close(fig)
         figure_amount += 1
 

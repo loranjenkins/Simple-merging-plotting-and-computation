@@ -247,6 +247,7 @@ if __name__ == '__main__':
         '% fixation on opponent')
     ahead_crt_55_45 = pd.concat([df1['CRT'], df2['CRT']], axis=0)
     df_ahead_55_45 = pd.concat([ahead_crt_55_45, ahead_fixations_55_45], axis=1)
+
     behind_fixations_55_45 = pd.concat([df1['% fixation vehicle 2'], df2['% fixation vehicle 1']], axis=0).rename(
         '% fixation on opponent')
     behind_crt_55_45 = pd.concat([df1['CRT'], df2['CRT']], axis=0)
@@ -343,7 +344,14 @@ if __name__ == '__main__':
 
 
     #----- combined plot
+    # df_50_50['condition'] = ['condition 1'] * len(df_50_50)
+    # df_ahead_55_45['condition'] = ['condition 2'] * len(df_ahead_55_45)
+    # df_behind_55_45['condition'] = ['condition 2'] * len(df_behind_55_45)
+    # df_ahead_60_40['condition'] = ['condition 3'] * len(df_ahead_60_40)
+    # df_behind_60_40['condition'] = ['condition 3'] * len(df_behind_60_40)
+
     df_total = pd.concat([df_ahead_55_45, df_behind_55_45, df_ahead_60_40, df_behind_60_40, df_50_50])
+
     r6, p6 = stats.pearsonr(df_total['CRT'], df_total['% fixation on opponent'])
 
     fig, ax6 = plt.subplots(1, 1)
