@@ -1,12 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import datetime
 from pathlib import Path
-from scipy.ndimage import gaussian_filter1d
-
 import seaborn as sns
-from natsort import natsorted
+import scipy.stats as stats
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
@@ -27,6 +24,7 @@ def vehicle_xy_coordinates(intcolumn, data_csv):
 
     return list_x, list_y
 
+
 def average_nested(l):
     llen = len(l)
 
@@ -37,7 +35,6 @@ def average_nested(l):
 
 # if __name__ == '__main__':
 def probability_calc(path_to_data_csv, left_or_right):
-
     data = pd.read_csv(path_to_data_csv, sep=',')
 
     data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
@@ -46,7 +43,7 @@ def probability_calc(path_to_data_csv, left_or_right):
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=120,  # original = 118 -> check in unreal
+                                               tunnel_length=125,  # original = 118 -> check in unreal
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -64,30 +61,12 @@ def probability_calc(path_to_data_csv, left_or_right):
     xy_coordinates_vehicle1 = np.array(xy_coordinates_vehicle1)
     xy_coordinates_vehicle2 = np.array(xy_coordinates_vehicle2)
 
-    traveled_distance1 = []
-    traveled_distance2 = []
-    for i in range(len(xy_coordinates_vehicle1)):
-        _traveled_distance1 = track.coordinates_to_traveled_distance(xy_coordinates_vehicle1[i])
-        _traveled_distance2 = track.coordinates_to_traveled_distance(xy_coordinates_vehicle2[i])
-        traveled_distance1.append(_traveled_distance1)
-        traveled_distance2.append(_traveled_distance2)
-
-    traveled_distance1 = gaussian_filter1d(traveled_distance1, sigma=15)
-    traveled_distance2 = gaussian_filter1d(traveled_distance2, sigma=15)
-
-
     index_of_mergepoint_vehicle1 = min(range(len(xy_coordinates_vehicle1)),
                                        key=lambda i: abs(xy_coordinates_vehicle1[i][1] - track.merge_point[1]))
-    # index_of_mergepoint_vehicle1 = min(range(len(traveled_distance1)),
-    #                                key=lambda i: abs(traveled_distance1[i] - track.section_length_before))
-
-
     index_of_mergepoint_vehicle2 = min(range(len(xy_coordinates_vehicle2)),
                                        key=lambda i: abs(xy_coordinates_vehicle2[i][1] - track.merge_point[1]))
-    # index_of_mergepoint_vehicle2 = min(range(len(traveled_distance2)),
-    #                                key=lambda i: abs(traveled_distance2[i] - track.section_length_before))
 
-    if left_or_right =='right':
+    if left_or_right == 'right':
         if index_of_mergepoint_vehicle1 < index_of_mergepoint_vehicle2:
             return 1
         else:
@@ -95,9 +74,10 @@ def probability_calc(path_to_data_csv, left_or_right):
 
     if left_or_right == 'left':
         if index_of_mergepoint_vehicle1 < index_of_mergepoint_vehicle2:
-                return 1
+            return 1
         else:
-                return 0
+            return 0
+
 
 def compute_average(folder_with_csv, side):
     trails = []
@@ -124,8 +104,9 @@ def compute_average(folder_with_csv, side):
 
     return average_per_condition
 
+
 if __name__ == '__main__':
-    #experiment1
+    # experiment1
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment1'
     c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment1'
     c50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_50_50\experiment1'
@@ -139,7 +120,8 @@ if __name__ == '__main__':
     average_left_experiment1 = compute_average(left, 'left')
     average_experiment1 = average_right_experiment1 + average_left_experiment1
 
-    #experiment2
+
+    # experiment2
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment2'
     c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment2'
     c50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_50_50\experiment2'
@@ -152,7 +134,6 @@ if __name__ == '__main__':
     average_right_experiment2 = compute_average(right, 'right')
     average_left_experiment2 = compute_average(left, 'left')
     average_experiment2 = average_right_experiment2 + average_left_experiment2
-
 
     #experiment3
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment3'
@@ -224,95 +205,46 @@ if __name__ == '__main__':
     average_left_experiment7 = compute_average(left, 'left')
     average_experiment7 = average_right_experiment7 + average_left_experiment7
 
-    average_list = [average_experiment1, average_experiment2, average_experiment3, average_experiment4,
-                    average_experiment5, average_experiment6, average_experiment7]
+    _40value = [average_experiment1[0], average_experiment2[0], average_experiment3[0], average_experiment4[0], average_experiment5[0], average_experiment6[0], average_experiment7[0]]
+    _45value = [average_experiment1[1], average_experiment2[1], average_experiment3[1], average_experiment4[1], average_experiment5[1], average_experiment6[1], average_experiment7[1]]
+    _50value = [average_experiment1[2], average_experiment2[2], average_experiment3[2], average_experiment4[2], average_experiment5[2], average_experiment6[2], average_experiment7[2]]
+    _55value = [average_experiment1[3], average_experiment2[3], average_experiment3[3], average_experiment4[3], average_experiment5[3], average_experiment6[3], average_experiment7[3]]
+    _60value = [average_experiment1[4], average_experiment2[4], average_experiment3[4], average_experiment4[4], average_experiment5[4], average_experiment6[4], average_experiment7[4]]
 
-    average_list = np.array(average_list)
-    print(average_list)
-    mean = np.mean(average_list, axis=0)
-    mean_per_experiment = np.mean(average_list, axis=1)
-    print(mean)
-    print(mean_per_experiment)
+    dict = {'x_value': [], 'y_value': []}
+    for i in range(7):
+        dict['x_value'].append(40)
+        dict['y_value'].append(_40value[i])
 
-    fig, (ax1, ax2, ax3, ax4, ax5, ax6, ax7) = plt.subplots(1, 7, figsize=(10, 5), sharey=True)
+    for i in range(7):
+        dict['x_value'].append(45)
+        dict['y_value'].append(_45value[i])
 
-    x = np.array([0, 1, 2, 3, 4])
-    for i in range(len(average_experiment1)):
-        ax1.scatter(x[i], average_experiment1[i], marker = "o", color = 'slateblue')
+    for i in range(7):
+        dict['x_value'].append(50)
+        dict['y_value'].append(_50value[i])
 
-    for i in range(len(average_experiment2)):
-        ax2.scatter(x[i], average_experiment2[i], marker = "o", color = 'slateblue')
+    for i in range(7):
+        dict['x_value'].append(55)
+        dict['y_value'].append(_55value[i])
 
-    for i in range(len(average_experiment3)):
-        ax3.scatter(x[i], average_experiment3[i], marker = "o", color = 'slateblue')
+    for i in range(7):
+        dict['x_value'].append(60)
+        dict['y_value'].append(_60value[i])
 
-    for i in range(len(average_experiment4)):
-        ax4.scatter(x[i], average_experiment4[i], marker = "o", color = 'slateblue')
 
-    for i in range(len(average_experiment5)):
-        ax5.scatter(x[i], average_experiment5[i], marker = "o", color = 'slateblue')
+    fig, ax = plt.subplots(1, 1)
+    fig.suptitle('Probability of vehicle 1 merging first over all sessions')
 
-    for i in range(len(average_experiment6)):
-        ax6.scatter(x[i], average_experiment6[i], marker = "o", color = 'slateblue')
+    df1 = pd.DataFrame.from_dict(dict)
 
-    for i in range(len(average_experiment7)):
-        ax7.scatter(x[i], average_experiment7[i], marker = "o", color = 'slateblue')
+    sns.regplot(x="x_value", y="y_value", data=df1)
+    ax.set(xlabel='Velocity vehicle 1 [km/h]', ylabel='Probability [%]')
 
-    ax1.set_xticks(range(5))
-    ax1.set_xticklabels(['40', '45', '50', '55', '60'])
-    ax1.set_yticks(np.arange(0, 1.2, step=0.2))
-    ax1.set_yticklabels(['0', '0.2', '0.4', '0.6', '0.8', '1'])
-    # ax1.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[0], 3)))
-    ax1.set_title('1')
+    r, p = stats.pearsonr(df1['x_value'], df1['y_value'])
 
-    ax2.set_xticks(range(5))
-    ax2.set_xticklabels(['40', '45', '50', '55', '60'])
-    # ax2.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[1], 3)))
-    ax2.set_title('2')
-
-    ax3.set_xticks(range(5))
-    ax3.set_xticklabels(['40', '45', '50', '55', '60'])
-    ax3.set_yticks(np.arange(0, 1.2, step=0.2))
-    # ax3.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[2], 3)))
-    ax3.set_title('3')
-
-    ax4.set_xticks(range(5))
-    ax4.set_xticklabels(['40', '45', '50', '55', '60'])
-    ax4.set_yticks(np.arange(0, 1.2, step=0.2))
-    # ax4.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[3], 3)))
-    ax4.set_title('4')
-
-    ax5.set_xticks(range(5))
-    ax5.set_xticklabels(['40', '45', '50', '55', '60'])
-    ax5.set_yticks(np.arange(0, 1.2, step=0.2))
-    # ax5.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[4], 3)))
-    ax5.set_title('5')
-
-    ax6.set_xticks(range(5))
-    ax6.set_xticklabels(['40', '45', '50', '55', '60'])
-    ax6.set_yticks(np.arange(0, 1.2, step=0.2))
-    # ax6.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[5], 3)))
-    ax6.set_title('6')
-
-    ax7.set_xticks(range(5))
-    ax7.set_xticklabels(['40', '45', '50', '55', '60'])
-    ax7.set_yticks(np.arange(0, 1.2, step=0.2))
-    # ax7.plot([], [], ' ', label='Average: ' + str(round(mean_per_experiment[6], 3)))
-    ax7.set_title('7')
-
-    fig.suptitle('Probability vehicle 1 merging first for each session individually')
-    fig.text(0.06, 0.5, "Probability [%]", va='center', rotation='vertical')
-    fig.text(0.5, 0.04, "Velocity vehicle 1 [km/h]", ha="center", va="center")
-    # ax1.legend(loc='lower left')
-    # ax2.legend(loc='lower left')
-    # ax3.legend(loc='lower left')
-    # ax4.legend(loc='lower left')
-    # ax5.legend(loc='lower left')
-    # ax6.legend(loc='lower left')
-    # ax7.legend(loc='lower left')
-
-    # fig.set_size_inches(12, 8)
-    plt.savefig(r'D:\Thesis_data_all_experiments\Conditions\figures_all_conditions\boxplot_per_experiment\boxplot_per_experiment')
+    ax.plot([], [], ' ', label='r: ' + str(round(r, 2)))
+    ax.plot([], [], ' ', label='p: ' + str(round(p, 2)))
+    ax.legend(loc='best')
 
     plt.show()
-
