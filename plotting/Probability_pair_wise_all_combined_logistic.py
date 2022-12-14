@@ -4,6 +4,8 @@ import numpy as np
 from pathlib import Path
 import seaborn as sns
 import scipy.stats as stats
+import pingouin as pg
+from ast import literal_eval
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
@@ -79,7 +81,7 @@ def probability_calc(path_to_data_csv, left_or_right):
             return 0
 
 
-def compute_average(folder_with_csv, side):
+def compute_average(folder_with_csv, condition, side):
     trails = []
     for i in range(len(folder_with_csv)):
         path_per_c = []
@@ -87,22 +89,17 @@ def compute_average(folder_with_csv, side):
             path_per_c.append(file)
         trails.append(path_per_c)
 
-    probability = []
+    dict = {'merge_or_not': [], 'velocity': []}
+
     for i in range(len(trails)):
         single_folder = trails[i]
-        inner_list = []
         for file in range(len(single_folder)):
             c_p = probability_calc(str(single_folder[file]), side)
-            inner_list.append(c_p)
-        probability.append(inner_list)
+            # print(c_p)
+            dict['merge_or_not'].append(c_p)
+            dict['velocity'] = [int(condition)] * len(dict['merge_or_not'])
 
-    average_per_condition = []
-    for list in range(len(probability)):
-        probability_p_c = probability[list]
-        average = sum(probability_p_c) / len(probability_p_c)
-        average_per_condition.append(average)
-
-    return average_per_condition
+    return dict
 
 
 if __name__ == '__main__':
@@ -113,13 +110,17 @@ if __name__ == '__main__':
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment1'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment1'
 
-    right = [c40_60, c45_55, c50_50]
-    left = [c55_45, c60_40]
+    session1_40 = compute_average([c40_60], '40', 'right')
+    session1_45 = compute_average([c45_55], '45', 'right')
+    session1_50 = compute_average([c50_50], '50', 'right')
+    session1_55 = compute_average([c55_45], '55', 'left')
+    session1_60 = compute_average([c60_40], '60', 'left')
 
-    average_right_experiment1 = compute_average(right, 'right')
-    average_left_experiment1 = compute_average(left, 'left')
-    average_experiment1 = average_right_experiment1 + average_left_experiment1
-
+    df1_40 = pd.DataFrame(session1_40)
+    df1_45 = pd.DataFrame(session1_45)
+    df1_50 = pd.DataFrame(session1_50)
+    df1_55 = pd.DataFrame(session1_55)
+    df1_60 = pd.DataFrame(session1_60)
 
     # experiment2
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment2'
@@ -128,12 +129,17 @@ if __name__ == '__main__':
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment2'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment2'
 
-    left = [c55_45, c60_40]
-    right = [c40_60, c45_55, c50_50]
+    session2_40 = compute_average([c40_60], '40', 'right')
+    session2_45 = compute_average([c45_55], '45', 'right')
+    session2_50 = compute_average([c50_50], '50', 'right')
+    session2_55 = compute_average([c55_45], '55', 'left')
+    session2_60 = compute_average([c60_40], '60', 'left')
 
-    average_right_experiment2 = compute_average(right, 'right')
-    average_left_experiment2 = compute_average(left, 'left')
-    average_experiment2 = average_right_experiment2 + average_left_experiment2
+    df2_40 = pd.DataFrame(session2_40)
+    df2_45 = pd.DataFrame(session2_45)
+    df2_50 = pd.DataFrame(session2_50)
+    df2_55 = pd.DataFrame(session2_55)
+    df2_60 = pd.DataFrame(session2_60)
 
     #experiment3
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment3'
@@ -142,12 +148,17 @@ if __name__ == '__main__':
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment3'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment3'
 
-    left = [c55_45, c60_40]
-    right = [c40_60, c45_55, c50_50]
+    session3_40 = compute_average([c40_60], '40', 'right')
+    session3_45 = compute_average([c45_55], '45', 'right')
+    session3_50 = compute_average([c50_50], '50', 'right')
+    session3_55 = compute_average([c55_45], '55', 'left')
+    session3_60 = compute_average([c60_40], '60', 'left')
 
-    average_right_experiment3 = compute_average(right, 'right')
-    average_left_experiment3 = compute_average(left, 'left')
-    average_experiment3 = average_right_experiment3 + average_left_experiment3
+    df3_40 = pd.DataFrame(session3_40)
+    df3_45 = pd.DataFrame(session3_45)
+    df3_50 = pd.DataFrame(session3_50)
+    df3_55 = pd.DataFrame(session3_55)
+    df3_60 = pd.DataFrame(session3_60)
 
     #experiment4
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment4'
@@ -156,12 +167,17 @@ if __name__ == '__main__':
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment4'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment4'
 
-    left = [c55_45, c60_40]
-    right = [c40_60, c45_55, c50_50]
+    session4_40 = compute_average([c40_60], '40', 'right')
+    session4_45 = compute_average([c45_55], '45', 'right')
+    session4_50 = compute_average([c50_50], '50', 'right')
+    session4_55 = compute_average([c55_45], '55', 'left')
+    session4_60 = compute_average([c60_40], '60', 'left')
 
-    average_right_experiment4 = compute_average(right, 'right')
-    average_left_experiment4 = compute_average(left, 'left')
-    average_experiment4 = average_right_experiment4 + average_left_experiment4
+    df4_40 = pd.DataFrame(session4_40)
+    df4_45 = pd.DataFrame(session4_45)
+    df4_50 = pd.DataFrame(session4_50)
+    df4_55 = pd.DataFrame(session4_55)
+    df4_60 = pd.DataFrame(session4_60)
 
     #experiment5
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment5'
@@ -170,12 +186,17 @@ if __name__ == '__main__':
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment5'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment5'
 
-    left = [c55_45, c60_40]
-    right = [c40_60, c45_55, c50_50]
+    session5_40 = compute_average([c40_60], '40', 'right')
+    session5_45 = compute_average([c45_55], '45', 'right')
+    session5_50 = compute_average([c50_50], '50', 'right')
+    session5_55 = compute_average([c55_45], '55', 'left')
+    session5_60 = compute_average([c60_40], '60', 'left')
 
-    average_right_experiment5 = compute_average(right, 'right')
-    average_left_experiment5 = compute_average(left, 'left')
-    average_experiment5 = average_right_experiment5 + average_left_experiment5
+    df5_40 = pd.DataFrame(session5_40)
+    df5_45 = pd.DataFrame(session5_45)
+    df5_50 = pd.DataFrame(session5_50)
+    df5_55 = pd.DataFrame(session5_55)
+    df5_60 = pd.DataFrame(session5_60)
 
     #experiment6
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment6'
@@ -184,12 +205,17 @@ if __name__ == '__main__':
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment6'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment6'
 
-    left = [c55_45, c60_40]
-    right = [c40_60, c45_55, c50_50]
+    session6_40 = compute_average([c40_60], '40', 'right')
+    session6_45 = compute_average([c45_55], '45', 'right')
+    session6_50 = compute_average([c50_50], '50', 'right')
+    session6_55 = compute_average([c55_45], '55', 'left')
+    session6_60 = compute_average([c60_40], '60', 'left')
 
-    average_right_experiment6 = compute_average(right, 'right')
-    average_left_experiment6 = compute_average(left, 'left')
-    average_experiment6 = average_right_experiment6 + average_left_experiment6
+    df6_40 = pd.DataFrame(session6_40)
+    df6_45 = pd.DataFrame(session6_45)
+    df6_50 = pd.DataFrame(session6_50)
+    df6_55 = pd.DataFrame(session6_55)
+    df6_60 = pd.DataFrame(session6_60)
 
     #experiment7
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment7'
@@ -198,53 +224,31 @@ if __name__ == '__main__':
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment7'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment7'
 
-    left = [c55_45, c60_40]
-    right = [c40_60, c45_55, c50_50]
+    session7_40 = compute_average([c40_60], '40', 'right')
+    session7_45 = compute_average([c45_55], '45', 'right')
+    session7_50 = compute_average([c50_50], '50', 'right')
+    session7_55 = compute_average([c55_45], '55', 'left')
+    session7_60 = compute_average([c60_40], '60', 'left')
 
-    average_right_experiment7 = compute_average(right, 'right')
-    average_left_experiment7 = compute_average(left, 'left')
-    average_experiment7 = average_right_experiment7 + average_left_experiment7
+    df7_40 = pd.DataFrame(session7_40)
+    df7_45 = pd.DataFrame(session7_45)
+    df7_50 = pd.DataFrame(session7_50)
+    df7_55 = pd.DataFrame(session7_55)
+    df7_60 = pd.DataFrame(session7_60)
 
-    _40value = [average_experiment1[0], average_experiment2[0], average_experiment3[0], average_experiment4[0], average_experiment5[0], average_experiment6[0], average_experiment7[0]]
-    _45value = [average_experiment1[1], average_experiment2[1], average_experiment3[1], average_experiment4[1], average_experiment5[1], average_experiment6[1], average_experiment7[1]]
-    _50value = [average_experiment1[2], average_experiment2[2], average_experiment3[2], average_experiment4[2], average_experiment5[2], average_experiment6[2], average_experiment7[2]]
-    _55value = [average_experiment1[3], average_experiment2[3], average_experiment3[3], average_experiment4[3], average_experiment5[3], average_experiment6[3], average_experiment7[3]]
-    _60value = [average_experiment1[4], average_experiment2[4], average_experiment3[4], average_experiment4[4], average_experiment5[4], average_experiment6[4], average_experiment7[4]]
+    total_df = pd.concat([df1_40, df2_40, df3_40, df4_40, df5_40, df6_40, df7_40,
+                          df1_45, df2_45, df3_45, df4_45, df5_45, df6_45, df7_45,
+                          df1_50, df2_50, df3_50, df4_50, df5_50, df6_50, df7_50,
+                          df1_55, df2_55, df3_55, df4_55, df5_55, df6_55, df7_55,
+                          df1_60, df2_60, df3_60, df4_60, df5_60, df6_60, df7_60], ignore_index=True)
 
-    dict = {'x_value': [], 'y_value': []}
-    for i in range(7):
-        dict['x_value'].append(40)
-        dict['y_value'].append(_40value[i])
+    lr = pg.logistic_regression(total_df['velocity'], total_df['merge_or_not']).round(3)
+    print(lr)
 
-    for i in range(7):
-        dict['x_value'].append(45)
-        dict['y_value'].append(_45value[i])
+    p_velocity40 = 1 / (1 + np.exp(-4.779))
+    p_velocity45 = 1 / (1 + np.exp(-(4.779-0.100)))
+    p_velocity50 = 1 / (1 + np.exp(-(4.679-0.100)))
+    p_velocity55 = 1 / (1 + np.exp(-(4.579-0.100)))
+    p_velocity60 = 1 / (1 + np.exp(-(4.479-0.100)))
 
-    for i in range(7):
-        dict['x_value'].append(50)
-        dict['y_value'].append(_50value[i])
-
-    for i in range(7):
-        dict['x_value'].append(55)
-        dict['y_value'].append(_55value[i])
-
-    for i in range(7):
-        dict['x_value'].append(60)
-        dict['y_value'].append(_60value[i])
-
-
-    fig, ax = plt.subplots(1, 1)
-    fig.suptitle('Probability of vehicle 1 merging first over all sessions')
-
-    df1 = pd.DataFrame.from_dict(dict)
-
-    sns.regplot(x="x_value", y="y_value", data=df1)
-    ax.set(xlabel='Velocity vehicle 1 [km/h]', ylabel='Probability [%]')
-
-    r, p = stats.pearsonr(df1['x_value'], df1['y_value'])
-
-    ax.plot([], [], ' ', label='r: ' + str(round(r, 2)))
-    ax.plot([], [], ' ', label='p: ' + str(round(p, 2)))
-    ax.legend(loc='best')
-
-    plt.show()
+    print(p_velocity40, p_velocity45, p_velocity50, p_velocity55, p_velocity60)
