@@ -62,7 +62,7 @@ def nans(shape, dtype=float):
 def plot_varjo(path_to_csv_folder, condition, who_ahead):
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=125,
+                                               tunnel_length=100,
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -308,12 +308,12 @@ if __name__ == '__main__':
     # df2 = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dict55_45_v2_ahead.items()]))
     #
     # # for ahead
-    # ahead_fixations_55_45 = pd.concat([df1['gaze_vehicle1'], df2['gaze_vehicle2']], axis=0).rename(
+    # ahead_fixations_55_45 = pd.concat([df1['gaze_vehicle1'], df2['gaze_vehicle2']], axis=0, ignore_index=True).rename(
     #     'ahead_fixations')
-    # ahead_time_55_45 = pd.concat([df1['time_vehicle1'], df2['time_vehicle2']], axis=0).rename(
+    # ahead_time_55_45 = pd.concat([df1['time_vehicle1'], df2['time_vehicle2']], axis=0, ignore_index=True).rename(
     #     'ahead_time')
-    # ahead_crt_55_45 = pd.concat([df1['CRT'], df2['CRT']], axis=0)
-    # ahead_trails = pd.concat([df1['trail'], df2['trail']], axis=0)
+    # ahead_crt_55_45 = pd.concat([df1['CRT'], df2['CRT']], axis=0, ignore_index=True)
+    # ahead_trails = pd.concat([df1['trail'], df2['trail']], axis=0, ignore_index=True)
     # df_ahead_55_45 = pd.concat([ahead_fixations_55_45, ahead_time_55_45, ahead_crt_55_45, ahead_trails],
     #                            axis=1).dropna()
     # df_ahead_55_45['ahead_time'] = df_ahead_55_45['ahead_time'] - df_ahead_55_45['CRT']
@@ -353,12 +353,12 @@ if __name__ == '__main__':
     #
     # # --------------------------------------------------------------
     # # for behind
-    # behind_fixations_55_45 = pd.concat([df1['gaze_vehicle2'], df2['gaze_vehicle1']], axis=0).rename(
+    # behind_fixations_55_45 = pd.concat([df1['gaze_vehicle2'], df2['gaze_vehicle1']], axis=0, ignore_index=True).rename(
     #     'behind_fixations')
-    # behind_time_55_45 = pd.concat([df1['time_vehicle2'], df2['time_vehicle1']], axis=0).rename(
+    # behind_time_55_45 = pd.concat([df1['time_vehicle2'], df2['time_vehicle1']], axis=0, ignore_index=True).rename(
     #     'behind_time')
-    # behind_crt_55_45 = pd.concat([df1['CRT'], df2['CRT']], axis=0)
-    # behind_trails = pd.concat([df1['trail'], df2['trail']], axis=0)
+    # behind_crt_55_45 = pd.concat([df1['CRT'], df2['CRT']], axis=0, ignore_index=True)
+    # behind_trails = pd.concat([df1['trail'], df2['trail']], axis=0, ignore_index=True)
     # df_behind_55_45 = pd.concat([behind_fixations_55_45, behind_time_55_45, behind_crt_55_45, behind_trails],
     #                             axis=1).dropna()
     # df_behind_55_45['behind_time'] = df_behind_55_45['behind_time'] - df_behind_55_45['CRT']
@@ -452,12 +452,12 @@ if __name__ == '__main__':
     # df2 = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dict60_40_v2_ahead.items()]))
     #
     # # for ahead
-    # ahead_fixations_60_40 = pd.concat([df1['gaze_vehicle1'], df2['gaze_vehicle2']], axis=0).rename(
+    # ahead_fixations_60_40 = pd.concat([df1['gaze_vehicle1'], df2['gaze_vehicle2']], axis=0, ignore_index=True).rename(
     #     'ahead_fixations')
-    # ahead_time_60_40 = pd.concat([df1['time_vehicle1'], df2['time_vehicle2']], axis=0).rename(
+    # ahead_time_60_40 = pd.concat([df1['time_vehicle1'], df2['time_vehicle2']], axis=0, ignore_index=True).rename(
     #     'ahead_time')
-    # ahead_crt_60_40 = pd.concat([df1['CRT'], df2['CRT']], axis=0)
-    # ahead_trails_60_40 = pd.concat([df1['trail'], df2['trail']], axis=0)
+    # ahead_crt_60_40 = pd.concat([df1['CRT'], df2['CRT']], axis=0, ignore_index=True)
+    # ahead_trails_60_40 = pd.concat([df1['trail'], df2['trail']], axis=0, ignore_index=True)
     # df_ahead_60_40 = pd.concat([ahead_fixations_60_40, ahead_time_60_40, ahead_crt_60_40, ahead_trails_60_40],
     #                            axis=1).dropna()
     # df_ahead_60_40['ahead_time'] = df_ahead_60_40['ahead_time'] - df_ahead_60_40['CRT']
@@ -497,12 +497,12 @@ if __name__ == '__main__':
     #
     # # --------------------------------------------------------------
     # # for behind
-    # behind_fixations_60_40 = pd.concat([df1['gaze_vehicle2'], df2['gaze_vehicle1']], axis=0).rename(
+    # behind_fixations_60_40 = pd.concat([df1['gaze_vehicle2'], df2['gaze_vehicle1']], axis=0, ignore_index=True).rename(
     #     'behind_fixations')
-    # behind_time_60_40 = pd.concat([df1['time_vehicle2'], df2['time_vehicle1']], axis=0).rename(
+    # behind_time_60_40 = pd.concat([df1['time_vehicle2'], df2['time_vehicle1']], axis=0, ignore_index=True).rename(
     #     'behind_time')
-    # behind_crt_60_40 = pd.concat([df1['CRT'], df2['CRT']], axis=0)
-    # behind_trails = pd.concat([df1['trail'], df2['trail']], axis=0)
+    # behind_crt_60_40 = pd.concat([df1['CRT'], df2['CRT']], axis=0, ignore_index=True)
+    # behind_trails = pd.concat([df1['trail'], df2['trail']], axis=0, ignore_index=True)
     # df_behind_60_40 = pd.concat([behind_fixations_60_40, behind_time_60_40, behind_crt_60_40, behind_trails],
     #                             axis=1).dropna()
     # df_behind_60_40['behind_time'] = df_behind_60_40['behind_time'] - df_behind_60_40['CRT']
@@ -583,21 +583,27 @@ if __name__ == '__main__':
 
     # --------------------------------------------------
     # 50-50
-    path_to_csv_50_50 = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50'
+    path_to_csv_50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_50_50'
     dict50_50 = plot_varjo(path_to_csv_50_50, '50-50', 'equal')
 
     df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dict50_50.items()]))
-
+    pd.set_option('display.max_columns', None)
     df['time_v1_new'] = df['time_vehicle1'] - df['CRT']
     df['time_v2_new'] = df['time_vehicle2'] - df['CRT']
     df['Average_time'] = df[["time_v1_new", "time_v2_new"]].mean(axis=1)
     df['Average_fixation'] = df[["gaze_vehicle1", "gaze_vehicle2"]].mean(axis=1)
-
-    print(len(df['Average_time']), len(df['Average_fixation']))
+    df = df[df.Average_fixation != 0.5]
+    print(list(df['Average_fixation']))
     min_time_equal = min(min(df['time_v1_new']), min(df['time_v2_new']))
     max_time_equal = max(max(df['time_v1_new']), max(df['time_v2_new']))
 
-    new_time = np.linspace(min_time_equal, max_time_equal, 2000)
+    lengths = []
+    for trial_number in df['trail'].unique():
+        trial_data = df.loc[df['trail'] == trial_number, :]
+        a = len(trial_data['Average_fixation'])
+        lengths.append(a)
+
+    new_time = np.linspace(min_time_equal, max_time_equal, max(lengths))
 
     new_df = {'trial': [],
               'new_time': [],
@@ -605,13 +611,16 @@ if __name__ == '__main__':
 
     for trial_number in df['trail'].unique():
         trial_data = df.loc[df['trail'] == trial_number, :]
-
         new_df['new_time'] += list(new_time)
-        new_df['new_data'] += list(np.interp(new_time, trial_data['Average_time'],
-                                             trial_data['Average_fixation']))
+        new_df['new_data'] += list(np.interp(new_time, trial_data['time_v1_new'],
+                                             trial_data['gaze_vehicle1']))
         new_df['trial'] += [trial_number] * len(new_time)
 
     new_df = pd.DataFrame(new_df)
+    for trial_number in new_df['trial'].unique():
+        trial_data = new_df.loc[new_df['trial'] == trial_number, :]
+
+
 
     data_before_crt = new_df[new_df['new_time'] < 0]
     on_road_fixation_before = list(data_before_crt['new_data']).count(1)
