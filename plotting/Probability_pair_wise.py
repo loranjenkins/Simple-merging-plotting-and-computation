@@ -35,7 +35,6 @@ def average_nested(l):
     return map(divide, map(sum, zip(*l)))
 
 
-# if __name__ == '__main__':
 def probability_calc(path_to_data_csv, left_or_right):
 
     data = pd.read_csv(path_to_data_csv, sep=',')
@@ -46,7 +45,7 @@ def probability_calc(path_to_data_csv, left_or_right):
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=120,  # original = 118 -> check in unreal
+                                               tunnel_length=125,
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -71,9 +70,6 @@ def probability_calc(path_to_data_csv, left_or_right):
         _traveled_distance2 = track.coordinates_to_traveled_distance(xy_coordinates_vehicle2[i])
         traveled_distance1.append(_traveled_distance1)
         traveled_distance2.append(_traveled_distance2)
-
-    traveled_distance1 = gaussian_filter1d(traveled_distance1, sigma=15)
-    traveled_distance2 = gaussian_filter1d(traveled_distance2, sigma=15)
 
 
     index_of_mergepoint_vehicle1 = min(range(len(xy_coordinates_vehicle1)),

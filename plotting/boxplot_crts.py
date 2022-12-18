@@ -3,13 +3,11 @@ import pandas as pd
 import os
 import numpy as np
 import seaborn as sns
-from scipy.stats import ttest_ind, ttest_ind_from_stats
+from scipy.stats import ttest_ind
 import pingouin as pg
 
 
 path_to_data_csv_crt = os.path.join('..', 'data_folder', 'crt_who_is_first_exit_interactive.csv')
-# path_to_data_csv_crt = os.path.join('..', 'data_folder', 'crt_at_average_exit.csv')
-
 
 global_crt = pd.read_csv(path_to_data_csv_crt, sep=',')
 global_crt.replace(0, np.nan, inplace=True)
@@ -17,7 +15,6 @@ global_crt.replace(0, np.nan, inplace=True)
 dict1 = {'condition': [], 'value': []}
 dict2 = {'condition': [], 'value': []}
 dict3 = {'condition': [], 'value': []}
-
 
 individual_list_c1 = list(global_crt['Condition 1'])
 individual_list_c2 = list(global_crt['Condition 2'])
@@ -60,7 +57,6 @@ print('Pearson values t and p: ', t1, p1)
 
 medians_crt = global_crt.median()
 
-
 # path_to_saved_dict1 = os.path.join('..', 'data_folder', 'medians_crt.csv')
 #
 #
@@ -81,9 +77,8 @@ PROPS = {
 fig, ax1 = plt.subplots()
 sns.boxplot(data=global_crt, **PROPS)
 
-fig.suptitle('Comparison CRT all conditions')
+fig.suptitle('Comparison all CRTs between conditions')
 ax1.set(ylabel='CRT [s]')
-# ax1.set_ylabel('CRT [s]')
 ax1.set_xticklabels(["Condition 1:\n 50-50 km/h", "Condition 2:\n 55-45 km/h", "Condition 3:\n 60-40 km/h"])
-# plt.show()
+plt.show()
 

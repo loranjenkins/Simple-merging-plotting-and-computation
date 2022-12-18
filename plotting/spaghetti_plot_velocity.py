@@ -278,7 +278,6 @@ def get_dict(path_to_data_csv, who_is_ahead, condition):
 
 if __name__ == '__main__':
     path_to_csv_vehicle1_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle1'
-    [path_to_csv_vehicle1_ahead,path_to_csv_vehicle1_ahead]
 
     who_is_ahead = 'vehicle1'
     condition = '60-40'

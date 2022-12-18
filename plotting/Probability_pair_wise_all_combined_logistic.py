@@ -243,6 +243,9 @@ if __name__ == '__main__':
                           df1_60, df2_60, df3_60, df4_60, df5_60, df6_60, df7_60], ignore_index=True)
 
     lr = pg.logistic_regression(total_df['velocity'], total_df['merge_or_not'])
+
+    pd.set_option('display.max_columns', None)
+
     print(lr)
 
     p_velocity40 = 1 / (1 + np.exp(-4.779))

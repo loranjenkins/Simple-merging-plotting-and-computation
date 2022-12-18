@@ -6,9 +6,9 @@ import os
 from natsort import natsorted
 from scipy.ndimage import gaussian_filter1d
 
-
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
+
 
 def vehicle_xy_coordinates(intcolumn, data_csv):
     list_x = []
@@ -35,6 +35,7 @@ def vehicle_velocity(intcolumnname, data_csv):
         # velocity = list(dict.fromkeys(velocity))
     return velocity
 
+
 def get_timestamps(intcolumnname, data_csv):
     time = []
     for i in range(len(data_csv.iloc[:, intcolumnname])):
@@ -45,20 +46,18 @@ def get_timestamps(intcolumnname, data_csv):
     return time
 
 
-
 def check_if_on_collision_course_for_point(travelled_distance_collision_point, data_dict, simulation_constants):
     track = SymmetricMergingTrack(simulation_constants)
     point_predictions = {'vehicle1': [], 'vehicle2': []}
 
     point_predictions['vehicle1'] = np.array(data_dict['distance_traveled_vehicle1']) + np.array(
         data_dict['velocity_vehicle1']) * (travelled_distance_collision_point - np.array(
-                                        data_dict['distance_traveled_vehicle2'])) / np.array(
+        data_dict['distance_traveled_vehicle2'])) / np.array(
         data_dict['velocity_vehicle2'])
     point_predictions['vehicle2'] = np.array(data_dict['distance_traveled_vehicle2']) + np.array(
         data_dict['velocity_vehicle2']) * (travelled_distance_collision_point - np.array(
-                                        data_dict['distance_traveled_vehicle1'])) / np.array(
+        data_dict['distance_traveled_vehicle1'])) / np.array(
         data_dict['velocity_vehicle1'])
-
 
     lb, ub = track.get_collision_bounds(travelled_distance_collision_point, simulation_constants.vehicle_width,
                                         simulation_constants.vehicle_length)
@@ -118,7 +117,6 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
 
 # if __name__ == '__main__':
 def compute_crt(path_to_data_csv, condition):
-
     data = pd.read_csv(path_to_data_csv, sep=',')
 
     data.drop(data.loc[data['Carla Interface.time'] == 0].index, inplace=True)
@@ -127,7 +125,7 @@ def compute_crt(path_to_data_csv, condition):
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=120,  # original = 118 -> check in unreal
+                                               tunnel_length=125,  # original = 118 -> check in unreal
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -153,25 +151,6 @@ def compute_crt(path_to_data_csv, condition):
 
     xy_coordinates_vehicle1 = np.array(xy_coordinates_vehicle1)
     xy_coordinates_vehicle2 = np.array(xy_coordinates_vehicle2)
-
-    if xy_coordinates_vehicle1[0][0] > 0:
-        for i in range(len(xy_coordinates_vehicle1)):
-            straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
-            data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
-
-        for i in range(len(xy_coordinates_vehicle2)):
-            straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
-            data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
-
-    elif xy_coordinates_vehicle2[0][0] > 0:
-        for i in range(len(xy_coordinates_vehicle1)):
-            straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
-            data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
-
-        for i in range(len(xy_coordinates_vehicle2)):
-            straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
-            data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
-
 
     # ------------------------------------------------------------------------#
     # velocity
@@ -200,58 +179,56 @@ def compute_crt(path_to_data_csv, condition):
     data_dict['distance_traveled_vehicle1'] = gaussian_filter1d(data_dict['distance_traveled_vehicle1'], sigma=15)
     data_dict['distance_traveled_vehicle2'] = gaussian_filter1d(data_dict['distance_traveled_vehicle2'], sigma=15)
 
+    index_of_tunnel_vehicle1 = min(range(len(data_dict['distance_traveled_vehicle1'])),
+                                   key=lambda i: abs(data_dict['distance_traveled_vehicle1'][i] - track.tunnel_length))
+    index_of_tunnel_vehicle2 = min(range(len(data_dict['distance_traveled_vehicle2'])),
+                                   key=lambda i: abs(data_dict['distance_traveled_vehicle2'][i] - track.tunnel_length))
+
+    who_is_first_tunnel = min(index_of_tunnel_vehicle1, index_of_tunnel_vehicle2)
+    who_is_first_tunnel_time = time_in_seconds_trail[who_is_first_tunnel]
+
     ##compute crt
     crt_object = calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
 
     if not crt_object[1].size:
         crt = 0
     else:
-        crt = crt_object[1][-1]
+        crt = crt_object[1][-1] - who_is_first_tunnel_time
 
-    if not crt_object[1].size:
-        crt_index = 0
-    else:
-        crt_index = min(range(len(data_dict['time'])),
-                                   key=lambda i: abs(data_dict['time'][i] - crt))
+    return crt
 
-
-    return crt, crt_index
 
 if __name__ == '__main__':
-    #condition50-50
-    files_directory1 = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50'
+    # condition50-50
+    files_directory1 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_50_50'
     condition = '50-50'
 
     trails_condition_50_50 = []
     for file in Path(files_directory1).glob('*.csv'):
         trails_condition_50_50.append(file)
     trails_condition_50_50 = natsorted(trails_condition_50_50, key=str)
+    trails = natsorted(trails_condition_50_50, key=str)
 
     crts_50_50 = []
-    # crt_indexes_50_50 = []
     for i in range(len(trails_condition_50_50)):
-        crt = compute_crt(trails_condition_50_50[i], condition)[0]
-        # crt_index = compute_crt(trails_condition_50_50[i], condition)[1]
+        crt = compute_crt(trails_condition_50_50[i], condition)
         crts_50_50.append(crt)
-        # crt_indexes_50_50.append(crt_index)
 
-    #condition55-45 - right ahead
+    # condition55-45 - right ahead
     files_directory2 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 1'
     condition = '55-45'
     trails_condition_45_55 = []
     for file in Path(files_directory2).glob('*.csv'):
         trails_condition_45_55.append(file)
     trails_condition_45_55 = natsorted(trails_condition_45_55, key=str)
+    trails = natsorted(trails_condition_45_55, key=str)
 
     crts_45_55 = []
-    # crt_indexes_45_55 = []
     for i in range(len(trails_condition_45_55)):
-        crt = compute_crt(trails_condition_45_55[i], condition)[0]
-        # crt_index = compute_crt(trails_condition_45_55[i], condition)[1]
+        crt = compute_crt(trails_condition_45_55[i], condition)
         crts_45_55.append(crt)
-        # crt_indexes_45_55.append(crt_index)
 
-    #condition55-45 - left ahead
+    # condition55-45 - left ahead
     files_directory3 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 2'
     condition = '55-45'
     trails_condition_55_45 = []
@@ -262,10 +239,8 @@ if __name__ == '__main__':
     crts_55_45 = []
     # crt_indexes_55_45 = []
     for i in range(len(trails_condition_55_45)):
-        crt = compute_crt(trails_condition_55_45[i], condition)[0]
-        # crt_index = compute_crt(trails_condition_55_45[i], condition)[1]
+        crt = compute_crt(trails_condition_55_45[i], condition)
         crts_55_45.append(crt)
-        # crt_indexes_55_45.append(crt_index)
 
     # condition right ahead
     files_directory4 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle1'
@@ -276,12 +251,9 @@ if __name__ == '__main__':
     trails_condition_40_60 = natsorted(trails_condition_40_60, key=str)
 
     crts_40_60 = []
-    # crt_indexes_40_60 = []
     for i in range(len(trails_condition_40_60)):
-        crt = compute_crt(trails_condition_40_60[i], condition)[0]
-        # crt_index = compute_crt(trails_condition_40_60[i], condition)[1]
+        crt = compute_crt(trails_condition_40_60[i], condition)
         crts_40_60.append(crt)
-        # crt_indexes_40_60.append(crt_index)
 
     # condition left ahead
     files_directory5 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle2'
@@ -294,13 +266,10 @@ if __name__ == '__main__':
     crts_60_40 = []
     # crt_indexes_60_40 = []
     for i in range(len(trails_condition_60_40)):
-        crt = compute_crt(trails_condition_60_40[i], condition)[0]
-        # crt_index = compute_crt(trails_condition_60_40[i], condition)[1]
+        crt = compute_crt(trails_condition_60_40[i], condition)
         crts_60_40.append(crt)
-        # crt_indexes_60_40.append(crt_index)
 
     path_to_saved_dict_crt = os.path.join('..', 'data_folder', 'crt_who_is_ahead.csv')
-    # path_to_saved_dict_index = os.path.join('..', 'data_folder', 'crt_index_who_is_ahead.csv')
 
     df1 = pd.DataFrame({'crt_50_50': crts_50_50})
     df2 = pd.DataFrame({'crt_45_55_vehicle1': crts_45_55})
@@ -308,11 +277,3 @@ if __name__ == '__main__':
     df4 = pd.DataFrame({'crt_40_60_vehicle1': crts_40_60})
     df5 = pd.DataFrame({'crt_60_40_vehicle2': crts_60_40})
     pd.concat([df1, df2, df3, df4, df5], axis=1).to_csv(path_to_saved_dict_crt, index=False)
-
-    # df6 = pd.DataFrame({'crt_index_50_50': crt_indexes_50_50})
-    # df7 = pd.DataFrame({'crt_index_45_55_right': crt_indexes_45_55})
-    # df8 = pd.DataFrame({'crt_index_55_45_left': crt_indexes_55_45})
-    # df9 = pd.DataFrame({'crt_index_40_60_right': crt_indexes_40_60})
-    # df10 = pd.DataFrame({'crt_index_60_40_left': crt_indexes_60_40})
-    #
-    # pd.concat([df6, df7, df8, df9, df10], axis=1).to_csv(path_to_saved_dict_index, index=False)

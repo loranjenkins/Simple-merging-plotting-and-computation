@@ -253,8 +253,6 @@ def plot_varjo(path_to_csv_folder):
 
 
 if __name__ == '__main__':
-    path_to_data_csv = os.path.join('..', 'data_folder', 'medians_crt_who_is_ahead.csv')
-    global_crt = pd.read_csv(path_to_data_csv, sep=',')
 
     # --------------------------------------------------
     # left ahead 55-45

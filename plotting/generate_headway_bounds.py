@@ -28,24 +28,6 @@ from trackobjects.symmetricmerge_bounds import SymmetricMergingTrack
 
 
 def generate_data_dict():
-    # simulation_constants = SimulationConstants(vehicle_width=1.5,
-    #                                            vehicle_length=4.7,
-    #                                            tunnel_length=120,  # original = 118 -> check in unreal
-    #                                            track_width=8,
-    #                                            track_height=220,
-    #                                            track_start_point_distance=440,
-    #                                            track_section_length_before=305, #original 304.056
-    #                                            track_section_length_after=112.5)  # goes until 400
-
-    # simulation_constants = SimulationConstants(vehicle_width=1.5,
-    #                                            vehicle_length=4.7,
-    #                                            tunnel_length=118,  # original = 118 -> check in unreal
-    #                                            track_width=8,
-    #                                            track_height=230,
-    #                                            track_start_point_distance=460,
-    #                                            track_section_length_before=321,
-    #                                            track_section_length_after=100)
-
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
                                                tunnel_length=120,  # original = 118 -> check in unreal
@@ -71,7 +53,7 @@ def generate_data_dict():
 
         lb, ub = track.get_headway_bounds(average_y_position,
                                           vehicle_length=simulation_constants.vehicle_length,
-                                          vehicle_width=simulation_constants.vehicle_width) #if we switch length with width it plots
+                                          vehicle_width=simulation_constants.vehicle_width)
         if lb == -0.0:
             lb = np.nan
         if ub == -0.0:

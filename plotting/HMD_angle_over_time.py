@@ -18,9 +18,7 @@ def vehicle_xy_coordinates(intcolumn, data_csv):
         y_loc = transform_vehicle1[1]
 
         list_x.append(x_loc)
-        # list_x = list(dict.fromkeys(list_x))
         list_y.append(y_loc)
-        # list_y = list(dict.fromkeys(list_y))
 
     return list_x, list_y
 
@@ -43,7 +41,7 @@ def hmd_over_time(path_to_data_csv, condition):
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=135,  # original = 118 -> check in unreal
+                                               tunnel_length=125,
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -69,24 +67,6 @@ def hmd_over_time(path_to_data_csv, condition):
 
     xy_coordinates_vehicle1 = np.array(xy_coordinates_vehicle1)
     xy_coordinates_vehicle2 = np.array(xy_coordinates_vehicle2)
-
-    if xy_coordinates_vehicle1[0][0] > 0:
-        for i in range(len(xy_coordinates_vehicle1)):
-            straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
-            data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
-
-        for i in range(len(xy_coordinates_vehicle2)):
-            straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
-            data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
-
-    elif xy_coordinates_vehicle2[0][0] > 0:
-        for i in range(len(xy_coordinates_vehicle1)):
-            straight_line_vehicle1 = track.closest_point_on_route(xy_coordinates_vehicle1[i])
-            data_dict['y1_straight'].append(straight_line_vehicle1[0][1])
-
-        for i in range(len(xy_coordinates_vehicle2)):
-            straight_line_vehicle2 = track.closest_point_on_route(xy_coordinates_vehicle2[i])
-            data_dict['y2_straight'].append(straight_line_vehicle2[0][1])
 
     # ------------------------------------------------------------------------#
     # time
@@ -146,37 +126,37 @@ if __name__ == '__main__':
     files_directory1 = r'D:\Thesis_data_all_experiments\Conditions\condition_55_45'
     files_directory2 = r'D:\Thesis_data_all_experiments\Conditions\condition_60_40'
 
-    # trails = []
-    # for file in Path(files_directory).glob('*.csv'):
-    #     # trail_condition = plot_trail(file)
-    #     trails.append(file)
-    # trails = natsorted(trails, key=str)
-    #
-    # figure_amount = 0
-    # condition1 = '50-50'
-    # for i in range(len(trails)):
-    #     hmd_over_time(trails[i], condition1)
-    #     fig = plt.savefig(
-    #         r'D:\Thesis_data_all_experiments\Figures_hmd_rots\Condition 1 - 50_50\condition1_trail_{}'.format(
-    #             str(figure_amount)))
-    #     plt.close(fig)
-    #     figure_amount += 1
-    #
-    # trails1 = []
-    # for file in Path(files_directory1).glob('*.csv'):
-    #     # trail_condition = plot_trail(file)
-    #     trails1.append(file)
-    # trails1 = natsorted(trails1, key=str)
-    #
-    # figure_amount = 0
-    # condition2 = '55-45'
-    # for i in range(len(trails1)):
-    #     hmd_over_time(trails1[i], condition2)
-    #     fig = plt.savefig(
-    #         r'D:\Thesis_data_all_experiments\Figures_hmd_rots\Condition 2 - 55_45\condition2_trail_{}'.format(
-    #             str(figure_amount)))
-    #     plt.close(fig)
-    #     figure_amount += 1
+    trails = []
+    for file in Path(files_directory).glob('*.csv'):
+        # trail_condition = plot_trail(file)
+        trails.append(file)
+    trails = natsorted(trails, key=str)
+
+    figure_amount = 0
+    condition1 = '50-50'
+    for i in range(len(trails)):
+        hmd_over_time(trails[i], condition1)
+        fig = plt.savefig(
+            r'D:\Thesis_data_all_experiments\Figures_hmd_rots\Condition 1 - 50_50\condition1_trail_{}'.format(
+                str(figure_amount)))
+        plt.close(fig)
+        figure_amount += 1
+
+    trails1 = []
+    for file in Path(files_directory1).glob('*.csv'):
+        # trail_condition = plot_trail(file)
+        trails1.append(file)
+    trails1 = natsorted(trails1, key=str)
+
+    figure_amount = 0
+    condition2 = '55-45'
+    for i in range(len(trails1)):
+        hmd_over_time(trails1[i], condition2)
+        fig = plt.savefig(
+            r'D:\Thesis_data_all_experiments\Figures_hmd_rots\Condition 2 - 55_45\condition2_trail_{}'.format(
+                str(figure_amount)))
+        plt.close(fig)
+        figure_amount += 1
 
     trails2 = []
     for file in Path(files_directory2).glob('*.csv'):

@@ -1,5 +1,4 @@
 import autograd.numpy as np
-import matplotlib.pyplot as plt
 import shapely.affinity
 import shapely.geometry
 import shapely.ops

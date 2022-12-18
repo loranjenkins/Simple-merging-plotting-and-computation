@@ -46,18 +46,9 @@ def average(l):
 
 
 def plot_varjo(path_to_csv_folder, condition, who_ahead):
-    # simulation_constants = SimulationConstants(vehicle_width=2,
-    #                                            vehicle_length=4.7,
-    #                                            tunnel_length=100,  # original = 118 -> check in unreal
-    #                                            track_width=8,
-    #                                            track_height=215,
-    #                                            track_start_point_distance=430,
-    #                                            track_section_length_before=304.056,
-    #                                            track_section_length_after=150)  # goes until 400
-
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=130,
+                                               tunnel_length=125,
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -69,7 +60,6 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
     files_directory = path_to_csv_folder
     trails = []
     for file in Path(files_directory).glob('*.csv'):
-        # trail_condition = plot_trail(file)
         trails.append(file)
     trails = natsorted(trails, key=str)
 
@@ -234,97 +224,97 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
 
 
 if __name__ == '__main__':
-    # # 55_45
-    # path_to_csv_vehicle1_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 1'
-    # dict55_45_v1_ahead = plot_varjo(path_to_csv_vehicle1_ahead, '55-45', 'vehicle1')
-    #
-    # path_to_csv_vehicle2_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 2'
-    # dict55_45_v2_ahead = plot_varjo(path_to_csv_vehicle2_ahead, '55-45', 'vehicle2')
-    #
-    # df1 = pd.DataFrame.from_dict(dict55_45_v1_ahead)
-    # df2 = pd.DataFrame.from_dict(dict55_45_v2_ahead)
-    #
-    # ahead_fixations_55_45 = pd.concat([df1['% fixation vehicle 1'], df2['% fixation vehicle 2']], axis=0).rename(
-    #     '% fixation on opponent')
-    # ahead_crt_55_45 = pd.concat([df1['CRT'], df2['CRT']], axis=0)
-    # df_ahead_55_45 = pd.concat([ahead_crt_55_45, ahead_fixations_55_45], axis=1)
-    #
-    # behind_fixations_55_45 = pd.concat([df1['% fixation vehicle 2'], df2['% fixation vehicle 1']], axis=0).rename(
-    #     '% fixation on opponent')
-    # behind_crt_55_45 = pd.concat([df1['CRT'], df2['CRT']], axis=0)
-    # df_behind_55_45 = pd.concat([behind_crt_55_45, behind_fixations_55_45], axis=1)
-    #
-    # r, p = stats.pearsonr(df_ahead_55_45['CRT'], df_ahead_55_45['% fixation on opponent'])
-    # r1, p1 = stats.pearsonr(df_behind_55_45['CRT'], df_behind_55_45['% fixation on opponent'])
-    #
-    # fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-    # fig.suptitle('Linear regression analysis on condition 2 (55-45 km/h)')
-    # fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
-    # fig.text(0.5, 0.05, "CRT [s]", ha="center", va="center")
-    #
-    # sns.regplot(df_ahead_55_45, x='CRT', y='% fixation on opponent', ax=axes[0])
-    # sns.regplot(df_behind_55_45, x='CRT', y='% fixation on opponent', ax=axes[1])
-    #
-    # axes[0].set_title('Participant is behind')
-    # axes[1].set_title('Participant is ahead')
-    #
-    # axes[0].set(xlabel=None, ylabel= None)
-    # axes[1].set(xlabel=None, ylabel= None)
-    #
-    # axes[0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
-    # axes[0].plot([], [], ' ', label='p: ' + str(round(p, 2)))
-    # axes[1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
-    # axes[1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
-    #
-    # axes[0].legend(loc='best')
-    # axes[1].legend(loc='best')
-    #
-    # # --------------------------------------------------
-    # # 60-40
-    # path_to_csv_vehicle1_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle1'
-    # dict60_40_v1_ahead = plot_varjo(path_to_csv_vehicle1_ahead, '60-40', 'vehicle1')
-    #
-    # path_to_csv_vehicle2_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle2'
-    # dict60_40_v2_ahead = plot_varjo(path_to_csv_vehicle2_ahead, '60-40', 'vehicle2')
-    #
-    # df3 = pd.DataFrame.from_dict(dict60_40_v1_ahead)
-    # df4 = pd.DataFrame.from_dict(dict60_40_v2_ahead)
-    #
-    # ahead_fixations_60_40 = pd.concat([df3['% fixation vehicle 1'], df4['% fixation vehicle 2']], axis=0).rename(
-    #     '% fixation on opponent')
-    # ahead_crt_60_40 = pd.concat([df3['CRT'], df4['CRT']], axis=0)
-    # df_ahead_60_40 = pd.concat([ahead_crt_60_40, ahead_fixations_60_40], axis=1)
-    #
-    # behind_fixations_60_40 = pd.concat([df3['% fixation vehicle 2'], df4['% fixation vehicle 1']], axis=0).rename(
-    #     '% fixation on opponent')
-    # behind_crt_60_40 = pd.concat([df3['CRT'], df4['CRT']], axis=0)
-    # df_behind_60_40 = pd.concat([behind_crt_60_40, behind_fixations_60_40], axis=1)
-    #
-    # r3, p3 = stats.pearsonr(df_ahead_60_40['CRT'], df_ahead_60_40['% fixation on opponent'])
-    # r4, p4 = stats.pearsonr(df_behind_60_40['CRT'], df_behind_60_40['% fixation on opponent'])
-    #
-    # fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-    # fig.suptitle('Linear regression analysis on condition 3 (60-40 km/h)')
-    # fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
-    # fig.text(0.5, 0.05, "CRT [s]", ha="center", va="center")
-    #
-    # sns.regplot(df_ahead_60_40, x='CRT', y='% fixation on opponent', ax=axes[0])
-    # sns.regplot(df_behind_60_40, x='CRT', y='% fixation on opponent', ax=axes[1])
-    #
-    # axes[0].set_title('Participant is behind')
-    # axes[1].set_title('Participant is ahead')
-    #
-    # axes[0].set(xlabel=None, ylabel= None)
-    # axes[1].set(xlabel=None, ylabel= None)
-    #
-    # axes[0].plot([], [], ' ', label='r: ' + str(round(r3, 2)))
-    # axes[0].plot([], [], ' ', label='p: ' + str(round(p3, 2)))
-    # axes[1].plot([], [], ' ', label='r: ' + str(round(r4, 2)))
-    # axes[1].plot([], [], ' ', label='p: ' + str(round(p4, 2)))
-    #
-    # axes[0].legend(loc='best')
-    # axes[1].legend(loc='best')
-    #
+    # 55_45
+    path_to_csv_vehicle1_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 1'
+    dict55_45_v1_ahead = plot_varjo(path_to_csv_vehicle1_ahead, '55-45', 'vehicle1')
+
+    path_to_csv_vehicle2_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 2'
+    dict55_45_v2_ahead = plot_varjo(path_to_csv_vehicle2_ahead, '55-45', 'vehicle2')
+
+    df1 = pd.DataFrame.from_dict(dict55_45_v1_ahead)
+    df2 = pd.DataFrame.from_dict(dict55_45_v2_ahead)
+
+    ahead_fixations_55_45 = pd.concat([df1['% fixation vehicle 1'], df2['% fixation vehicle 2']], axis=0).rename(
+        '% fixation on opponent')
+    ahead_crt_55_45 = pd.concat([df1['CRT'], df2['CRT']], axis=0)
+    df_ahead_55_45 = pd.concat([ahead_crt_55_45, ahead_fixations_55_45], axis=1)
+
+    behind_fixations_55_45 = pd.concat([df1['% fixation vehicle 2'], df2['% fixation vehicle 1']], axis=0).rename(
+        '% fixation on opponent')
+    behind_crt_55_45 = pd.concat([df1['CRT'], df2['CRT']], axis=0)
+    df_behind_55_45 = pd.concat([behind_crt_55_45, behind_fixations_55_45], axis=1)
+
+    r, p = stats.pearsonr(df_ahead_55_45['CRT'], df_ahead_55_45['% fixation on opponent'])
+    r1, p1 = stats.pearsonr(df_behind_55_45['CRT'], df_behind_55_45['% fixation on opponent'])
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    fig.suptitle('Linear regression analysis on condition 2 (55-45 km/h)')
+    fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
+    fig.text(0.5, 0.05, "CRT [s]", ha="center", va="center")
+
+    sns.regplot(df_ahead_55_45, x='CRT', y='% fixation on opponent', ax=axes[0])
+    sns.regplot(df_behind_55_45, x='CRT', y='% fixation on opponent', ax=axes[1])
+
+    axes[0].set_title('Participant is behind')
+    axes[1].set_title('Participant is ahead')
+
+    axes[0].set(xlabel=None, ylabel= None)
+    axes[1].set(xlabel=None, ylabel= None)
+
+    axes[0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
+    axes[0].plot([], [], ' ', label='p: ' + str(round(p, 2)))
+    axes[1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
+    axes[1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
+
+    axes[0].legend(loc='best')
+    axes[1].legend(loc='best')
+
+    # --------------------------------------------------
+    # 60-40
+    path_to_csv_vehicle1_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle1'
+    dict60_40_v1_ahead = plot_varjo(path_to_csv_vehicle1_ahead, '60-40', 'vehicle1')
+
+    path_to_csv_vehicle2_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle2'
+    dict60_40_v2_ahead = plot_varjo(path_to_csv_vehicle2_ahead, '60-40', 'vehicle2')
+
+    df3 = pd.DataFrame.from_dict(dict60_40_v1_ahead)
+    df4 = pd.DataFrame.from_dict(dict60_40_v2_ahead)
+
+    ahead_fixations_60_40 = pd.concat([df3['% fixation vehicle 1'], df4['% fixation vehicle 2']], axis=0).rename(
+        '% fixation on opponent')
+    ahead_crt_60_40 = pd.concat([df3['CRT'], df4['CRT']], axis=0)
+    df_ahead_60_40 = pd.concat([ahead_crt_60_40, ahead_fixations_60_40], axis=1)
+
+    behind_fixations_60_40 = pd.concat([df3['% fixation vehicle 2'], df4['% fixation vehicle 1']], axis=0).rename(
+        '% fixation on opponent')
+    behind_crt_60_40 = pd.concat([df3['CRT'], df4['CRT']], axis=0)
+    df_behind_60_40 = pd.concat([behind_crt_60_40, behind_fixations_60_40], axis=1)
+
+    r3, p3 = stats.pearsonr(df_ahead_60_40['CRT'], df_ahead_60_40['% fixation on opponent'])
+    r4, p4 = stats.pearsonr(df_behind_60_40['CRT'], df_behind_60_40['% fixation on opponent'])
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    fig.suptitle('Linear regression analysis on condition 3 (60-40 km/h)')
+    fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
+    fig.text(0.5, 0.05, "CRT [s]", ha="center", va="center")
+
+    sns.regplot(df_ahead_60_40, x='CRT', y='% fixation on opponent', ax=axes[0])
+    sns.regplot(df_behind_60_40, x='CRT', y='% fixation on opponent', ax=axes[1])
+
+    axes[0].set_title('Participant is behind')
+    axes[1].set_title('Participant is ahead')
+
+    axes[0].set(xlabel=None, ylabel= None)
+    axes[1].set(xlabel=None, ylabel= None)
+
+    axes[0].plot([], [], ' ', label='r: ' + str(round(r3, 2)))
+    axes[0].plot([], [], ' ', label='p: ' + str(round(p3, 2)))
+    axes[1].plot([], [], ' ', label='r: ' + str(round(r4, 2)))
+    axes[1].plot([], [], ' ', label='p: ' + str(round(p4, 2)))
+
+    axes[0].legend(loc='best')
+    axes[1].legend(loc='best')
+
 
     # --------------------------------------------------
     # #50_50
@@ -352,32 +342,10 @@ if __name__ == '__main__':
     plt.show()
 
 
-    #----- combined plot
-    # df_50_50['condition'] = ['condition 1'] * len(df_50_50)
-    # df_ahead_55_45['condition'] = ['condition 2'] * len(df_ahead_55_45)
-    # df_behind_55_45['condition'] = ['condition 2'] * len(df_behind_55_45)
-    # df_ahead_60_40['condition'] = ['condition 3'] * len(df_ahead_60_40)
-    # df_behind_60_40['condition'] = ['condition 3'] * len(df_behind_60_40)
-
-    # df_total = pd.concat([df_ahead_55_45, df_behind_55_45, df_ahead_60_40, df_behind_60_40, df_50_50])
-    #
-    # r6, p6 = stats.pearsonr(df_total['CRT'], df_total['% fixation on opponent'])
-    #
-    # fig, ax6 = plt.subplots(1, 1)
-    # fig.suptitle('Linear regression analysis of all conditions')
-    # sns.regplot(df_total, x='CRT', y='% fixation on opponent')
-    # ax6.set(xlabel='CRT [s]', ylabel='Fixation on opponent [%]')
-    # ax6.plot([], [], ' ', label='r: ' + str(round(r6, 2)))
-    # ax6.plot([], [], ' ', label='p: ' + str(round(p6, 2)))
-    # ax6.legend(loc='best')
-
-    # plt.show()
-
-    #
-    # # --------to csv
-    # path_to_saved_dict_crt = os.path.join('..', 'data_folder', 'boxplot_who_is_ahead.csv')
-    # df2 = pd.DataFrame({'ahead_fixations_55_45': list(ahead_fixations_55_45)})
-    # df3 = pd.DataFrame({'behind_fixations_55_45': list(behind_fixations_55_45)})
-    # df4 = pd.DataFrame({'ahead_fixations_60_40': list(ahead_fixations_60_40)})
-    # df5 = pd.DataFrame({'behind_fixations_60_40': list(behind_fixations_60_40)})
-    # pd.concat([df2, df3, df4, df5], axis=1).to_csv(path_to_saved_dict_crt, index=False)
+    # --------to csv
+    path_to_saved_dict_crt = os.path.join('..', 'data_folder', 'boxplot_who_is_ahead.csv')
+    df2 = pd.DataFrame({'ahead_fixations_55_45': list(ahead_fixations_55_45)})
+    df3 = pd.DataFrame({'behind_fixations_55_45': list(behind_fixations_55_45)})
+    df4 = pd.DataFrame({'ahead_fixations_60_40': list(ahead_fixations_60_40)})
+    df5 = pd.DataFrame({'behind_fixations_60_40': list(behind_fixations_60_40)})
+    pd.concat([df2, df3, df4, df5], axis=1).to_csv(path_to_saved_dict_crt, index=False)

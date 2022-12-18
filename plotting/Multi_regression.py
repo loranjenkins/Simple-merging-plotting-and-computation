@@ -46,18 +46,10 @@ def average(l):
 
 
 def plot_varjo(path_to_csv_folder, condition, who_ahead):
-    # simulation_constants = SimulationConstants(vehicle_width=2,
-    #                                            vehicle_length=4.7,
-    #                                            tunnel_length=100,  # original = 118 -> check in unreal
-    #                                            track_width=8,
-    #                                            track_height=215,
-    #                                            track_start_point_distance=430,
-    #                                            track_section_length_before=304.056,
-    #                                            track_section_length_after=150)  # goes until 400
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=130,
+                                               tunnel_length=125,
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -308,7 +300,7 @@ if __name__ == '__main__':
     # lm = pg.linear_regression(df[['CRT', 'relative_velocity', 'ahead_behind', 'speed']], df['% fixation on opponent'], remove_na=True).round(2)
     lm_all = pg.linear_regression(df[['CRT', 'relative_velocity', 'speed']], df['% fixation on opponent'])
 
-    lm_condition2_3 = pg.linear_regression(df2_3[['CRT', 'relative_velocity', 'ahead_behind', 'speed']], df2_3['% fixation on opponent'])
+    lm_condition2_3 = pg.linear_regression(df2_3[['CRT', 'relative_velocity', 'speed']], df2_3['% fixation on opponent'])
 
     pd.set_option('display.max_columns', None)
 

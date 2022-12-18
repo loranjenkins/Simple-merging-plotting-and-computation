@@ -44,14 +44,6 @@ def average(l):
 
 
 def plot_varjo(path_to_csv_folder):
-    # simulation_constants = SimulationConstants(vehicle_width=2,
-    #                                            vehicle_length=4.7,
-    #                                            tunnel_length=100,  # original = 118 -> check in unreal
-    #                                            track_width=8,
-    #                                            track_height=215,
-    #                                            track_start_point_distance=430,
-    #                                            track_section_length_before=304.056,
-    #                                            track_section_length_after=150)  # goes until 400
 
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
@@ -219,9 +211,6 @@ def plot_varjo(path_to_csv_folder):
 
 
 if __name__ == '__main__':
-    path_to_data_csv = os.path.join('..', 'data_folder', 'medians_crt_index.csv')
-    global_crt_index = pd.read_csv(path_to_data_csv, sep=',')
-
     # --------------------------------------------------
     # #left ahead 45-55
     path_to_csv_55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 2'
@@ -263,7 +252,7 @@ if __name__ == '__main__':
     #plotting
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
     fig.suptitle('Comparison gaze behavior over traveled distance condition 2 (55-45 km/h)')
-    ax1.plot(combined_x_data_behind, combined_hmd_data_behind)  # see x below
+    ax1.plot(combined_x_data_behind, combined_hmd_data_behind, color = 'slateblue')  # see x below
     ax1.fill_between(combined_x_data_behind, combined_hmd_data_behind, color='blue', alpha=0.1,
                      label='Fixation on road')
     ax1.fill_between(combined_x_data_behind, combined_hmd_data_behind, 1, color='red', alpha=0.1,
@@ -272,7 +261,7 @@ if __name__ == '__main__':
     ax1.set_xlim([125, 325])
     ax1.set_ylim([0, 1])
 
-    ax2.plot(combined_x_data_ahead, combined_hmd_data_ahead)  # see x below
+    ax2.plot(combined_x_data_ahead, combined_hmd_data_ahead, color = 'slateblue')  # see x below
     ax2.fill_between(combined_x_data_ahead, combined_hmd_data_ahead, color='blue', alpha=0.1, label='Fixation on road')
     ax2.fill_between(combined_x_data_ahead, combined_hmd_data_ahead, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
@@ -282,8 +271,8 @@ if __name__ == '__main__':
 
     # ax1.axvline(global_crt_index['median_55_45_v1'][0], 0, 1, color='r', label='Average conflict resolved')
     # ax2.axvline(global_crt_index['median_55_45_v2'][0], 0, 1, color='r', label='Average conflict resolved')
-    ax1.axvline(global_crt_index['median_55_45_v1'][0], 0, 1, color='r', label='Kernel density maximum')
-    ax2.axvline(global_crt_index['median_55_45_v2'][0], 0, 1, color='r', label='Kernel density maximum')
+    # ax1.axvline(global_crt_index['median_55_45_v1'][0], 0, 1, color='r', label='Kernel density maximum')
+    # ax2.axvline(global_crt_index['median_55_45_v2'][0], 0, 1, color='r', label='Kernel density maximum')
 
     fig.text(0.05, 0.5, "Fixation on AOI [%]", va='center', rotation='vertical')
     fig.text(0.5, 0.03, "Traveled distance [m]", ha="center", va="center")
@@ -331,7 +320,7 @@ if __name__ == '__main__':
     #plotting
     fig, (ax3, ax4) = plt.subplots(1, 2, figsize=(10, 5))
     fig.suptitle('Comparison gaze behavior over traveled distance condition 3 (60-40 km/h)')
-    ax3.plot(combined_x_data_behind, combined_hmd_data_behind)  # see x below
+    ax3.plot(combined_x_data_behind, combined_hmd_data_behind, color = 'slateblue')  # see x below
     ax3.fill_between(combined_x_data_behind, combined_hmd_data_behind, color='blue', alpha=0.1,
                      label='Fixation on road')
     ax3.fill_between(combined_x_data_behind, combined_hmd_data_behind, 1, color='red', alpha=0.1,
@@ -340,7 +329,7 @@ if __name__ == '__main__':
     ax3.set_xlim([125, 325])
     ax3.set_ylim([0, 1])
 
-    ax4.plot(combined_x_data_ahead, combined_hmd_data_ahead)  # see x below
+    ax4.plot(combined_x_data_ahead, combined_hmd_data_ahead, color = 'slateblue')  # see x below
     ax4.fill_between(combined_x_data_ahead, combined_hmd_data_ahead, color='blue', alpha=0.1, label='Fixation on road')
     ax4.fill_between(combined_x_data_ahead, combined_hmd_data_ahead, 1, color='red', alpha=0.1,
                      label='Fixation on opponent')
@@ -350,8 +339,8 @@ if __name__ == '__main__':
 
     # ax3.axvline(global_crt_index['median_60_40_v1'][0], 0, 1, color='r', label='Average conflict resolved')
     # ax4.axvline(global_crt_index['median_60_40_v2'][0], 0, 1, color='r', label='Average conflict resolved')
-    ax3.axvline(global_crt_index['median_60_40_v1'][0], 0, 1, color='r', label='Kernel density maximum')
-    ax4.axvline(global_crt_index['median_60_40_v2'][0], 0, 1, color='r', label='Kernel density maximum')
+    # ax3.axvline(global_crt_index['median_60_40_v1'][0], 0, 1, color='r', label='Kernel density maximum')
+    # ax4.axvline(global_crt_index['median_60_40_v2'][0], 0, 1, color='r', label='Kernel density maximum')
 
     fig.text(0.05, 0.5, "Fixation on AOI [%]", va='center', rotation='vertical')
     fig.text(0.5, 0.03, "Travelled distance [m]", ha="center", va="center")
@@ -383,14 +372,14 @@ if __name__ == '__main__':
     # plotting
     fig, ax5 = plt.subplots(1, 1)
     fig.suptitle('Gaze behavior over traveled distance condition 1 (50-50 km/h)')
-    ax5.plot(combined_x_data, combined_hmd_data)  # see x below
+    ax5.plot(combined_x_data, combined_hmd_data, color = 'slateblue')  # see x below
     ax5.fill_between(combined_x_data, combined_hmd_data, color='blue', alpha=0.1, label='Fixation on road')
     ax5.fill_between(combined_x_data, combined_hmd_data, 1, color='red', alpha=0.1, label='Fixation on opponent')
     ax5.set_xlim([125, 325])
     ax5.set_ylim([0, 1])
     ax5.set(xlabel='Traveled distance [m]', ylabel='Fixation on AOI [%]')
     # ax5.axvline(global_crt_index['median_50_50'][0], 0, 1, color='r', label='Average conflict resolved')
-    ax5.axvline(global_crt_index['median_50_50'][0], 0, 1, color='r', label='Kernel density maximum')
+    # ax5.axvline(global_crt_index['median_50_50'][0], 0, 1, color='r', label='Kernel density maximum')
 
     ax5.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace, 2)))
     ax5.legend(loc='lower left')
