@@ -166,9 +166,34 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
     global_crt = pd.read_csv(path_to_data_csv, sep=',')
 
     trial = 1
-    for i in range(len(time_in_seconds_trails_v1)):
-        dict['trial'] += [trial] * len(time_in_seconds_trails_v1[i])
-        trial += 1
+    if condition == '50-50':
+        for i in range(len(time_in_seconds_trails_v1)):
+            dict['trial'] += [trial] * len(time_in_seconds_trails_v1[i])
+            trial += 1
+
+    trial_55_45_first = 1
+    trial_55_45_second = 54
+    if condition == '55-45':
+        if who_ahead == 'vehicle1':
+            for i in range(len(time_in_seconds_trails_v1)):
+                dict['trial'] += [trial_55_45_first] * len(time_in_seconds_trails_v1[i])
+                trial_55_45_first += 1
+        elif who_ahead == 'vehicle2':
+            for i in range(len(time_in_seconds_trails_v1)):
+                dict['trial'] += [trial_55_45_second] * len(time_in_seconds_trails_v1[i])
+                trial_55_45_second += 1
+
+    trial_60_40_first = 1
+    trial_60_40_second = 53
+    if condition == '60-40':
+        if who_ahead == 'vehicle1':
+            for i in range(len(time_in_seconds_trails_v1)):
+                dict['trial'] += [trial_60_40_first] * len(time_in_seconds_trails_v1[i])
+                trial_60_40_first += 1
+        elif who_ahead == 'vehicle2':
+            for i in range(len(time_in_seconds_trails_v1)):
+                dict['trial'] += [trial_60_40_second] * len(time_in_seconds_trails_v1[i])
+                trial_60_40_second += 1
 
     if condition == '50-50':
         if who_ahead == 'equal':

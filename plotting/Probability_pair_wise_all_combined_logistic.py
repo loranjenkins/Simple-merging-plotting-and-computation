@@ -141,6 +141,7 @@ if __name__ == '__main__':
     df2_55 = pd.DataFrame(session2_55)
     df2_60 = pd.DataFrame(session2_60)
 
+
     #experiment3
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment3'
     c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment3'
@@ -255,3 +256,14 @@ if __name__ == '__main__':
     p_velocity60 = 1 / (1 + np.exp(-(4.479-0.100)))
 
     print(p_velocity40, p_velocity45, p_velocity50, p_velocity55, p_velocity60)
+
+    g = sns.lmplot(x="velocity", y="merge_or_not", data=total_df,
+               logistic=True, truncate=False)
+
+    ax = plt.gca()
+    ax.set_title('Logistic regression on probability merging first vehicle 1')
+    ax.set(xlabel='Velocity [km/h]', ylabel='Merged first')
+    ax.spines.right.set_visible(True)
+    ax.spines.top.set_visible(True)
+    # plt.title('Logistic regression on probability merging first vehicle 1')
+    plt.show()

@@ -300,7 +300,7 @@ if __name__ == '__main__':
     # lm = pg.linear_regression(df[['CRT', 'relative_velocity', 'ahead_behind', 'speed']], df['% fixation on opponent'], remove_na=True).round(2)
     lm_all = pg.linear_regression(df[['CRT', 'relative_velocity', 'speed']], df['% fixation on opponent'])
 
-    lm_condition2_3 = pg.linear_regression(df2_3[['CRT', 'relative_velocity', 'speed']], df2_3['% fixation on opponent'])
+    lm_condition2_3 = pg.linear_regression(df2_3[['CRT', 'relative_velocity', 'ahead_behind', 'speed']], df2_3['% fixation on opponent'])
 
     pd.set_option('display.max_columns', None)
 

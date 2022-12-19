@@ -295,13 +295,6 @@ if __name__ == '__main__':
     df_60_40 = pd.concat([df1, df2])
 
 
-    fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-    fig.suptitle('Velocity traces ahead vehicle exit tunnel behind vehicle\n condition 3 (60-40 km/h)')
-    sns.lineplot(data=df_60_40, x=df_60_40['time_ahead'], y=df_60_40['velocity_ahead'], hue=df_60_40['trial'], ax= ax)
-    ax.get_legend().remove()
-    ax.set(xlabel='Time [s]', ylabel='Velocity [km/h]')
-
-
     path_to_csv_vehicle1_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 1'
     who_is_ahead = 'vehicle1'
     condition = '55-45'
@@ -317,11 +310,26 @@ if __name__ == '__main__':
     df4['trial'] = df4['trial'] + list(df3['trial'])[-1]
 
     df_55_45 = pd.concat([df3, df4])
-    fig, ax1 = plt.subplots(1, 1, figsize=(10, 5))
-    fig.suptitle('Velocity traces ahead vehicle exit tunnel behind vehicle\n condition 2 (55-45 km/h)')
-    sns.lineplot(data=df_55_45, x=df_55_45['time_ahead'], y=df_55_45['velocity_ahead'], hue=df_55_45['trial'], ax=ax1)
-    ax1.get_legend().remove()
-    ax1.set(xlabel='Time [s]', ylabel='Velocity [km/h]')
+
+    fig, ax = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+    fig.text(0.05, 0.5, "Velocity [m/s]", va='center', rotation='vertical')
+    fig.text(0.5, 0.05, "Time [s]", ha="center", va="center")
+    fig.suptitle('Velocity traces of vehicle ahead until vehicle behind leaves the tunnel')
+
+    sns.lineplot(data=df_55_45, x=df_55_45['time_ahead'], y=df_55_45['velocity_ahead'], hue=df_55_45['trial'], ax=ax[0], legend=False)
+    ax[0].axvline(5.6, 0, 1, color='r', label='Ahead vehicle leaving the tunnel')
+    ax[0].axvline(df_55_45['time_ahead'].iloc[-1], 0, 1, color='b', label='Behind vehicle leaving the tunnel')
+    ax[0].set_title('Condition 2 (55-45 km/h)')
+    ax[0].legend(loc='lower left')
+
+    sns.lineplot(data=df_60_40, x=df_60_40['time_ahead'], y=df_60_40['velocity_ahead'], hue=df_60_40['trial'], ax=ax[1], legend=False)
+    ax[1].axvline(2.56, 0, 1, color='r', label='Ahead vehicle leaving the tunnel')
+    ax[1].axvline(df_60_40['time_ahead'].iloc[-1], 0, 1, color='b', label='Behind vehicle leaving the tunnel')
+    ax[1].set_title('Condition 3 (60-40 km/h)')
+    ax[1].legend(loc='lower left')
+
+    ax[0].set(xlabel=None, ylabel=None)
+    ax[1].set(xlabel=None, ylabel=None)
 
     plt.show()
 
