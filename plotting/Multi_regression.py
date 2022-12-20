@@ -293,6 +293,7 @@ if __name__ == '__main__':
 
 
     df = pd.concat([df_ahead_55_45, df_behind_55_45, df_ahead_60_40, df_behind_60_40, df_50_50], ignore_index=True)
+    print(df)
 
     df2_3 = pd.concat([df_ahead_55_45, df_behind_55_45, df_ahead_60_40, df_behind_60_40], ignore_index=True)
 

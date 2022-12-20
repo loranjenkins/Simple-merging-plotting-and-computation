@@ -360,7 +360,9 @@ if __name__ == '__main__':
     fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
     fig.suptitle('Linear regression analysis before-after CRT condition 1 (50-50 km/h)')
     fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
-    fig.text(0.5, 0.05, "Time [s]", ha="center", va="center")
+    fig.text(0.51, 0.05, "Time [s]", ha="center", va="center")
+
+    plt.subplots_adjust(hspace=0.3)
 
     sns.regplot(df_before_50_50, x='time_before', y='fixations_before', ax=axes[0])
     sns.regplot(df_after_50_50, x='time_after', y='fixations_after', ax=axes[1])

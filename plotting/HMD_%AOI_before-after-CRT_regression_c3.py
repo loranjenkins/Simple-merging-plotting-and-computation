@@ -310,7 +310,7 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
 if __name__ == '__main__':
     pd.set_option('display.max_columns', None)
 
-    # # -----------------------------------------------------
+    # # # -----------------------------------------------------
     # 60-40
     path_to_csv_vehicle1_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle1'
 
@@ -332,7 +332,7 @@ if __name__ == '__main__':
     ahead_crt_60_40 = pd.concat([df1['CRT'], df2['CRT']], axis=0, ignore_index=True)
     ahead_trails_60_40 = pd.concat([df1['trial'], df2['trial']], axis=0, ignore_index=True)
     df_ahead_60_40 = pd.concat([ahead_fixations_60_40, ahead_time_60_40, ahead_crt_60_40, ahead_trails_60_40],
-                               axis=1).dropna()
+                               axis=1)
     df_ahead_60_40['Average_time_minCRT'] = df_ahead_60_40['ahead_time'] - df_ahead_60_40['CRT']
 
 
@@ -372,29 +372,29 @@ if __name__ == '__main__':
     r, p = stats.pearsonr(df_before_ahead_60_40['time_before'], df_before_ahead_60_40['fixations_before'])
     r1, p1 = stats.pearsonr(df_after_ahead_60_40['time_after'], df_after_ahead_60_40['fixations_after'])
 
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
-    fig.suptitle('Linear regression analysis before-after the CRT participant ahead condition 3 (60-40 km/h)')
-    fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
-    fig.text(0.5, 0.05, "Time [s]", ha="center", va="center")
+    # fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+    # fig.suptitle('Linear regression analysis before-after the CRT participant ahead condition 3 (60-40 km/h)')
+    # fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
+    # fig.text(0.5, 0.05, "Time [s]", ha="center", va="center")
+    #
+    # sns.regplot(df_before_ahead_60_40, x='time_before', y='fixations_before', ax=axes[0])
+    # sns.regplot(df_after_ahead_60_40, x='time_after', y='fixations_after', ax=axes[1])
+    #
+    # axes[0].set(xlabel=None, ylabel=None)
+    # axes[1].set(xlabel=None, ylabel=None)
+    #
+    # axes[0].set_title('5 seconds before the CRT')
+    # axes[1].set_title('5 seconds after the CRT')
+    #
+    # axes[0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
+    # axes[0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
+    # axes[1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
+    # axes[1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
+    #
+    # axes[0].legend(loc='upper left')
+    # axes[1].legend(loc='upper left')
 
-    sns.regplot(df_before_ahead_60_40, x='time_before', y='fixations_before', ax=axes[0])
-    sns.regplot(df_after_ahead_60_40, x='time_after', y='fixations_after', ax=axes[1])
 
-    axes[0].set(xlabel=None, ylabel=None)
-    axes[1].set(xlabel=None, ylabel=None)
-
-    axes[0].set_title('5 seconds before the CRT')
-    axes[1].set_title('5 seconds after the CRT')
-
-    axes[0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
-    axes[0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
-    axes[1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
-    axes[1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
-
-    axes[0].legend(loc='upper left')
-    axes[1].legend(loc='upper left')
-
-    plt.show()
 
     # --------------------------------------------------------------
     # for behind
@@ -403,9 +403,9 @@ if __name__ == '__main__':
     behind_time_60_40 = pd.concat([df1['time_vehicle2'], df2['time_vehicle1']], axis=0, ignore_index=True).rename(
         'behind_time')
     behind_crt_60_40 = pd.concat([df1['CRT'], df2['CRT']], axis=0, ignore_index=True)
-    behind_trails = pd.concat([df1['trial'], df2['trial']], axis=0, ignore_index=True)
-    df_behind_60_40 = pd.concat([behind_fixations_60_40, behind_time_60_40, behind_crt_60_40, behind_trails],
-                                axis=1).dropna()
+    behind_trails_60_40 =  pd.concat([df1['trial'], df2['trial']], axis=0, ignore_index=True)
+    df_behind_60_40 = pd.concat([behind_fixations_60_40, behind_time_60_40, behind_crt_60_40, behind_trails_60_40],
+                                axis=1)
     df_behind_60_40['Average_time_minCRT'] = df_behind_60_40['behind_time'] - df_behind_60_40['CRT']
 
     dict = {'fixations_before': [], 'fixations_after': [], 'time_before': [], 'time_after': []}
@@ -413,6 +413,7 @@ if __name__ == '__main__':
         trial_data = df_behind_60_40.loc[df_behind_60_40['trial'] == trial_number]
         time_idx_before = trial_data['Average_time_minCRT'].sub(-5).abs().idxmin()
         time_idx_after = trial_data['Average_time_minCRT'].sub(5).abs().idxmin()
+
         average_time_dot_before = df_behind_60_40['behind_time'].iloc[time_idx_before]
         average_time_dot_after = df_behind_60_40['behind_time'].iloc[time_idx_after]
 
@@ -428,6 +429,7 @@ if __name__ == '__main__':
                     sum(fixations_before['behind_fixations']) / len(fixations_before['behind_fixations']))
 
         fixations_after = trial_data[trial_data['Average_time_minCRT'].between(0, 5)]
+
         if fixations_after.empty:
             average_fixation_before = np.nan
         else:
@@ -441,27 +443,75 @@ if __name__ == '__main__':
     df_before_behind_60_40 = df_before_after_behind_60_40[['fixations_before', 'time_before']].dropna()
     df_after_behind_60_40 = df_before_after_behind_60_40[['fixations_after', 'time_after']].dropna()
 
-    r, p = stats.pearsonr(df_before_behind_60_40['time_before'], df_before_behind_60_40['fixations_before'])
-    r1, p1 = stats.pearsonr(df_after_behind_60_40['time_after'], df_after_behind_60_40['fixations_after'])
+    r2, p2 = stats.pearsonr(df_before_behind_60_40['time_before'], df_before_behind_60_40['fixations_before'])
+    r3, p3 = stats.pearsonr(df_after_behind_60_40['time_after'], df_after_behind_60_40['fixations_after'])
 
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
-    fig.suptitle('Linear regression analysis before-after the CRT participant behind condition 3 (60-40 km/h)')
-    fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
-    fig.text(0.5, 0.05, "Time [s]", ha="center", va="center")
+    # fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+    # fig.suptitle('Linear regression analysis before-after the CRT participant behind condition 3 (60-40 km/h)')
+    # fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
+    # fig.text(0.5, 0.05, "Time [s]", ha="center", va="center")
+    #
+    # sns.regplot(df_before_behind_60_40, x='time_before', y='fixations_before', ax=axes[0])
+    # sns.regplot(df_after_behind_60_40, x='time_after', y='fixations_after', ax=axes[1])
+    #
+    # axes[0].set(xlabel=None, ylabel=None)
+    # axes[1].set(xlabel=None, ylabel=None)
+    #
+    # axes[0].set_title('5 seconds before the CRT')
+    # axes[1].set_title('5 seconds after the CRT')
+    #
+    # axes[0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
+    # axes[0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
+    # axes[1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
+    # axes[1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
+    #
+    # axes[0].legend(loc='upper left')
+    # axes[1].legend(loc='upper left')
 
-    sns.regplot(df_before_behind_60_40, x='time_before', y='fixations_before', ax=axes[0])
-    sns.regplot(df_after_behind_60_40, x='time_after', y='fixations_after', ax=axes[1])
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10), sharey=True)
 
-    axes[0].set(xlabel=None, ylabel=None)
-    axes[1].set(xlabel=None, ylabel=None)
+    fig.suptitle('Linear regression analysis before-after the CRT condition 3 (60-40 km/h)')
+    fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical', fontsize=12)
+    fig.text(0.51, 0.48, "Participant is ahead", ha="center", va='center', fontsize=12)
+    fig.text(0.51, 0.92, "Participant is behind", ha="center", va='center', fontsize=12)
+    fig.text(0.51, 0.05, "Time [s]", ha="center", va="center", fontsize=12)
 
-    axes[0].set_title('5 seconds before the CRT')
-    axes[1].set_title('5 seconds after the CRT')
+    plt.subplots_adjust(hspace=0.3)
 
-    axes[0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
-    axes[0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
-    axes[1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
-    axes[1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
+    sns.regplot(df_before_ahead_60_40, x='time_before', y='fixations_before', ax=axes[0][0])
+    sns.regplot(df_after_ahead_60_40, x='time_after', y='fixations_after', ax=axes[0][1])
+    sns.regplot(df_before_behind_60_40, x='time_before', y='fixations_before', ax=axes[1][0])
+    sns.regplot(df_after_behind_60_40, x='time_after', y='fixations_after', ax=axes[1][1])
 
-    axes[0].legend(loc='upper left')
-    axes[1].legend(loc='upper left')
+    axes[0][0].set(xlabel=None, ylabel=None)
+    axes[0][1].set(xlabel=None, ylabel=None)
+    axes[1][0].set(xlabel=None, ylabel=None)
+    axes[1][1].set(xlabel=None, ylabel=None)
+
+    axes[0][0].set_title('5 seconds before the CRT')
+    axes[0][1].set_title('5 seconds after the CRT')
+    axes[1][0].set_title('5 seconds before the CRT')
+    axes[1][1].set_title('5 seconds after the CRT')
+
+    axes[0][0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
+    axes[0][0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
+    axes[0][1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
+    axes[0][1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
+    axes[1][0].plot([], [], ' ', label='r: ' + str(round(r2, 2)))
+    axes[1][0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p2))
+    axes[1][1].plot([], [], ' ', label='r: ' + str(round(r3, 2)))
+    axes[1][1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p3))
+
+    # axes[0][0].set_ylim([0, 1])
+    # axes[0][1].set_ylim([0, 1])
+    # axes[1][0].set_ylim([0, 1])
+    # axes[1][1].set_ylim([0, 1])
+
+    axes[0][0].legend(loc='upper left')
+    axes[0][1].legend(loc='upper left')
+    axes[1][0].legend(loc='upper left')
+    axes[1][1].legend(loc='upper left')
+
+    plt.show()
+
+    plt.show()
