@@ -261,7 +261,7 @@ if __name__ == '__main__':
                logistic=True, truncate=False)
 
     ax = plt.gca()
-    ax.set_title('Logistic regression on probability merging first vehicle 1')
+    ax.set_title('Logistic regression on the binary merging data of vehicle 1')
     ax.set(xlabel='Velocity [km/h]', ylabel='Merged first')
     ax.spines.right.set_visible(True)
     ax.spines.top.set_visible(True)
