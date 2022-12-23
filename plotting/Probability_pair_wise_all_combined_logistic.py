@@ -105,7 +105,7 @@ def compute_average(folder_with_csv, condition, side):
 if __name__ == '__main__':
     # experiment1
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment1'
-    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment1'
+    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle1\experiment1'
     c50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_50_50\experiment1'
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment1'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment1'
@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
     # experiment2
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment2'
-    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment2'
+    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle1\experiment2'
     c50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_50_50\experiment2'
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment2'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment2'
@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
     #experiment3
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment3'
-    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment3'
+    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle1\experiment3'
     c50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_50_50\experiment3'
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment3'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment3'
@@ -163,7 +163,7 @@ if __name__ == '__main__':
 
     #experiment4
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment4'
-    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment4'
+    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle1\experiment4'
     c50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_50_50\experiment4'
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment4'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment4'
@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
     #experiment5
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment5'
-    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment5'
+    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle1\experiment5'
     c50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_50_50\experiment5'
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment5'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment5'
@@ -201,7 +201,7 @@ if __name__ == '__main__':
 
     #experiment6
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment6'
-    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment6'
+    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle1\experiment6'
     c50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_50_50\experiment6'
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment6'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment6'
@@ -220,7 +220,7 @@ if __name__ == '__main__':
 
     #experiment7
     c40_60 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle1\experiment7'
-    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment7'
+    c45_55 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle1\experiment7'
     c50_50 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_50_50\experiment7'
     c55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_55_45\vehicle2\experiment7'
     c60_40 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_pair_wise\whos_ahead_60_40\vehicle2\experiment7'
