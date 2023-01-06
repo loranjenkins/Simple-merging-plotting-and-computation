@@ -195,7 +195,13 @@ def compute_crt(path_to_data_csv, condition):
     else:
         crt = crt_object[1][-1] - who_is_first_tunnel_time
 
-    return crt
+    if not crt_object[1].size:
+        index_crt = 0
+    else:
+        index_crt = min(range(len(data_dict['time'])),
+                        key=lambda i: abs(data_dict['time'][i] - crt))
+
+    return crt, index_crt
 
 if __name__ == '__main__':
     # condition50-50
@@ -207,9 +213,11 @@ if __name__ == '__main__':
     trails_condition_50_50 = natsorted(trails_condition_50_50, key=str)
 
     crts_50_50 = []
+    crts_50_50_index = []
     for i in range(len(trails_condition_50_50)):
         crt = compute_crt(trails_condition_50_50[i], condition)
-        crts_50_50.append(crt)
+        crts_50_50.append(crt[0])
+        crts_50_50_index.append(crt[1])
 
     # condition55-45
     files_directory2 = r'D:\Thesis_data_all_experiments\Conditions\condition_55_45'
@@ -220,9 +228,11 @@ if __name__ == '__main__':
     trails_condition_55_45 = natsorted(trails_condition_55_45, key=str)
 
     crts_55_45 = []
+    crts_55_45_index = []
     for i in range(len(trails_condition_55_45)):
         crt = compute_crt(trails_condition_55_45[i], condition)
-        crts_55_45.append(crt)
+        crts_55_45.append(crt[0])
+        crts_55_45_index.append(crt[1])
 
     # condition60-40
     files_directory3 = r'D:\Thesis_data_all_experiments\Conditions\condition_60_40'
@@ -233,14 +243,23 @@ if __name__ == '__main__':
     trails_condition_60_40 = natsorted(trails_condition_60_40, key=str)
 
     crts_60_40 = []
+    crts_60_40_index = []
     for i in range(len(trails_condition_60_40)):
         crt = compute_crt(trails_condition_60_40[i], condition)
-        crts_60_40.append(crt)
+        crts_60_40.append(crt[0])
+        crts_60_40_index.append(crt[1])
 
     path_to_saved_dict_crt = os.path.join('..', 'data_folder', 'crt_who_is_first_exit_interactive.csv')
+    path_to_saved_dict_crt_index = os.path.join('..', 'data_folder', 'crt_index_who_is_first_exit_interactive.csv')
 
     df1 = pd.DataFrame({'Condition 1': crts_50_50})
     df2 = pd.DataFrame({'Condition 2': crts_55_45})
     df3 = pd.DataFrame({'Condition 3': crts_60_40})
 
     pd.concat([df1, df2, df3], axis=1).to_csv(path_to_saved_dict_crt, index=False)
+
+    df4 = pd.DataFrame({'crt_index_50_50': crts_50_50_index})
+    df5 = pd.DataFrame({'crt_index_55_45': crts_55_45_index})
+    df6 = pd.DataFrame({'crt_index_60_40': crts_60_40_index})
+
+    pd.concat([df4, df5, df6], axis=1).to_csv(path_to_saved_dict_crt_index, index=False)

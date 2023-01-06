@@ -113,18 +113,9 @@ def calculate_conflict_resolved_time(data_dict, simulation_constants, condition)
 
 
 def plot_varjo(path_to_csv_folder, condition):
-    # simulation_constants = SimulationConstants(vehicle_width=2,
-    #                                            vehicle_length=4.7,
-    #                                            tunnel_length=118,  # original = 118 -> check in unreal
-    #                                            track_width=8,
-    #                                            track_height=215,
-    #                                            track_start_point_distance=430,
-    #                                            track_section_length_before=304.056,
-    #                                            track_section_length_after=150)  # goes until 400
-
     simulation_constants = SimulationConstants(vehicle_width=1.5,
                                                vehicle_length=4.7,
-                                               tunnel_length=135,  # original = 118 -> check in unreal
+                                               tunnel_length=135,
                                                track_width=8,
                                                track_height=230,
                                                track_start_point_distance=460,
@@ -231,7 +222,7 @@ def plot_varjo(path_to_csv_folder, condition):
         interactive_area_travelled_trace_vehicle2.append(interactive_trace_2)
         combined_trace.append(average_travelled_distance_trace)
 
-    path_to_data_csv = os.path.join('..', 'data_folder', 'crt_index_first_exit_interactive.csv')
+    path_to_data_csv = os.path.join('..', 'data_folder', 'crt_index_who_is_first_exit_interactive.csv')
 
     global_crt_index = pd.read_csv(path_to_data_csv, sep=',')
 
@@ -282,7 +273,8 @@ if __name__ == '__main__':
     y = y[x_index:len(x)]
     maxid = y.argmax()
 
-    average1 = x[maxid]
+    # average1 = x[maxid]
+    average1 = sum(Varjo_data[0]) / len(Varjo_data[0])
 
     ax1.scatter(x[maxid], y[maxid], c='yellow', marker='x', s=100, zorder=3)
     ax1.axvline(x[maxid], 0, 1, color='r', label='Kernel density maximum: ' + str(round(x[maxid])))
@@ -319,8 +311,10 @@ if __name__ == '__main__':
     y2 = y2[x2_index:len(x2)]
     maxid2 = y2.argmax()
 
-    average2 = x1[maxid1]
-    average3 = x2[maxid2]
+    # average2 = x1[maxid1]
+    # average3 = x2[maxid2]
+    average2 = sum(Varjo_data[1]) / len(Varjo_data[1])
+    average3 = sum(Varjo_data[2]) / len(Varjo_data[2])
 
     axes[0].scatter(x1[maxid1], y1[maxid1], c='yellow', marker='x', s=100, zorder=3)
     axes[0].axvline(x1[maxid1], 0, 1, color='r', label='Kernel density maximum: ' + str(round(x1[maxid1])))
@@ -362,8 +356,10 @@ if __name__ == '__main__':
     y2 = y2[x2_index:len(x2)]
     maxid2 = y2.argmax()
 
-    average4 = x1[maxid1]
-    average5 = x2[maxid2]
+    # average4 = x1[maxid1]
+    # average5 = x2[maxid2]
+    average4 = sum(Varjo_data[3]) / len(Varjo_data[3])
+    average5 = sum(Varjo_data[4]) / len(Varjo_data[4])
 
     axes[0].scatter(x1[maxid1], y1[maxid1], c='yellow', marker='x', s=100, zorder=3)
     axes[0].axvline(x1[maxid1], 0, 1, color='r', label='Kernel density maximum: ' + str(round(x1[maxid1])))

@@ -6,6 +6,7 @@ import seaborn as sns
 from scipy.stats import ttest_ind
 import pingouin as pg
 
+# pd.set_option('display.max_columns', None)
 
 path_to_data_csv_crt = os.path.join('..', 'data_folder', 'crt_who_is_first_exit_interactive.csv')
 
@@ -50,6 +51,9 @@ print(a)
 print('-----')
 print(b)
 print('-----')
+
+tukey = pg.pairwise_tukey(dv='value', between='condition', data=df)
+print(tukey)
 
 
 t1, p1 = ttest_ind(list(global_crt.iloc[:, 2].dropna()), list(global_crt.iloc[:, 1].dropna()))

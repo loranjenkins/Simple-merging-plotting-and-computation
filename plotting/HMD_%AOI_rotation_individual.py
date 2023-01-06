@@ -211,6 +211,10 @@ def plot_varjo(path_to_csv_folder):
 
 
 if __name__ == '__main__':
+
+    path_to_data_csv = os.path.join('..', 'data_folder', 'medians_crt_index.csv')
+    global_crt_index = pd.read_csv(path_to_data_csv, sep=',')
+
     # --------------------------------------------------
     # #left ahead 45-55
     path_to_csv_55_45 = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 2'
@@ -271,13 +275,13 @@ if __name__ == '__main__':
 
     # ax1.axvline(global_crt_index['median_55_45_v1'][0], 0, 1, color='r', label='Average conflict resolved')
     # ax2.axvline(global_crt_index['median_55_45_v2'][0], 0, 1, color='r', label='Average conflict resolved')
-    # ax1.axvline(global_crt_index['median_55_45_v1'][0], 0, 1, color='r', label='Kernel density maximum')
-    # ax2.axvline(global_crt_index['median_55_45_v2'][0], 0, 1, color='r', label='Kernel density maximum')
+    ax1.axvline(global_crt_index['median_55_45_v1'][0], 0, 1, color='r', label='Kernel density maximum')
+    ax2.axvline(global_crt_index['median_55_45_v2'][0], 0, 1, color='r', label='Kernel density maximum')
 
     fig.text(0.05, 0.5, "Fixation on AOI [%]", va='center', rotation='vertical')
     fig.text(0.5, 0.03, "Traveled distance [m]", ha="center", va="center")
-    ax1.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_behind, 2)))
-    ax2.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_ahead, 2)))
+    ax1.plot([], [], ' ', label='Average fixation on opponent: ' + str(round(1 - average_trace_behind, 2)))
+    ax2.plot([], [], ' ', label='Average fixation on opponent: ' + str(round(1 - average_trace_ahead, 2)))
     ax1.legend(loc='lower left')
     ax2.legend(loc='lower left')
 
@@ -339,13 +343,13 @@ if __name__ == '__main__':
 
     # ax3.axvline(global_crt_index['median_60_40_v1'][0], 0, 1, color='r', label='Average conflict resolved')
     # ax4.axvline(global_crt_index['median_60_40_v2'][0], 0, 1, color='r', label='Average conflict resolved')
-    # ax3.axvline(global_crt_index['median_60_40_v1'][0], 0, 1, color='r', label='Kernel density maximum')
-    # ax4.axvline(global_crt_index['median_60_40_v2'][0], 0, 1, color='r', label='Kernel density maximum')
+    ax3.axvline(global_crt_index['median_60_40_v1'][0], 0, 1, color='r', label='Kernel density maximum')
+    ax4.axvline(global_crt_index['median_60_40_v2'][0], 0, 1, color='r', label='Kernel density maximum')
 
     fig.text(0.05, 0.5, "Fixation on AOI [%]", va='center', rotation='vertical')
     fig.text(0.5, 0.03, "Travelled distance [m]", ha="center", va="center")
-    ax3.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_behind, 2)))
-    ax4.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace_ahead, 2)))
+    ax3.plot([], [], ' ', label='Average fixation on opponent: ' + str(round(1 - average_trace_behind, 2)))
+    ax4.plot([], [], ' ', label='Average fixation on opponent: ' + str(round(1 - average_trace_ahead, 2)))
     ax3.legend(loc='lower left')
     ax4.legend(loc='lower left')
 
@@ -379,9 +383,9 @@ if __name__ == '__main__':
     ax5.set_ylim([0, 1])
     ax5.set(xlabel='Traveled distance [m]', ylabel='Fixation on AOI [%]')
     # ax5.axvline(global_crt_index['median_50_50'][0], 0, 1, color='r', label='Average conflict resolved')
-    # ax5.axvline(global_crt_index['median_50_50'][0], 0, 1, color='r', label='Kernel density maximum')
+    ax5.axvline(global_crt_index['median_50_50'][0], 0, 1, color='r', label='Kernel density maximum')
 
-    ax5.plot([], [], ' ', label='Average % fixation: ' + str(round(1 - average_trace, 2)))
-    ax5.legend(loc='lower left')
+    ax5.plot([], [], ' ', label='Average fixation on opponent: ' + str(round(1 - average_trace, 2)))
+    ax5.legend(loc='lower right')
 
     plt.show()
