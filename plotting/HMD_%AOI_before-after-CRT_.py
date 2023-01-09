@@ -314,89 +314,89 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
 
 if __name__ == '__main__':
     pd.set_option('display.max_columns', None)
-    # --------------------------------------------------
-    # 50-50
-    path_to_csv_50_50 = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_50_50'
-
-
-    dict50_50 = plot_varjo(path_to_csv_50_50, '50-50', 'equal')
-
-    df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dict50_50.items()]))
-
-    df['time_v1_new'] = df['time_vehicle1'] - df['CRT']
-    df['time_v2_new'] = df['time_vehicle2'] - df['CRT']
-    df['Average_time'] = df[["time_v1_new", "time_v2_new"]].mean(axis=1)
-    df['Average_fixation'] = df[["gaze_vehicle1", "gaze_vehicle2"]].mean(axis=1)
-
-    min_time_equal = min(min(df['time_v1_new']), min(df['time_v2_new']))
-    max_time_equal = max(max(df['time_v1_new']), max(df['time_v2_new']))
-
-    lengths = []
-    for trial_number in df['trial'].unique():
-        trial_data = df.loc[df['trial'] == trial_number, :]
-        a = len(trial_data['Average_fixation'])
-        lengths.append(a)
-
-    new_time = np.linspace(min_time_equal, max_time_equal, max(lengths))
-
-    new_df = {'trial': [],
-              'new_time': [],
-              'new_data': []}
-
-    for trial_number in df['trial'].unique():
-        trial_data = df.loc[df['trial'] == trial_number, :]
-        new_df['new_time'] += list(new_time)
-        new_df['new_data'] += list(np.interp(new_time, trial_data['Average_time'],
-                                             trial_data['Average_fixation']))
-
-        new_df['trial'] += [trial_number] * len(new_time)
-
-    new_df = pd.DataFrame(new_df)
-
-    data_before_crt = new_df[new_df['new_time'].between(-5, 0)]
-    on_road_fixation_before = list(data_before_crt['new_data']).count(1)
-    both_else_fixation_before = list(data_before_crt['new_data']).count(0.5)
-    on_opponent_fixation_before = list(data_before_crt['new_data']).count(0)
-
-    average_fixation_before = (on_opponent_fixation_before + both_else_fixation_before / 2) / sum(
-        [on_road_fixation_before, both_else_fixation_before, on_opponent_fixation_before])
-
-    data_after_crt = new_df[new_df['new_time'].between(0, 5)]
-    on_road_fixation_after = list(data_after_crt['new_data']).count(1)
-    both_else_fixation_after = list(data_after_crt['new_data']).count(0.5)
-    on_opponent_fixation_after = list(data_after_crt['new_data']).count(0)
-
-    average_fixation_after = (on_opponent_fixation_after + both_else_fixation_after / 2) / sum(
-        [on_road_fixation_after, both_else_fixation_after, on_opponent_fixation_after])
-
-    print('50_50_before: ', round(average_fixation_before, 2))
-    print('50_50_after: ', round(average_fixation_after, 2))
-
-
-    fig, ax5 = plt.subplots(1, 1)
-    fig.suptitle('Gaze behavior before-after the CRT condition 1 (50-50 km/h)')
-    line_combined = sns.lineplot(x="new_time", y="new_data", data=new_df, errorbar=None, linestyle='')
-
-    l1 = line_combined.lines[0]
-    x1 = l1.get_xydata()[:, 0]
-    y1 = l1.get_xydata()[:, 1]
+    # # --------------------------------------------------
+    # # 50-50
+    # path_to_csv_50_50 = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_50_50'
     #
-    ysmoothed_1 = gaussian_filter1d(y1, sigma=4)
     #
-    ax5.plot(x1, ysmoothed_1, color = 'slateblue')
-
-    ax5.fill_between(x1, ysmoothed_1, color='blue', alpha=0.1, label='Fixation on road')
-    ax5.fill_between(x1, ysmoothed_1, 1, color='red', alpha=0.1, label='Fixation on opponent')
-
-    ax5.set_xlim([min_time_equal, max_time_equal])
-    ax5.set_ylim([0, 1])
-
-    ax5.axvline(0, 0, 1, color='r', label='CRT')
-
-    ax5.set(xlabel='Time relative to CRT [s]', ylabel='Fixation on opponent [%]')
-    ax5.legend(loc='lower left')
-
-    # # ## -----------
+    # dict50_50 = plot_varjo(path_to_csv_50_50, '50-50', 'equal')
+    #
+    # df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dict50_50.items()]))
+    #
+    # df['time_v1_new'] = df['time_vehicle1'] - df['CRT']
+    # df['time_v2_new'] = df['time_vehicle2'] - df['CRT']
+    # df['Average_time'] = df[["time_v1_new", "time_v2_new"]].mean(axis=1)
+    # df['Average_fixation'] = df[["gaze_vehicle1", "gaze_vehicle2"]].mean(axis=1)
+    #
+    # min_time_equal = min(min(df['time_v1_new']), min(df['time_v2_new']))
+    # max_time_equal = max(max(df['time_v1_new']), max(df['time_v2_new']))
+    #
+    # lengths = []
+    # for trial_number in df['trial'].unique():
+    #     trial_data = df.loc[df['trial'] == trial_number, :]
+    #     a = len(trial_data['Average_fixation'])
+    #     lengths.append(a)
+    #
+    # new_time = np.linspace(min_time_equal, max_time_equal, max(lengths))
+    #
+    # new_df = {'trial': [],
+    #           'new_time': [],
+    #           'new_data': []}
+    #
+    # for trial_number in df['trial'].unique():
+    #     trial_data = df.loc[df['trial'] == trial_number, :]
+    #     new_df['new_time'] += list(new_time)
+    #     new_df['new_data'] += list(np.interp(new_time, trial_data['Average_time'],
+    #                                          trial_data['Average_fixation']))
+    #
+    #     new_df['trial'] += [trial_number] * len(new_time)
+    #
+    # new_df = pd.DataFrame(new_df)
+    #
+    # data_before_crt = new_df[new_df['new_time'].between(-5, 0)]
+    # on_road_fixation_before = list(data_before_crt['new_data']).count(1)
+    # both_else_fixation_before = list(data_before_crt['new_data']).count(0.5)
+    # on_opponent_fixation_before = list(data_before_crt['new_data']).count(0)
+    #
+    # average_fixation_before = (on_opponent_fixation_before + both_else_fixation_before / 2) / sum(
+    #     [on_road_fixation_before, both_else_fixation_before, on_opponent_fixation_before])
+    #
+    # data_after_crt = new_df[new_df['new_time'].between(0, 5)]
+    # on_road_fixation_after = list(data_after_crt['new_data']).count(1)
+    # both_else_fixation_after = list(data_after_crt['new_data']).count(0.5)
+    # on_opponent_fixation_after = list(data_after_crt['new_data']).count(0)
+    #
+    # average_fixation_after = (on_opponent_fixation_after + both_else_fixation_after / 2) / sum(
+    #     [on_road_fixation_after, both_else_fixation_after, on_opponent_fixation_after])
+    #
+    # print('50_50_before: ', round(average_fixation_before, 2))
+    # print('50_50_after: ', round(average_fixation_after, 2))
+    #
+    #
+    # fig, ax5 = plt.subplots(1, 1)
+    # fig.suptitle('Gaze behavior before-after the CRT condition 1 (50-50 km/h)')
+    # line_combined = sns.lineplot(x="new_time", y="new_data", data=new_df, errorbar=None, linestyle='')
+    #
+    # l1 = line_combined.lines[0]
+    # x1 = l1.get_xydata()[:, 0]
+    # y1 = l1.get_xydata()[:, 1]
+    # #
+    # ysmoothed_1 = gaussian_filter1d(y1, sigma=4)
+    # #
+    # ax5.plot(x1, ysmoothed_1, color = 'slateblue')
+    #
+    # ax5.fill_between(x1, ysmoothed_1, color='blue', alpha=0.1, label='Fixation on road')
+    # ax5.fill_between(x1, ysmoothed_1, 1, color='red', alpha=0.1, label='Fixation on opponent')
+    #
+    # ax5.set_xlim([min_time_equal, max_time_equal])
+    # ax5.set_ylim([0, 1])
+    #
+    # ax5.axvline(0, 0, 1, color='r', label='CRT')
+    #
+    # ax5.set(xlabel='Time relative to CRT [s]', ylabel='Fixation on opponent [%]')
+    # ax5.legend(loc='lower left')
+    #
+    # # # ## -----------
 
     # 55_45
     path_to_csv_vehicle1_ahead = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_55_45\vehicle1'
@@ -424,9 +424,9 @@ if __name__ == '__main__':
     max_time_ahead = max(df_ahead_55_45['ahead_time'])
 
     lengths = []
-    for trial_number in df['trial'].unique():
-        trial_data = df.loc[df['trial'] == trial_number, :]
-        a = len(trial_data['Average_fixation'])
+    for trial_number in df_ahead_55_45['trial'].unique():
+        trial_data = df_ahead_55_45.loc[df_ahead_55_45['trial'] == trial_number, :]
+        a = len(trial_data['ahead_fixations'])
         lengths.append(a)
 
     new_time = np.linspace(min_time_ahead, max_time_ahead, max(lengths))
@@ -478,9 +478,9 @@ if __name__ == '__main__':
     max_time_behind = max(df_behind_55_45['behind_time'])
 
     lengths = []
-    for trial_number in df['trial'].unique():
-        trial_data = df.loc[df['trial'] == trial_number, :]
-        a = len(trial_data['Average_fixation'])
+    for trial_number in df_behind_55_45['trial'].unique():
+        trial_data = df_behind_55_45.loc[df_behind_55_45['trial'] == trial_number, :]
+        a = len(trial_data['behind_fixations'])
         lengths.append(a)
 
     new_time = np.linspace(min_time_behind, max_time_behind, max(lengths))
@@ -520,7 +520,7 @@ if __name__ == '__main__':
     fig, axes = plt.subplots(1, 2, figsize=(10, 5))
     fig.suptitle('Gaze behavior before-after the CRT condition 2 (55-45 km/h)')
     fig.text(0.07, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
-    fig.text(0.5, 0.07, "Time relative to CRT [s]", ha="center", va="center")
+    fig.text(0.5, 0.04, "Time relative to CRT [s]", ha="center", va="center")
 
     line_ahead = sns.lineplot(x="new_time", y="new_data", data=new_df_behind, ax=axes[0], errorbar=None, linestyle='')
     line_behind = sns.lineplot(x="new_time", y="new_data", data=new_df_ahead, ax=axes[1], errorbar=None, linestyle='')
@@ -590,9 +590,9 @@ if __name__ == '__main__':
     max_time_ahead = max(df_ahead_60_40['ahead_time'])
 
     lengths = []
-    for trial_number in df['trial'].unique():
-        trial_data = df.loc[df['trial'] == trial_number, :]
-        a = len(trial_data['Average_fixation'])
+    for trial_number in df_ahead_60_40['trial'].unique():
+        trial_data = df_ahead_60_40.loc[df_ahead_60_40['trial'] == trial_number, :]
+        a = len(trial_data['ahead_fixations'])
         lengths.append(a)
 
     new_time = np.linspace(min_time_ahead, max_time_ahead, max(lengths))
@@ -644,9 +644,9 @@ if __name__ == '__main__':
     max_time_behind = max(df_behind_60_40['behind_time'])
 
     lengths = []
-    for trial_number in df['trial'].unique():
-        trial_data = df.loc[df['trial'] == trial_number, :]
-        a = len(trial_data['Average_fixation'])
+    for trial_number in df_behind_60_40['trial'].unique():
+        trial_data = df_behind_60_40.loc[df_behind_60_40['trial'] == trial_number, :]
+        a = len(trial_data['behind_fixations'])
         lengths.append(a)
 
     new_time = np.linspace(min_time_behind, max_time_behind, max(lengths))
@@ -686,7 +686,7 @@ if __name__ == '__main__':
     fig, axes = plt.subplots(1, 2, figsize=(10, 5))
     fig.suptitle('Gaze behavior before-after the CRT condition 3 (60-40 km/h)')
     fig.text(0.07, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
-    fig.text(0.5, 0.07, "Time relative to CRT [s]", ha="center", va="center")
+    fig.text(0.5, 0.04, "Time relative to CRT [s]", ha="center", va="center")
 
     line_ahead = sns.lineplot(x="new_time", y="new_data", data=new_df_behind, ax=axes[0], errorbar=None, linestyle ='')
     line_behind = sns.lineplot(x="new_time", y="new_data", data=new_df_ahead, ax=axes[1], errorbar=None, linestyle ='')
