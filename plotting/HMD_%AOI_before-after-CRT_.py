@@ -163,7 +163,7 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
         for value in inner:
             dict['time_vehicle2'].append(value)
 
-    path_to_data_csv = os.path.join('..', 'data_folder', 'crt_who_is_ahead.csv')
+    path_to_data_csv = os.path.join('../..', 'data_folder', 'crt_who_is_ahead.csv')
     global_crt = pd.read_csv(path_to_data_csv, sep=',')
 
     trial = 1
@@ -272,13 +272,13 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
         inner_attention_list_2 = []
 
         for hmd_rot in range(len(individual_hmd_rot_list_1)):
-            if individual_hmd_rot_list_1[hmd_rot] > 0.95:  # this we need to know better
+            if individual_hmd_rot_list_1[hmd_rot] > 0.95:
                 inner_attention_list_1.append(1)
             else:
                 inner_attention_list_1.append(0)
 
         for i in range(len(individual_hmd_rot_list_2)):
-            if individual_hmd_rot_list_2[i] > 0.95:  # this we need to know better
+            if individual_hmd_rot_list_2[i] > 0.95:
                 inner_attention_list_2.append(1)
             else:
                 inner_attention_list_2.append(0)
@@ -318,88 +318,87 @@ if __name__ == '__main__':
     # 50-50
     path_to_csv_50_50 = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_50_50'
 
+
     dict50_50 = plot_varjo(path_to_csv_50_50, '50-50', 'equal')
 
     df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dict50_50.items()]))
 
     df['time_v1_new'] = df['time_vehicle1'] - df['CRT']
     df['time_v2_new'] = df['time_vehicle2'] - df['CRT']
-    df['Average_time'] = df[["time_vehicle1", "time_vehicle1"]].mean(axis=1)
-    df['Average_time_minCRT'] = df[["time_v1_new", "time_v2_new"]].mean(axis=1)
+    df['Average_time'] = df[["time_v1_new", "time_v2_new"]].mean(axis=1)
     df['Average_fixation'] = df[["gaze_vehicle1", "gaze_vehicle2"]].mean(axis=1)
 
-    dict = {'fixations_before': [], 'fixations_after': [], 'time_before': [], 'time_after': []}
+    min_time_equal = min(min(df['time_v1_new']), min(df['time_v2_new']))
+    max_time_equal = max(max(df['time_v1_new']), max(df['time_v2_new']))
+
+    lengths = []
     for trial_number in df['trial'].unique():
-        trial_data = df.loc[df['trial'] == trial_number]
-        time_idx_before = trial_data['Average_time_minCRT'].sub(-5).abs().idxmin()
-        time_idx_after = trial_data['Average_time_minCRT'].sub(5).abs().idxmin()
-        average_time_dot_before = df['Average_time'].iloc[time_idx_before]
-        average_time_dot_after = df['Average_time'].iloc[time_idx_after]
+        trial_data = df.loc[df['trial'] == trial_number, :]
+        a = len(trial_data['Average_fixation'])
+        lengths.append(a)
 
-        dict['time_before'].append(average_time_dot_before)
-        dict['time_after'].append(average_time_dot_after)
+    new_time = np.linspace(min_time_equal, max_time_equal, max(lengths))
 
-        fixations_before = trial_data[trial_data['Average_time_minCRT'].between(-5, 0)]
-        # print(fixations_before)
-        if fixations_before.empty:
-            average_fixation_before = np.nan
-        else:
-            average_fixation_before = 1 - (
-                        sum(fixations_before['Average_fixation']) / len(fixations_before['Average_fixation']))
+    new_df = {'trial': [],
+              'new_time': [],
+              'new_data': []}
 
-        fixations_after = trial_data[trial_data['Average_time_minCRT'].between(0, 5)]
-        average_fixation_after = 1 - (
-                    sum(fixations_after['Average_fixation']) / len(fixations_after['Average_fixation']))
+    for trial_number in df['trial'].unique():
+        trial_data = df.loc[df['trial'] == trial_number, :]
+        new_df['new_time'] += list(new_time)
+        new_df['new_data'] += list(np.interp(new_time, trial_data['Average_time'],
+                                             trial_data['Average_fixation']))
 
-        dict['fixations_before'].append(average_fixation_before)
-        dict['fixations_after'].append(average_fixation_after)
+        new_df['trial'] += [trial_number] * len(new_time)
 
-    df_before_after_50_50 = pd.DataFrame(dict)
-    df_before_50_50 = df_before_after_50_50[['fixations_before', 'time_before']].dropna()
-    df_after_50_50 = df_before_after_50_50[['fixations_after', 'time_after']].dropna()
+    new_df = pd.DataFrame(new_df)
 
-    r, p = stats.pearsonr(df_before_50_50['time_before'], df_before_50_50['fixations_before'])
-    r1, p1 = stats.pearsonr(df_after_50_50['time_after'], df_after_50_50['fixations_after'])
+    data_before_crt = new_df[new_df['new_time'].between(-5, 0)]
+    on_road_fixation_before = list(data_before_crt['new_data']).count(1)
+    both_else_fixation_before = list(data_before_crt['new_data']).count(0.5)
+    on_opponent_fixation_before = list(data_before_crt['new_data']).count(0)
 
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
-    fig.suptitle('Linear regression analysis 5 seconds before-after CRT condition 1 (50-50 km/h)')
-    fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
+    average_fixation_before = (on_opponent_fixation_before + both_else_fixation_before / 2) / sum(
+        [on_road_fixation_before, both_else_fixation_before, on_opponent_fixation_before])
 
-    plt.subplots_adjust(hspace=0.3)
+    data_after_crt = new_df[new_df['new_time'].between(0, 5)]
+    on_road_fixation_after = list(data_after_crt['new_data']).count(1)
+    both_else_fixation_after = list(data_after_crt['new_data']).count(0.5)
+    on_opponent_fixation_after = list(data_after_crt['new_data']).count(0)
 
-    sns.regplot(df_before_50_50, x='time_before', y='fixations_before', ax=axes[0])
-    sns.regplot(df_after_50_50, x='time_after', y='fixations_after', ax=axes[1])
+    average_fixation_after = (on_opponent_fixation_after + both_else_fixation_after / 2) / sum(
+        [on_road_fixation_after, both_else_fixation_after, on_opponent_fixation_after])
 
-    axes[0].set(xlabel='CRT - 5 sec', ylabel=None)
-    axes[1].set(xlabel='CRT + 5 sec', ylabel=None)
+    print('50_50_before: ', round(average_fixation_before, 2))
+    print('50_50_after: ', round(average_fixation_after, 2))
 
-    # axes[0].set_title('5 seconds before the CRT')
-    # axes[1].set_title('5 seconds after the CRT')
 
-    axes[0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
-    axes[0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
-    axes[1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
-    axes[1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
+    fig, ax5 = plt.subplots(1, 1)
+    fig.suptitle('Gaze behavior before-after the CRT condition 1 (50-50 km/h)')
+    line_combined = sns.lineplot(x="new_time", y="new_data", data=new_df, errorbar=None, linestyle='')
 
-    axes[0].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
+    l1 = line_combined.lines[0]
+    x1 = l1.get_xydata()[:, 0]
+    y1 = l1.get_xydata()[:, 1]
+    #
+    ysmoothed_1 = gaussian_filter1d(y1, sigma=4)
+    #
+    ax5.plot(x1, ysmoothed_1, color = 'slateblue')
 
-    axes[1].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
+    ax5.fill_between(x1, ysmoothed_1, color='blue', alpha=0.1, label='Fixation on road')
+    ax5.fill_between(x1, ysmoothed_1, 1, color='red', alpha=0.1, label='Fixation on opponent')
 
-    axes[0].legend(loc='upper left')
-    axes[1].legend(loc='upper left')
+    ax5.set_xlim([min_time_equal, max_time_equal])
+    ax5.set_ylim([0, 1])
 
-    #-------------------------------------------------------
-    # # 55_45
+    ax5.axvline(0, 0, 1, color='r', label='CRT')
+
+    ax5.set(xlabel='Time relative to CRT [s]', ylabel='Fixation on opponent [%]')
+    ax5.legend(loc='lower left')
+
+    # # ## -----------
+
+    # 55_45
     path_to_csv_vehicle1_ahead = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_55_45\vehicle1'
     dict55_45_v1_ahead = plot_varjo(path_to_csv_vehicle1_ahead, '55-45', 'vehicle1')
 
@@ -409,7 +408,7 @@ if __name__ == '__main__':
     # df1 = pd.DataFrame.from_dict(dict55_45_v1_ahead)
     df1 = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dict55_45_v1_ahead.items()]))
     df2 = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dict55_45_v2_ahead.items()]))
-    # print(df1)
+
     # for ahead
     ahead_fixations_55_45 = pd.concat([df1['gaze_vehicle1'], df2['gaze_vehicle2']], axis=0, ignore_index=True).rename(
         'ahead_fixations')
@@ -419,40 +418,49 @@ if __name__ == '__main__':
     ahead_trails = pd.concat([df1['trial'], df2['trial']], axis=0, ignore_index=True)
     df_ahead_55_45 = pd.concat([ahead_fixations_55_45, ahead_time_55_45, ahead_crt_55_45, ahead_trails],
                                axis=1)
-    df_ahead_55_45['Average_time_minCRT'] = df_ahead_55_45['ahead_time'] - df_ahead_55_45['CRT']
+    df_ahead_55_45['ahead_time'] = df_ahead_55_45['ahead_time'] - df_ahead_55_45['CRT']
 
-    dict = {'fixations_before': [], 'fixations_after': [], 'time_before': [], 'time_after': []}
+    min_time_ahead = min(df_ahead_55_45['ahead_time'])
+    max_time_ahead = max(df_ahead_55_45['ahead_time'])
+
+    lengths = []
+    for trial_number in df['trial'].unique():
+        trial_data = df.loc[df['trial'] == trial_number, :]
+        a = len(trial_data['Average_fixation'])
+        lengths.append(a)
+
+    new_time = np.linspace(min_time_ahead, max_time_ahead, max(lengths))
+
+    new_df_ahead = {'trial': [],
+                    'new_time': [],
+                    'new_data': []}
+
     for trial_number in df_ahead_55_45['trial'].unique():
-        trial_data = df_ahead_55_45.loc[df_ahead_55_45['trial'] == trial_number]
-        time_idx_before = trial_data['Average_time_minCRT'].sub(-5).abs().idxmin()
-        time_idx_after = trial_data['Average_time_minCRT'].sub(5).abs().idxmin()
-        average_time_dot_before = df_ahead_55_45['ahead_time'].iloc[time_idx_before]
-        average_time_dot_after = df_ahead_55_45['ahead_time'].iloc[time_idx_after]
+        trial_data = df_ahead_55_45.loc[df_ahead_55_45['trial'] == trial_number, :]
 
-        dict['time_before'].append(average_time_dot_before)
-        dict['time_after'].append(average_time_dot_after)
+        new_df_ahead['new_time'] += list(new_time)
+        new_df_ahead['new_data'] += list(np.interp(new_time, trial_data['ahead_time'],
+                                                   trial_data['ahead_fixations']))
+        new_df_ahead['trial'] += [trial_number] * len(new_time)
 
-        fixations_before = trial_data[trial_data['Average_time_minCRT'].between(-5, 0)]
-        # print(fixations_before)
-        if fixations_before.empty:
-            average_fixation_before = np.nan
-        else:
-            average_fixation_before = 1 - (
-                    sum(fixations_before['ahead_fixations']) / len(fixations_before['ahead_fixations']))
+    new_df_ahead = pd.DataFrame(new_df_ahead)
 
-        fixations_after = trial_data[trial_data['Average_time_minCRT'].between(0, 5)]
-        average_fixation_after = 1 - (
-                sum(fixations_after['ahead_fixations']) / len(fixations_after['ahead_fixations']))
+    ahead_data_before_crt = new_df_ahead[new_df_ahead['new_time'].between(-5, 0)]
+    ahead_on_road_fixation_before = list(ahead_data_before_crt['new_data']).count(1)
+    ahead_on_opponent_fixation_before = list(ahead_data_before_crt['new_data']).count(0)
 
-        dict['fixations_before'].append(average_fixation_before)
-        dict['fixations_after'].append(average_fixation_after)
+    ahead_average_fixation_before = ahead_on_opponent_fixation_before / sum(
+        [ahead_on_road_fixation_before, ahead_on_opponent_fixation_before])
 
-    df_before_after_ahead_55_45 = pd.DataFrame(dict)
-    df_before_ahead_55_45 = df_before_after_ahead_55_45[['fixations_before', 'time_before']].dropna()
-    df_after_ahead_55_45 = df_before_after_ahead_55_45[['fixations_after', 'time_after']].dropna()
+    ahead_data_after_crt = new_df_ahead[new_df_ahead['new_time'].between(0, 5)]
+    ahead_on_road_fixation_after = list(ahead_data_after_crt['new_data']).count(1)
+    ahead_on_opponent_fixation_after = list(ahead_data_after_crt['new_data']).count(0)
 
-    r, p = stats.pearsonr(df_before_ahead_55_45['time_before'], df_before_ahead_55_45['fixations_before'])
-    r1, p1 = stats.pearsonr(df_after_ahead_55_45['time_after'], df_after_ahead_55_45['fixations_after'])
+    ahead_average_fixation_after = ahead_on_opponent_fixation_after / sum(
+        [ahead_on_road_fixation_after, ahead_on_opponent_fixation_after])
+    print('-------------')
+    print('55_45_ahead_before: ', round(ahead_average_fixation_before, 2))
+    print('55_45_ahead_after: ', round(ahead_average_fixation_after, 2))
 
     # --------------------------------------------------------------
     # for behind
@@ -464,112 +472,96 @@ if __name__ == '__main__':
     behind_trails = pd.concat([df1['trial'], df2['trial']], axis=0, ignore_index=True)
     df_behind_55_45 = pd.concat([behind_fixations_55_45, behind_time_55_45, behind_crt_55_45, behind_trails],
                                 axis=1)
-    df_behind_55_45['Average_time_minCRT'] = df_behind_55_45['behind_time'] - df_behind_55_45['CRT']
+    df_behind_55_45['behind_time'] = df_behind_55_45['behind_time'] - df_behind_55_45['CRT']
 
-    dict = {'fixations_before': [], 'fixations_after': [], 'time_before': [], 'time_after': []}
+    min_time_behind = min(df_behind_55_45['behind_time'])
+    max_time_behind = max(df_behind_55_45['behind_time'])
+
+    lengths = []
+    for trial_number in df['trial'].unique():
+        trial_data = df.loc[df['trial'] == trial_number, :]
+        a = len(trial_data['Average_fixation'])
+        lengths.append(a)
+
+    new_time = np.linspace(min_time_behind, max_time_behind, max(lengths))
+
+    new_df_behind = {'trial': [],
+                     'new_time': [],
+                     'new_data': []}
+
     for trial_number in df_behind_55_45['trial'].unique():
-        trial_data = df_behind_55_45.loc[df_behind_55_45['trial'] == trial_number]
-        time_idx_before = trial_data['Average_time_minCRT'].sub(-5).abs().idxmin()
-        time_idx_after = trial_data['Average_time_minCRT'].sub(5).abs().idxmin()
-        average_time_dot_before = df_behind_55_45['behind_time'].iloc[time_idx_before]
-        average_time_dot_after = df_behind_55_45['behind_time'].iloc[time_idx_after]
+        trial_data = df_behind_55_45.loc[df_behind_55_45['trial'] == trial_number, :]
 
-        dict['time_before'].append(average_time_dot_before)
-        dict['time_after'].append(average_time_dot_after)
+        new_df_behind['new_time'] += list(new_time)
+        new_df_behind['new_data'] += list(np.interp(new_time, trial_data['behind_time'],
+                                                    trial_data['behind_fixations']))
+        new_df_behind['trial'] += [trial_number] * len(new_time)
 
-        fixations_before = trial_data[trial_data['Average_time_minCRT'].between(-5, 0)]
-        # print(fixations_before)
-        if fixations_before.empty:
-            average_fixation_before = np.nan
-        else:
-            average_fixation_before = 1 - (
-                    sum(fixations_before['behind_fixations']) / len(fixations_before['behind_fixations']))
+    new_df_behind = pd.DataFrame(new_df_behind)
 
-        fixations_after = trial_data[trial_data['Average_time_minCRT'].between(0, 5)]
-        if fixations_after.empty:
-            average_fixation_before = np.nan
-        else:
-            average_fixation_after = 1 - (
-                    sum(fixations_after['behind_fixations']) / len(fixations_after['behind_fixations']))
+    behind_data_before_crt = new_df_behind[new_df_behind['new_time'].between(-5, 0)]
+    behind_on_road_fixation_before = list(behind_data_before_crt['new_data']).count(1)
+    behind_on_opponent_fixation_before = list(behind_data_before_crt['new_data']).count(0)
 
-        dict['fixations_before'].append(average_fixation_before)
-        dict['fixations_after'].append(average_fixation_after)
+    behind_average_fixation_before = behind_on_opponent_fixation_before / sum(
+        [behind_on_road_fixation_before, behind_on_opponent_fixation_before])
 
-    df_before_after_behind_55_45 = pd.DataFrame(dict)
-    df_before_behind_55_45 = df_before_after_behind_55_45[['fixations_before', 'time_before']].dropna()
-    df_after_behind_55_45 = df_before_after_behind_55_45[['fixations_after', 'time_after']].dropna()
+    behind_data_after_crt = new_df_behind[new_df_behind['new_time'].between(0, 5)]
+    behind_on_road_fixation_after = list(behind_data_after_crt['new_data']).count(1)
+    behind_on_opponent_fixation_after = list(behind_data_after_crt['new_data']).count(0)
 
-    r2, p2 = stats.pearsonr(df_before_behind_55_45['time_before'], df_before_behind_55_45['fixations_before'])
-    r3, p3 = stats.pearsonr(df_after_behind_55_45['time_after'], df_after_behind_55_45['fixations_after'])
+    behind_average_fixation_after = behind_on_opponent_fixation_after / sum(
+        [behind_on_road_fixation_after, behind_on_opponent_fixation_after])
+    print('-------------')
+    print('55_45_behind_before: ', round(behind_average_fixation_before, 2))
+    print('55_45_behind_after: ', round(behind_average_fixation_after, 2))
 
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10), sharey=True)
+    # --- plotting
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    fig.suptitle('Gaze behavior before-after the CRT condition 2 (55-45 km/h)')
+    fig.text(0.07, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
+    fig.text(0.5, 0.07, "Time relative to CRT [s]", ha="center", va="center")
 
-    fig.suptitle('Linear regression analysis 5 seconds before-after the CRT condition 2 (55-45 km/h)')
-    fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical', fontsize=12)
-    fig.text(0.51, 0.48, "Participant is ahead", ha="center", va='center', fontsize=12)
-    fig.text(0.51, 0.92, "Participant is behind", ha="center", va='center', fontsize=12)
-    # fig.text(0.51, 0.05, "Time [s]", ha="center", va="center", fontsize=12)
+    line_ahead = sns.lineplot(x="new_time", y="new_data", data=new_df_behind, ax=axes[0], errorbar=None, linestyle='')
+    line_behind = sns.lineplot(x="new_time", y="new_data", data=new_df_ahead, ax=axes[1], errorbar=None, linestyle='')
 
-    plt.subplots_adjust(hspace=0.3)
+    axes[0].set_title('Participant is behind')
+    axes[1].set_title('Participant is ahead')
 
-    sns.regplot(df_before_ahead_55_45, x='time_before', y='fixations_before', ax=axes[0][0])
-    sns.regplot(df_after_ahead_55_45, x='time_after', y='fixations_after', ax=axes[0][1])
-    sns.regplot(df_before_behind_55_45, x='time_before', y='fixations_before', ax=axes[1][0])
-    sns.regplot(df_after_behind_55_45, x='time_after', y='fixations_after', ax=axes[1][1])
+    l1 = line_ahead.lines[0]
+    x1 = l1.get_xydata()[:, 0]
+    y1 = l1.get_xydata()[:, 1]
+    l2 = line_behind.lines[0]
+    x2 = l2.get_xydata()[:, 0]
+    y2 = l2.get_xydata()[:, 1]
 
-    axes[0][0].set(xlabel='CRT - 5 sec', ylabel=None)
-    axes[0][1].set(xlabel='CRT + 5 sec', ylabel=None)
-    axes[1][0].set(xlabel='CRT - 5 sec', ylabel=None)
-    axes[1][1].set(xlabel='CRT + 5 sec', ylabel=None)
+    ysmoothed_1 = gaussian_filter1d(y1, sigma=4)
+    ysmoothed_2 = gaussian_filter1d(y2, sigma=4)
 
-    axes[0][0].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
+    axes[0].plot(x1, ysmoothed_1, color = 'slateblue')
+    axes[1].plot(x2, ysmoothed_2, color = 'slateblue')
 
-    axes[0][1].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
+    axes[0].fill_between(x1, ysmoothed_1, color='blue', alpha=0.1, label='Fixation on road')
+    axes[0].fill_between(x1, ysmoothed_1, 1, color='red', alpha=0.1, label='Fixation on opponent')
+    axes[1].fill_between(x2, ysmoothed_2, color='blue', alpha=0.1, label='Fixation on road')
+    axes[1].fill_between(x2, ysmoothed_2, 1, color='red', alpha=0.1, label='Fixation on opponent')
 
-    axes[1][0].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
+    axes[0].set_xlim([min_time_behind, max_time_behind])
+    axes[1].set_xlim([min_time_ahead, max_time_ahead])
 
-    axes[1][1].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
+    axes[0].axvline(0, 0, 1, color='r', label='CRT')
+    axes[1].axvline(0, 0, 1, color='r', label='CRT')
 
-    # axes[0][0].set_title('5 seconds before the CRT')
-    # axes[0][1].set_title('5 seconds after the CRT')
-    # axes[1][0].set_title('5 seconds before the CRT')
-    # axes[1][1].set_title('5 seconds after the CRT')
+    axes[0].set_ylim([0, 1])
+    axes[1].set_ylim([0, 1])
 
-    axes[0][0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
-    axes[0][0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
-    axes[0][1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
-    axes[0][1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
-    axes[1][0].plot([], [], ' ', label='r: ' + str(round(r2, 2)))
-    axes[1][0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p2))
-    axes[1][1].plot([], [], ' ', label='r: ' + str(round(r3, 2)))
-    axes[1][1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p3))
+    axes[0].set(xlabel=None, ylabel=None)
+    axes[1].set(xlabel=None, ylabel=None)
 
-    axes[0][0].legend(loc='upper left')
-    axes[0][1].legend(loc='upper left')
-    axes[1][0].legend(loc='upper left')
-    axes[1][1].legend(loc='upper left')
+    axes[0].legend(loc='lower left')
+    axes[1].legend(loc='lower left')
 
-    # # # -----------------------------------------------------
+    # # -----------------------------------------------------
     # 60-40
     path_to_csv_vehicle1_ahead = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_60_40\vehicle1'
 
@@ -579,6 +571,7 @@ if __name__ == '__main__':
 
     dict60_40_v2_ahead = plot_varjo(path_to_csv_vehicle2_ahead, '60-40', 'vehicle2')
 
+    # df1 = pd.DataFrame.from_dict(dict55_45_v1_ahead)
     df1 = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dict60_40_v1_ahead.items()]))
     df2 = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dict60_40_v2_ahead.items()]))
 
@@ -590,45 +583,50 @@ if __name__ == '__main__':
     ahead_crt_60_40 = pd.concat([df1['CRT'], df2['CRT']], axis=0, ignore_index=True)
     ahead_trails_60_40 = pd.concat([df1['trial'], df2['trial']], axis=0, ignore_index=True)
     df_ahead_60_40 = pd.concat([ahead_fixations_60_40, ahead_time_60_40, ahead_crt_60_40, ahead_trails_60_40],
-                               axis=1)
-    df_ahead_60_40['Average_time_minCRT'] = df_ahead_60_40['ahead_time'] - df_ahead_60_40['CRT']
+                               axis=1).dropna()
+    df_ahead_60_40['ahead_time'] = df_ahead_60_40['ahead_time'] - df_ahead_60_40['CRT']
 
+    min_time_ahead = min(df_ahead_60_40['ahead_time'])
+    max_time_ahead = max(df_ahead_60_40['ahead_time'])
 
-    dict = {'fixations_before': [], 'fixations_after': [], 'time_before': [], 'time_after': []}
+    lengths = []
+    for trial_number in df['trial'].unique():
+        trial_data = df.loc[df['trial'] == trial_number, :]
+        a = len(trial_data['Average_fixation'])
+        lengths.append(a)
+
+    new_time = np.linspace(min_time_ahead, max_time_ahead, max(lengths))
+
+    new_df_ahead = {'trial': [],
+                    'new_time': [],
+                    'new_data': []}
+
     for trial_number in df_ahead_60_40['trial'].unique():
-        trial_data = df_ahead_60_40.loc[df_ahead_60_40['trial'] == trial_number]
-        time_idx_before = trial_data['Average_time_minCRT'].sub(-5).abs().idxmin()
-        time_idx_after = trial_data['Average_time_minCRT'].sub(5).abs().idxmin()
-        average_time_dot_before = df_ahead_60_40['ahead_time'].iloc[time_idx_before]
-        average_time_dot_after = df_ahead_60_40['ahead_time'].iloc[time_idx_after]
+        trial_data = df_ahead_60_40.loc[df_ahead_60_40['trial'] == trial_number, :]
 
-        dict['time_before'].append(average_time_dot_before)
-        dict['time_after'].append(average_time_dot_after)
+        new_df_ahead['new_time'] += list(new_time)
+        new_df_ahead['new_data'] += list(np.interp(new_time, trial_data['ahead_time'],
+                                                   trial_data['ahead_fixations']))
+        new_df_ahead['trial'] += [trial_number] * len(new_time)
 
-        fixations_before = trial_data[trial_data['Average_time_minCRT'].between(-5, 0)]
+    new_df_ahead = pd.DataFrame(new_df_ahead)
 
-        if fixations_before.empty:
-            average_fixation_before = np.nan
-        else:
-            average_fixation_before = 1 - (
-                    sum(fixations_before['ahead_fixations']) / len(fixations_before['ahead_fixations']))
+    ahead_data_before_crt = new_df_ahead[new_df_ahead['new_time'] < 0]
+    ahead_on_road_fixation_before = list(ahead_data_before_crt['new_data']).count(1)
+    ahead_on_opponent_fixation_before = list(ahead_data_before_crt['new_data']).count(0)
 
-        fixations_after = trial_data[trial_data['Average_time_minCRT'].between(0, 5)]
-        if fixations_after.empty:
-            average_fixation_before = np.nan
-        else:
-            average_fixation_after = 1 - (
-                    sum(fixations_after['ahead_fixations']) / len(fixations_after['ahead_fixations']))
+    ahead_average_fixation_before = ahead_on_opponent_fixation_before / sum(
+        [ahead_on_road_fixation_before, ahead_on_opponent_fixation_before])
 
-        dict['fixations_before'].append(average_fixation_before)
-        dict['fixations_after'].append(average_fixation_after)
+    ahead_data_after_crt = new_df_ahead[new_df_ahead['new_time'] > 0]
+    ahead_on_road_fixation_after = list(ahead_data_after_crt['new_data']).count(1)
+    ahead_on_opponent_fixation_after = list(ahead_data_after_crt['new_data']).count(0)
 
-    df_before_after_ahead_60_40 = pd.DataFrame(dict)
-    df_before_ahead_60_40 = df_before_after_ahead_60_40[['fixations_before', 'time_before']].dropna()
-    df_after_ahead_60_40 = df_before_after_ahead_60_40[['fixations_after', 'time_after']].dropna()
-
-    r, p = stats.pearsonr(df_before_ahead_60_40['time_before'], df_before_ahead_60_40['fixations_before'])
-    r1, p1 = stats.pearsonr(df_after_ahead_60_40['time_after'], df_after_ahead_60_40['fixations_after'])
+    ahead_average_fixation_after = ahead_on_opponent_fixation_after / sum(
+        [ahead_on_road_fixation_after, ahead_on_opponent_fixation_after])
+    print('-------------')
+    print('60_45_ahead_before: ', round(ahead_average_fixation_before, 2))
+    print('60_45_ahead_after: ', round(ahead_average_fixation_after, 2))
 
     # --------------------------------------------------------------
     # for behind
@@ -637,114 +635,96 @@ if __name__ == '__main__':
     behind_time_60_40 = pd.concat([df1['time_vehicle2'], df2['time_vehicle1']], axis=0, ignore_index=True).rename(
         'behind_time')
     behind_crt_60_40 = pd.concat([df1['CRT'], df2['CRT']], axis=0, ignore_index=True)
-    behind_trails_60_40 =  pd.concat([df1['trial'], df2['trial']], axis=0, ignore_index=True)
-    df_behind_60_40 = pd.concat([behind_fixations_60_40, behind_time_60_40, behind_crt_60_40, behind_trails_60_40],
-                                axis=1)
-    df_behind_60_40['Average_time_minCRT'] = df_behind_60_40['behind_time'] - df_behind_60_40['CRT']
+    behind_trails = pd.concat([df1['trial'], df2['trial']], axis=0, ignore_index=True)
+    df_behind_60_40 = pd.concat([behind_fixations_60_40, behind_time_60_40, behind_crt_60_40, behind_trails],
+                                axis=1).dropna()
+    df_behind_60_40['behind_time'] = df_behind_60_40['behind_time'] - df_behind_60_40['CRT']
 
-    dict = {'fixations_before': [], 'fixations_after': [], 'time_before': [], 'time_after': []}
+    min_time_behind = min(df_behind_60_40['behind_time'])
+    max_time_behind = max(df_behind_60_40['behind_time'])
+
+    lengths = []
+    for trial_number in df['trial'].unique():
+        trial_data = df.loc[df['trial'] == trial_number, :]
+        a = len(trial_data['Average_fixation'])
+        lengths.append(a)
+
+    new_time = np.linspace(min_time_behind, max_time_behind, max(lengths))
+
+    new_df_behind = {'trial': [],
+                     'new_time': [],
+                     'new_data': []}
+
     for trial_number in df_behind_60_40['trial'].unique():
-        trial_data = df_behind_60_40.loc[df_behind_60_40['trial'] == trial_number]
-        time_idx_before = trial_data['Average_time_minCRT'].sub(-5).abs().idxmin()
-        time_idx_after = trial_data['Average_time_minCRT'].sub(5).abs().idxmin()
+        trial_data = df_behind_60_40.loc[df_behind_60_40['trial'] == trial_number, :]
 
-        average_time_dot_before = df_behind_60_40['behind_time'].iloc[time_idx_before]
-        average_time_dot_after = df_behind_60_40['behind_time'].iloc[time_idx_after]
+        new_df_behind['new_time'] += list(new_time)
+        new_df_behind['new_data'] += list(np.interp(new_time, trial_data['behind_time'],
+                                                    trial_data['behind_fixations']))
+        new_df_behind['trial'] += [trial_number] * len(new_time)
 
-        dict['time_before'].append(average_time_dot_before)
-        dict['time_after'].append(average_time_dot_after)
+    new_df_behind = pd.DataFrame(new_df_behind)
 
-        fixations_before = trial_data[trial_data['Average_time_minCRT'].between(-5, 0)]
+    behind_data_before_crt = new_df_behind[new_df_behind['new_time'] < 0]
+    behind_on_road_fixation_before = list(behind_data_before_crt['new_data']).count(1)
+    behind_on_opponent_fixation_before = list(behind_data_before_crt['new_data']).count(0)
 
-        if fixations_before.empty:
-            average_fixation_before = np.nan
-        else:
-            average_fixation_before = 1 - (
-                    sum(fixations_before['behind_fixations']) / len(fixations_before['behind_fixations']))
+    behind_average_fixation_before = behind_on_opponent_fixation_before / sum(
+        [behind_on_road_fixation_before, behind_on_opponent_fixation_before])
 
-        fixations_after = trial_data[trial_data['Average_time_minCRT'].between(0, 5)]
+    behind_data_after_crt = new_df_behind[new_df_behind['new_time'] > 0]
+    behind_on_road_fixation_after = list(behind_data_after_crt['new_data']).count(1)
+    behind_on_opponent_fixation_after = list(behind_data_after_crt['new_data']).count(0)
 
-        if fixations_after.empty:
-            average_fixation_before = np.nan
-        else:
-            average_fixation_after = 1 - (
-                    sum(fixations_after['behind_fixations']) / len(fixations_after['behind_fixations']))
+    behind_average_fixation_after = behind_on_opponent_fixation_after / sum(
+        [behind_on_road_fixation_after, behind_on_opponent_fixation_after])
+    print('-------------')
+    print('60_45_behind_before: ', round(behind_average_fixation_before, 2))
+    print('60_45_behind_after: ', round(behind_average_fixation_after, 2))
 
-        dict['fixations_before'].append(average_fixation_before)
-        dict['fixations_after'].append(average_fixation_after)
+    # --- plotting
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    fig.suptitle('Gaze behavior before-after the CRT condition 3 (60-40 km/h)')
+    fig.text(0.07, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
+    fig.text(0.5, 0.07, "Time relative to CRT [s]", ha="center", va="center")
 
-    df_before_after_behind_60_40 = pd.DataFrame(dict)
-    df_before_behind_60_40 = df_before_after_behind_60_40[['fixations_before', 'time_before']].dropna()
-    df_after_behind_60_40 = df_before_after_behind_60_40[['fixations_after', 'time_after']].dropna()
+    line_ahead = sns.lineplot(x="new_time", y="new_data", data=new_df_behind, ax=axes[0], errorbar=None, linestyle ='')
+    line_behind = sns.lineplot(x="new_time", y="new_data", data=new_df_ahead, ax=axes[1], errorbar=None, linestyle ='')
 
-    r2, p2 = stats.pearsonr(df_before_behind_60_40['time_before'], df_before_behind_60_40['fixations_before'])
-    r3, p3 = stats.pearsonr(df_after_behind_60_40['time_after'], df_after_behind_60_40['fixations_after'])
+    axes[0].set_title('Participant is behind')
+    axes[1].set_title('Participant is ahead')
 
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10), sharey=True)
+    l1 = line_ahead.lines[0]
+    x1 = l1.get_xydata()[:, 0]
+    y1 = l1.get_xydata()[:, 1]
+    l2 = line_behind.lines[0]
+    x2 = l2.get_xydata()[:, 0]
+    y2 = l2.get_xydata()[:, 1]
 
-    fig.suptitle('Linear regression analysis 5 seconds before-after the CRT condition 3 (60-40 km/h)')
-    fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical', fontsize=12)
-    fig.text(0.51, 0.48, "Participant is ahead", ha="center", va='center', fontsize=12)
-    fig.text(0.51, 0.92, "Participant is behind", ha="center", va='center', fontsize=12)
-    fig.text(0.51, 0.05, "Time [s]", ha="center", va="center", fontsize=12)
+    ysmoothed_1 = gaussian_filter1d(y1, sigma=4)
+    ysmoothed_2 = gaussian_filter1d(y2, sigma=4)
 
-    plt.subplots_adjust(hspace=0.3)
+    axes[0].plot(x1, ysmoothed_1, color = 'slateblue')
+    axes[1].plot(x2, ysmoothed_2, color = 'slateblue')
 
-    sns.regplot(df_before_ahead_60_40, x='time_before', y='fixations_before', ax=axes[0][0])
-    sns.regplot(df_after_ahead_60_40, x='time_after', y='fixations_after', ax=axes[0][1])
-    sns.regplot(df_before_behind_60_40, x='time_before', y='fixations_before', ax=axes[1][0])
-    sns.regplot(df_after_behind_60_40, x='time_after', y='fixations_after', ax=axes[1][1])
+    axes[0].fill_between(x1, ysmoothed_1, color='blue', alpha=0.1, label='Fixation on road')
+    axes[0].fill_between(x1, ysmoothed_1, 1, color='red', alpha=0.1, label='Fixation on opponent')
+    axes[1].fill_between(x2, ysmoothed_2, color='blue', alpha=0.1, label='Fixation on road')
+    axes[1].fill_between(x2, ysmoothed_2, 1, color='red', alpha=0.1, label='Fixation on opponent')
 
-    axes[0][0].set(xlabel='CRT - 5 sec', ylabel=None)
-    axes[0][1].set(xlabel='CRT + 5 sec', ylabel=None)
-    axes[1][0].set(xlabel='CRT - 5 sec', ylabel=None)
-    axes[1][1].set(xlabel='CRT + 5 sec', ylabel=None)
+    axes[0].set_xlim([min_time_behind, max_time_behind])
+    axes[1].set_xlim([min_time_ahead, max_time_ahead])
 
-    axes[0][0].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
+    axes[0].set_ylim([0, 1])
+    axes[1].set_ylim([0, 1])
 
-    axes[0][1].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
+    axes[0].set(xlabel=None, ylabel=None)
+    axes[1].set(xlabel=None, ylabel=None)
 
-    axes[1][0].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
+    axes[0].axvline(0, 0, 1, color='r', label='CRT')
+    axes[1].axvline(0, 0, 1, color='r', label='CRT')
 
-    axes[1][1].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
-    # axes[0][0].set_title('5 seconds before the CRT')
-    # axes[0][1].set_title('5 seconds after the CRT')
-    # axes[1][0].set_title('5 seconds before the CRT')
-    # axes[1][1].set_title('5 seconds after the CRT')
-
-    axes[0][0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
-    axes[0][0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
-    axes[0][1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
-    axes[0][1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
-    axes[1][0].plot([], [], ' ', label='r: ' + str(round(r2, 2)))
-    axes[1][0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p2))
-    axes[1][1].plot([], [], ' ', label='r: ' + str(round(r3, 2)))
-    axes[1][1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p3))
-
-    axes[0][0].legend(loc='upper left')
-    axes[0][1].legend(loc='upper left')
-    axes[1][0].legend(loc='upper left')
-    axes[1][1].legend(loc='upper left')
+    axes[0].legend(loc='lower left')
+    axes[1].legend(loc='lower left')
 
     plt.show()

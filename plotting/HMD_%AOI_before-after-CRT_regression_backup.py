@@ -7,6 +7,7 @@ import numpy as np
 import datetime
 from natsort import natsorted
 import seaborn as sns
+import scipy.stats as stats
 
 from trackobjects.simulationconstants import SimulationConstants
 from trackobjects.symmetricmerge import SymmetricMergingTrack
@@ -151,8 +152,6 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
             time_in_seconds_trails_v1.append(together[0])
             time_in_seconds_trails_v2.append(together[1])
 
-
-
     for i in range(len(time_in_seconds_trails_v1)):
         inner = time_in_seconds_trails_v1[i]
         for value in inner:
@@ -250,7 +249,6 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
     hmd_rot_interactive_area_vehicle2 = []
 
     for i in range(len(all_pds_list)):
-
         hmd_rot_1 = list(all_pds_list[i]['HMD_rotation_vehicle1'][
                          indexes_of_tunnel_and_merge_vehicle1[i][0]:indexes_of_tunnel_and_merge_vehicle1[i][1]])
 
@@ -259,7 +257,6 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
 
         hmd_rot_interactive_area_vehicle1.append(hmd_rot_1)
         hmd_rot_interactive_area_vehicle2.append(hmd_rot_2)
-
 
     # change hmd rots to ones and zeros
     on_ramp_vs_opponent_vehicle1 = []
@@ -307,8 +304,6 @@ def plot_varjo(path_to_csv_folder, condition, who_ahead):
         for value in inner:
             dict['gaze_vehicle2'].append(value)
 
-
-
     return dict
 
 
@@ -316,7 +311,7 @@ if __name__ == '__main__':
     pd.set_option('display.max_columns', None)
     # --------------------------------------------------
     # 50-50
-    path_to_csv_50_50 = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_50_50'
+    path_to_csv_50_50 = r'D:\Thesis_data_all_experiments\Conditions\condition_50_50'
 
     dict50_50 = plot_varjo(path_to_csv_50_50, '50-50', 'equal')
 
@@ -362,48 +357,35 @@ if __name__ == '__main__':
     r1, p1 = stats.pearsonr(df_after_50_50['time_after'], df_after_50_50['fixations_after'])
 
     fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
-    fig.suptitle('Linear regression analysis 5 seconds before-after CRT condition 1 (50-50 km/h)')
+    fig.suptitle('Linear regression analysis before-after CRT condition 1 (50-50 km/h)')
     fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical')
+    fig.text(0.51, 0.05, "Time [s]", ha="center", va="center")
 
     plt.subplots_adjust(hspace=0.3)
 
     sns.regplot(df_before_50_50, x='time_before', y='fixations_before', ax=axes[0])
     sns.regplot(df_after_50_50, x='time_after', y='fixations_after', ax=axes[1])
 
-    axes[0].set(xlabel='CRT - 5 sec', ylabel=None)
-    axes[1].set(xlabel='CRT + 5 sec', ylabel=None)
+    axes[0].set(xlabel=None, ylabel=None)
+    axes[1].set(xlabel=None, ylabel=None)
 
-    # axes[0].set_title('5 seconds before the CRT')
-    # axes[1].set_title('5 seconds after the CRT')
+    axes[0].set_title('5 seconds before the CRT')
+    axes[1].set_title('5 seconds after the CRT')
 
     axes[0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
     axes[0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
     axes[1].plot([], [], ' ', label='r: ' + str(round(r1, 2)))
     axes[1].plot([], [], ' ', label='p: ' + "{:.2e}".format(p1))
 
-    axes[0].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
-    axes[1].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
     axes[0].legend(loc='upper left')
     axes[1].legend(loc='upper left')
 
     #-------------------------------------------------------
     # # 55_45
-    path_to_csv_vehicle1_ahead = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_55_45\vehicle1'
+    path_to_csv_vehicle1_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 1'
     dict55_45_v1_ahead = plot_varjo(path_to_csv_vehicle1_ahead, '55-45', 'vehicle1')
 
-    path_to_csv_vehicle2_ahead = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_55_45\vehicle2'
+    path_to_csv_vehicle2_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_55_45\vehicle 2'
     dict55_45_v2_ahead = plot_varjo(path_to_csv_vehicle2_ahead, '55-45', 'vehicle2')
 
     # df1 = pd.DataFrame.from_dict(dict55_45_v1_ahead)
@@ -504,11 +486,11 @@ if __name__ == '__main__':
 
     fig, axes = plt.subplots(2, 2, figsize=(12, 10), sharey=True)
 
-    fig.suptitle('Linear regression analysis 5 seconds before-after the CRT condition 2 (55-45 km/h)')
+    fig.suptitle('Linear regression analysis before-after the CRT condition 2 (55-45 km/h)')
     fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical', fontsize=12)
     fig.text(0.51, 0.48, "Participant is ahead", ha="center", va='center', fontsize=12)
     fig.text(0.51, 0.92, "Participant is behind", ha="center", va='center', fontsize=12)
-    # fig.text(0.51, 0.05, "Time [s]", ha="center", va="center", fontsize=12)
+    fig.text(0.51, 0.05, "Time [s]", ha="center", va="center", fontsize=12)
 
     plt.subplots_adjust(hspace=0.3)
 
@@ -517,43 +499,15 @@ if __name__ == '__main__':
     sns.regplot(df_before_behind_55_45, x='time_before', y='fixations_before', ax=axes[1][0])
     sns.regplot(df_after_behind_55_45, x='time_after', y='fixations_after', ax=axes[1][1])
 
-    axes[0][0].set(xlabel='CRT - 5 sec', ylabel=None)
-    axes[0][1].set(xlabel='CRT + 5 sec', ylabel=None)
-    axes[1][0].set(xlabel='CRT - 5 sec', ylabel=None)
-    axes[1][1].set(xlabel='CRT + 5 sec', ylabel=None)
+    axes[0][0].set(xlabel=None, ylabel=None)
+    axes[0][1].set(xlabel=None, ylabel=None)
+    axes[1][0].set(xlabel=None, ylabel=None)
+    axes[1][1].set(xlabel=None, ylabel=None)
 
-    axes[0][0].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
-    axes[0][1].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
-    axes[1][0].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
-    axes[1][1].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
-    # axes[0][0].set_title('5 seconds before the CRT')
-    # axes[0][1].set_title('5 seconds after the CRT')
-    # axes[1][0].set_title('5 seconds before the CRT')
-    # axes[1][1].set_title('5 seconds after the CRT')
+    axes[0][0].set_title('5 seconds before the CRT')
+    axes[0][1].set_title('5 seconds after the CRT')
+    axes[1][0].set_title('5 seconds before the CRT')
+    axes[1][1].set_title('5 seconds after the CRT')
 
     axes[0][0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
     axes[0][0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
@@ -571,11 +525,11 @@ if __name__ == '__main__':
 
     # # # -----------------------------------------------------
     # 60-40
-    path_to_csv_vehicle1_ahead = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_60_40\vehicle1'
+    path_to_csv_vehicle1_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle1'
 
     dict60_40_v1_ahead = plot_varjo(path_to_csv_vehicle1_ahead, '60-40', 'vehicle1')
 
-    path_to_csv_vehicle2_ahead = r'D:\Pycharmprojects\Thesis_code_simple_merging\dataset\Conditions_who_is_ahead\whos_ahead_60_40\vehicle2'
+    path_to_csv_vehicle2_ahead = r'D:\Thesis_data_all_experiments\Conditions\Conditions_who_is_ahead\whos_ahead_60_40\vehicle2'
 
     dict60_40_v2_ahead = plot_varjo(path_to_csv_vehicle2_ahead, '60-40', 'vehicle2')
 
@@ -682,7 +636,7 @@ if __name__ == '__main__':
 
     fig, axes = plt.subplots(2, 2, figsize=(12, 10), sharey=True)
 
-    fig.suptitle('Linear regression analysis 5 seconds before-after the CRT condition 3 (60-40 km/h)')
+    fig.suptitle('Linear regression analysis before-after the CRT condition 3 (60-40 km/h)')
     fig.text(0.05, 0.5, "Fixation on opponent [%]", va='center', rotation='vertical', fontsize=12)
     fig.text(0.51, 0.48, "Participant is ahead", ha="center", va='center', fontsize=12)
     fig.text(0.51, 0.92, "Participant is behind", ha="center", va='center', fontsize=12)
@@ -695,43 +649,15 @@ if __name__ == '__main__':
     sns.regplot(df_before_behind_60_40, x='time_before', y='fixations_before', ax=axes[1][0])
     sns.regplot(df_after_behind_60_40, x='time_after', y='fixations_after', ax=axes[1][1])
 
-    axes[0][0].set(xlabel='CRT - 5 sec', ylabel=None)
-    axes[0][1].set(xlabel='CRT + 5 sec', ylabel=None)
-    axes[1][0].set(xlabel='CRT - 5 sec', ylabel=None)
-    axes[1][1].set(xlabel='CRT + 5 sec', ylabel=None)
+    axes[0][0].set(xlabel=None, ylabel=None)
+    axes[0][1].set(xlabel=None, ylabel=None)
+    axes[1][0].set(xlabel=None, ylabel=None)
+    axes[1][1].set(xlabel=None, ylabel=None)
 
-    axes[0][0].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
-    axes[0][1].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
-    axes[1][0].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
-    axes[1][1].tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=False)
-
-    # axes[0][0].set_title('5 seconds before the CRT')
-    # axes[0][1].set_title('5 seconds after the CRT')
-    # axes[1][0].set_title('5 seconds before the CRT')
-    # axes[1][1].set_title('5 seconds after the CRT')
+    axes[0][0].set_title('5 seconds before the CRT')
+    axes[0][1].set_title('5 seconds after the CRT')
+    axes[1][0].set_title('5 seconds before the CRT')
+    axes[1][1].set_title('5 seconds after the CRT')
 
     axes[0][0].plot([], [], ' ', label='r: ' + str(round(r, 2)))
     axes[0][0].plot([], [], ' ', label='p: ' + "{:.2e}".format(p))
@@ -748,3 +674,5 @@ if __name__ == '__main__':
     axes[1][1].legend(loc='upper left')
 
     plt.show()
+
+
